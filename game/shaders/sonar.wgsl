@@ -4,6 +4,8 @@
 //   height fog: thick at street level, thinning upward so rooftops show
 //   moonlit rims on whatever rises above the fog, window glow through it
 //   sonar pulses that cut the fog and draw soft monochrome outlines
+//   "Cold Moon" frost (disc 2's breakdown): black-and-white ice, frost creeping in
+//   from the edges, falling snow; cracks, then a shatter wipe back to color
 //
 // Pulse kinds: 0 = perfect, 1 = good, 2 = miss (glitch).
 // Classes (scene alpha): 0 sky, 0.25 ground, 0.5 house, 0.55 window, 0.75 candy, 1.0 danger.
@@ -12,11 +14,11 @@ struct Post {
     res: vec4<f32>,    // x = width px, y = height px, z = time s, w = street scroll (world units)
     bat: vec4<f32>,    // x, y = ring origin px, z = near, w = far
     cfg: vec4<f32>,    // x = ring speed px/s, y = fog boost 0..1 (bridge), z = idle reveal, w = class tint 0..1
-    look: vec4<f32>,   // x = fog top (world y), y = fog density 0..1, z = chroma 0..1, w = unused
+    look: vec4<f32>,   // x = fog top (world y), y = fog density 0..1, z = chroma 0..1, w = frost 0..1
     pulses: array<vec4<f32>, 4>, // x = start time, y = strength (0 = unused), z = kind, w = lifetime s
     invViewProj: mat4x4<f32>,
-    fx: vec4<f32>,     // x = seconds since a life was lost, y = seconds since a color burst, z = burst power, w = unused
-    fx2: vec4<f32>,    // x = seconds since a streak broke, y = break power 0..1, zw = unused
+    fx: vec4<f32>,     // x = seconds since a life was lost, y = seconds since a color burst, z = burst power, w = ice cracks so far
+    fx2: vec4<f32>,    // x = seconds since a streak broke, y = break power 0..1, z = seconds since the ice shattered (< 0 = not), w = seconds since the last crack
 };
 
 @group(0) @binding(0) var<uniform> u: Post;
@@ -111,6 +113,34 @@ fn outlineColor(c: f32) -> vec3<f32> {
     if (c > 0.9) { hint = vec3<f32>(0.62, 1.0, 0.6); }        // danger: faint green
     else if (c > 0.6) { hint = vec3<f32>(1.0, 0.78, 0.5); }   // candy: faint amber
     return mix(white, hint, u.cfg.w);
+}
+
+// Distance to the nearest Voronoi cell border (for ice cracks), cells of size 1.
+fn cracks(p: vec2<f32>) -> f32 {
+    let i = floor(p);
+    let f = fract(p);
+    var d1 = 8.0;
+    var d2 = 8.0;
+    for (var y = -1; y <= 1; y++) {
+        for (var x = -1; x <= 1; x++) {
+            let g = vec2<f32>(f32(x), f32(y));
+            let o = vec2<f32>(hash2(i + g), hash2(i + g + 19.0));
+            let r = length(g + o - f);
+            if (r < d1) { d2 = d1; d1 = r; } else if (r < d2) { d2 = r; }
+        }
+    }
+    return d2 - d1;
+}
+
+// Soft falling snow: one flake per cell, drifting sideways.
+fn snow(px: vec2<f32>, time: f32, cell: f32, speed: f32) -> f32 {
+    let q = vec2<f32>(px.x + sin(time * 0.7 + px.y * 0.01) * cell * 0.3, px.y - time * speed);
+    let id = floor(q / cell);
+    let f = fract(q / cell) - vec2<f32>(0.5);
+    let o = vec2<f32>(hash2(id), hash2(id + 7.0)) - vec2<f32>(0.5);
+    let r = length(f - o * 0.6) * cell;
+    let size = mix(0.8, 2.2, hash2(id + 3.0));
+    return smoothstep(size + 1.0, size - 0.5, r) * step(0.45, hash2(id + 11.0));
 }
 
 @fragment
@@ -249,6 +279,52 @@ fn fs_main(in: VOut) -> @location(0) vec4<f32> {
     // vignette
     let vig = smoothstep(0.95, 0.35, length(uv - vec2<f32>(0.5, 0.55)));
     col *= mix(0.5, 1.0, vig);
+
+    // --- Cold Moon frost: ice-white on black, frost from the edges, snow, cracks.
+    // The shatter wipes it away in a ring from the bat (the color burst follows).
+    var frost = u.look.w;
+    var crackFlash = 0.0;
+    if (u.fx2.z >= 0.0 && u.fx2.z < 1.5) {
+        let wipe = u.fx2.z * u.res.y * 2.4;
+        frost *= smoothstep(wipe - 60.0, wipe + 60.0, dist);
+        crackFlash = (1.0 - smoothstep(wipe - 30.0, wipe, dist)) * smoothstep(wipe - 260.0, wipe - 30.0, dist) * exp(-u.fx2.z * 2.0);
+    }
+    if (frost > 0.001) {
+        let l = luma(col);
+        let mono = smoothstep(0.04, 0.42, l);
+        let ice = mix(vec3<f32>(0.0, 0.003, 0.015), vec3<f32>(0.86, 0.93, 1.0), mono);
+        // the moon grows a cold halo
+        let halo = exp(-md * 7.0) * 0.35 + smoothstep(0.05, 0.045, md) * smoothstep(0.035, 0.045, md) * 0.25;
+        var cold = ice + vec3<f32>(0.75, 0.85, 1.0) * halo;
+        // frost creeps in from the screen edges, feathery
+        let edgeDist = min(min(uv.x, 1.0 - uv.x), min(uv.y, 1.0 - uv.y) * 0.8);
+        let fern = fbm(in.pos.xy * 0.03 + vec2<f32>(0.0, 3.0)) * 0.12 + noise(in.pos.xy * 0.12) * 0.03;
+        let reach = 0.11 * frost;
+        let e = edgeDist + fern - 0.05;
+        let rim = smoothstep(reach, reach - 0.05, e);
+        let edgeGlow = clamp(1.0 - e / max(reach, 0.001), 0.0, 1.0);
+        let crystal = 0.25 + 0.75 * smoothstep(0.03, 0.0, cracks(in.pos.xy * 0.05)) + fbm(in.pos.xy * 0.2) * 0.25;
+        cold = mix(cold, vec3<f32>(0.78, 0.88, 1.0) * crystal, rim * (0.25 + 0.5 * edgeGlow * edgeGlow));
+        // snow, two layers
+        let flakes = snow(in.pos.xy, time, 46.0, 38.0) + snow(in.pos.xy + vec2<f32>(17.0, 5.0), time, 23.0, 21.0) * 0.6;
+        cold += vec3<f32>(0.9, 0.95, 1.0) * flakes * 0.8;
+        // fine grain
+        cold += vec3<f32>(hash2(in.pos.xy + fract(time) * 91.0) - 0.5) * 0.05;
+        // cracks spread from the bat with each pickup hit, each one flashing
+        let crk = u.fx.w;
+        if (crk > 0.0) {
+            let reachC = crk * 0.42 * u.res.y;
+            let lines = smoothstep(0.07, 0.01, cracks(in.pos.xy / 80.0)) * (1.0 - smoothstep(reachC * 0.6, reachC, dist));
+            let flash = 1.0 + 1.5 * exp(-u.fx2.w * 5.0);
+            cold += vec3<f32>(0.85, 0.95, 1.0) * lines * 0.8 * flash;
+        }
+        col = mix(col, cold, frost);
+    }
+    // the shatter's ring edge: bright ice shards
+    if (crackFlash > 0.0) {
+        let shards = smoothstep(0.06, 0.0, cracks(in.pos.xy / 55.0));
+        col += vec3<f32>(0.9, 0.97, 1.0) * crackFlash * (0.25 + shards * 0.9);
+    }
 
     // streak broken: drain to a cold blue-grey, dim, squeeze the vignette; a pale ring edge
     if (brk > 0.0) {

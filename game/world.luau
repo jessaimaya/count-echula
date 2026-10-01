@@ -7,6 +7,7 @@ local rules = require('lib/rules')
 local beatmap = require('lib/beatmap')
 local hudtext = require('lib/hudtext')
 local harmony = require('lib/harmony')
+local discs = require('lib/discs')
 
 local NEAR = 0.1
 local FAR = 60
@@ -42,9 +43,41 @@ local PING_BEATS = 0.6
 local CANDY_STRENGTH = 0.9 -- sonar reach when a candy is caught
 local CANDY_BEATS = 1.6 -- how long that reveal lasts
 
+-- Record shelf (title screen) and pause. Hit areas are fractions of the layout size
+-- and match the RML in scene.rml (Title > Shelf, Hud > Pause Button, Pause).
+local PREVIEW_LEN = 16 -- seconds of chorus the menu plays before looping (8 bars)
+local PREVIEW_FADE = 0.8
+local PREVIEW_VOLUME = 0.8
+local ARROW_W = 0.24 -- side strips of the shelf that flip records
+local SHELF_TOP = 0.28
+local SHELF_BOTTOM = 0.62
+local PAUSE_SIZE = 84 -- top-right square of the pause button
+local RESUME_Y = 0.5 -- pause menu buttons: centre y and half height
+local MENU_Y = 0.6
+local BUTTON_H = 0.045
+local BUTTON_W = 0.3 -- half width
+local COUNTDOWN_BEATS = 3 -- after Resume, the song waits this many beats
+
+-- Keyboard (GLFW key codes, as KeyboardEvent.key reports them). Needs the
+-- <FocusData/> on the World layout in scene.rml, and focus set by the "Flow" machine.
+local KEY_SPACE = 32
+local KEY_A = 65
+local KEY_D = 68
+local KEY_M = 77
+local KEY_P = 80
+local KEY_ESCAPE = 256
+local KEY_ENTER = 257
+local KEY_BACKSPACE = 259
+local KEY_RIGHT = 262
+local KEY_LEFT = 263
+local KEY_KP_ENTER = 335
+
 type Pulse = { start: number, strength: number, kind: number, life: number }
 
 type Mode = 'ready' | 'playing' | 'over' | 'done'
+
+-- An effect sound scheduled ahead on the audio clock; stopped if the song pauses.
+type Pending = { sound: AudioSound, at: number }
 
 -- GameVM.mode values, read by the "Screens" state machine layer.
 local MODE_NUM: { [Mode]: number } = { ready = 0, playing = 1, over = 2, done = 3 }
@@ -82,7 +115,18 @@ type World = {
     viewProj: Mat4,
     invViewProj: Mat4,
     sampler: ImageSampler,
-    -- song clock
+    -- disc + song clock
+    disc: number, -- index into discs.list
+    map: beatmap.Beatmap,
+    sources: { [number]: AudioSource },
+    preview: AudioSound?,
+    previewStart: number, -- local time the menu preview started
+    pending: { Pending },
+    menuGest: gesture.Gesture,
+    menuPress: Vector,
+    paused: boolean,
+    pausedSong: number, -- song time when paused
+    resumeAt: number, -- local time the countdown ends (0 = none)
     clock: beatclock.Clock,
     source: AudioSource?,
     sound: AudioSound?,
@@ -108,6 +152,10 @@ type World = {
     strings: { [string]: Property<string> },
     lastStrings: { [string]: string },
     modeProp: Property<number>?,
+    discProp: Property<number>?,
+    discColor: Property<Color>?,
+    pausedProp: Property<boolean>?,
+    discFire: PropertyTrigger?,
     autopilot: Property<boolean>?,
     autopilotUntil: Property<number>?,
     judgeFire: PropertyTrigger?,
@@ -196,8 +244,136 @@ local function songNow(self: World): number
     return self.time - self.songStart
 end
 
+-- Play `src` at audio-engine time `at` (or now if that has passed or the audio clock
+-- is off). Future sounds are remembered so a pause can silence them.
+local function playAt(self: World, src: AudioSource, at: number?, volume: number)
+    local s: AudioSound? = nil
+    if at ~= nil and self.useAudioClock and at > Audio.time() then
+        s = Audio.playAtTime(src, at)
+        if s ~= nil then
+            table.insert(self.pending, { sound = s, at = at })
+        end
+    end
+    if s == nil then
+        s = Audio.play(src)
+    end
+    if s ~= nil then
+        s.volume = volume
+    end
+end
+
+local function stopPending(self: World)
+    for _, p in self.pending do
+        p.sound:stop()
+    end
+    self.pending = {}
+end
+
+local function prunePending(self: World)
+    local now = Audio.time()
+    local keep: { Pending } = {}
+    for _, p in self.pending do
+        if p.at > now then
+            table.insert(keep, p)
+        end
+    end
+    self.pending = keep
+end
+
+local function stopSong(self: World)
+    local s = self.sound
+    if s ~= nil then
+        s:stop()
+    end
+    self.sound = nil
+    stopPending(self)
+end
+
+-- ------------------------------------------------------------- record shelf
+
+local function stopPreview(self: World)
+    local s = self.preview
+    if s ~= nil then
+        s:stop()
+    end
+    self.preview = nil
+end
+
+-- The selected disc's first chorus, faded in; advance() fades it out and loops it.
+local function startPreview(self: World)
+    stopPreview(self)
+    self.previewStart = self.time
+    local src = self.sources[self.disc]
+    if src == nil then
+        return
+    end
+    local s = Audio.play(src)
+    if s ~= nil then
+        s:seek(discs.list[self.disc].preview)
+        s.volume = 0
+    end
+    self.preview = s
+end
+
+local function previewTick(self: World)
+    local el = self.time - self.previewStart
+    if el >= PREVIEW_LEN then
+        startPreview(self)
+        return
+    end
+    local s = self.preview
+    if s ~= nil then
+        local fadeIn = math.clamp(el / PREVIEW_FADE, 0, 1)
+        local fadeOut = math.clamp((PREVIEW_LEN - el) / PREVIEW_FADE, 0, 1)
+        s.volume = PREVIEW_VOLUME * math.min(fadeIn, fadeOut)
+    end
+end
+
+-- Song time the menu is "at" (drives the idle pulses on the preview's beat).
+local function previewSongTime(self: World): number
+    return discs.list[self.disc].preview + (self.time - self.previewStart)
+end
+
+local function selectDisc(self: World, index: number, preview: boolean)
+    self.disc = discs.wrap(index)
+    local d = discs.list[self.disc]
+    self.map = d.map
+    self.source = self.sources[self.disc]
+    self.clock = beatclock.new(d.map.bpm, d.map.firstBeat, AUDIO_OFFSET)
+    self.state = rules.new(d.map)
+    setString(self, 'discTitle', d.title)
+    setString(self, 'discSleeve', d.sleeve)
+    local p = self.discProp
+    if p ~= nil then
+        p.value = self.disc
+    end
+    local c = self.discColor
+    if c ~= nil then
+        c.value = d.color
+    end
+    if preview then
+        startPreview(self)
+    end
+end
+
+local function flipDisc(self: World, dir: number)
+    selectDisc(self, self.disc + dir, true)
+    fire(self.discFire)
+end
+
+local function setPaused(self: World, paused: boolean)
+    self.paused = paused
+    local p = self.pausedProp
+    if p ~= nil then
+        p.value = paused
+    end
+end
+
 local function startSong(self: World)
-    self.state = rules.new(beatmap)
+    stopPreview(self)
+    setPaused(self, false)
+    self.resumeAt = 0
+    self.state = rules.new(self.map)
     self.gest = gesture.new()
     self.pulses = newPulses()
     setMode(self, 'playing')
@@ -214,11 +390,7 @@ local function startSong(self: World)
     self.histBeat = {}
     self.histX = {}
     self.hitAt = -100
-    local old = self.sound
-    if old ~= nil then
-        old:stop()
-    end
-    self.sound = nil
+    stopSong(self)
     self.useAudioClock = false
     self.songStart = self.time + START_DELAY
     local src = self.source
@@ -229,7 +401,7 @@ local function startSong(self: World)
         self.lastAudio = Audio.time()
         self.audioIdle = 0
     end
-    print(string.format('song start: audio=%s', tostring(self.useAudioClock)))
+    print(string.format('song start: disc %d (%s)  audio=%s', self.disc, discs.list[self.disc].title, tostring(self.useAudioClock)))
 end
 
 local function endSong(self: World, mode: Mode)
@@ -251,6 +423,7 @@ local function endSong(self: World, mode: Mode)
     setString(self, 'resultTitle', hudtext.resultTitle(summary))
     setString(self, 'gradeText', hudtext.gradeText(summary))
     setString(self, 'statsText', hudtext.stats(summary))
+    setString(self, 'againText', hudtext.again(summary))
     setString(self, 'promptText', '')
     self.endAt = self.time
     setMode(self, mode)
@@ -259,6 +432,55 @@ local function endSong(self: World, mode: Mode)
     end
     print(string.format('%s: score %d  grade %s  candy %d/%d  perfect %d good %d  hits %d  pings %d  max combo %d',
         mode, st.score, summary.grade, st.candies, st.totalCandies, st.perfect, st.good, st.hits, st.pings, st.maxCombo))
+end
+
+-- Back to the record shelf (from the pause menu or a finished song).
+local function toMenu(self: World)
+    stopSong(self)
+    setPaused(self, false)
+    self.resumeAt = 0
+    setString(self, 'promptText', '')
+    selectDisc(self, self.disc, false)
+    setMode(self, 'ready')
+    self.menuGest = gesture.new()
+    startPreview(self)
+end
+
+local function pauseSong(self: World)
+    self.pausedSong = songNow(self)
+    self.resumeAt = 0
+    local s = self.sound
+    if s ~= nil then
+        s:pause()
+    end
+    stopPending(self)
+    self.gest = gesture.new()
+    setString(self, 'promptText', '')
+    setPaused(self, true)
+end
+
+-- Resume: the overlay closes, a short count-in, then the song continues.
+local function resumeSong(self: World)
+    setPaused(self, false)
+    self.resumeAt = self.time + COUNTDOWN_BEATS * beatclock.beatLen(self.clock)
+end
+
+local function countdownTick(self: World)
+    local left = self.resumeAt - self.time
+    if left > 0 then
+        setString(self, 'promptText', tostring(math.ceil(left / beatclock.beatLen(self.clock))))
+        return
+    end
+    self.resumeAt = 0
+    setString(self, 'promptText', '')
+    local s = self.sound
+    if s ~= nil then
+        s:resume()
+    end
+    self.audioStart = Audio.time() - self.pausedSong
+    self.songStart = self.time - self.pausedSong
+    self.lastAudio = Audio.time()
+    self.audioIdle = 0
 end
 
 -- --------------------------------------------------------------------- input
@@ -284,39 +506,33 @@ end
 -- Play a music-box note exactly on `beat` when the audio clock allows, else now.
 local function playNote(self: World, midi: number, beat: number, volume: number)
     local src = self.notes[midi]
-    if src == nil then
-        return
-    end
-    local s: AudioSound? = nil
-    if self.useAudioClock then
-        local at = self.audioStart + beatclock.timeOf(self.clock, beat)
-        if at > Audio.time() then
-            s = Audio.playAtTime(src, at)
-        end
-    end
-    if s == nil then
-        s = Audio.play(src)
-    end
-    if s ~= nil then
-        s.volume = volume
+    if src ~= nil then
+        playAt(self, src, self.audioStart + beatclock.timeOf(self.clock, beat), volume)
     end
 end
 
 -- Candy caught: the sonar fires on its beat, and the candy sings a note of the
--- chord playing at that moment (the streak walks the arpeggio).
+-- chord playing at that moment (the streak walks the arpeggio). In the frost the
+-- reveal lingers and the note rings an octave up, softer.
 local function onCatch(self: World, c: rules.Catch)
     local st = self.state
+    local map = self.map
+    local frost = beatmap.frostAt(map, c.beat)
     local strength = CANDY_STRENGTH
-    local beats = CANDY_BEATS
-    local note = harmony.noteFor(c.beat, st.combo)
+    local beats = CANDY_BEATS * (1 + frost)
+    local note = harmony.noteFor(map, c.beat, st.combo)
+    local gain = 1 - 0.35 * frost
+    if frost > 0.5 and self.notes[note + 12] ~= nil then
+        note += 12
+    end
     if c.judgement == 'perfect' then
         addPulse(self, strength, 0, beats)
-        playNote(self, note, c.beat, 0.9)
-        playNote(self, harmony.above(c.beat, note), c.beat, 0.5)
+        playNote(self, note, c.beat, 0.9 * gain)
+        playNote(self, harmony.above(map, c.beat, note), c.beat, 0.5 * gain)
         showJudge(self, hudtext.judge('perfect'))
     else
         addPulse(self, strength, 1, beats)
-        playNote(self, note, c.beat, 0.8)
+        playNote(self, note, c.beat, 0.8 * gain)
         if c.judgement == 'good' then
             showJudge(self, hudtext.judge('good'))
         end
@@ -325,19 +541,85 @@ local function onCatch(self: World, c: rules.Catch)
     fire(self.candyFire)
 end
 
+local function inPauseButton(self: World, p: Vector): boolean
+    return p.x >= self.size.x - PAUSE_SIZE and p.y <= PAUSE_SIZE
+end
+
+local function inButton(self: World, p: Vector, cy: number): boolean
+    return math.abs(p.x - self.size.x * 0.5) <= self.size.x * BUTTON_W
+        and math.abs(p.y - self.size.y * cy) <= self.size.y * BUTTON_H
+end
+
+-- Title screen tap: the side strips of the shelf flip records, anywhere else plays.
+local function menuTap(self: World)
+    local p = self.menuPress
+    local onShelf = p.y >= self.size.y * SHELF_TOP and p.y <= self.size.y * SHELF_BOTTOM
+    if onShelf and p.x < self.size.x * ARROW_W then
+        flipDisc(self, -1)
+    elseif onShelf and p.x > self.size.x * (1 - ARROW_W) then
+        flipDisc(self, 1)
+    else
+        startSong(self)
+    end
+end
+
+-- Swipe left = the next record (the shelf slides left).
+local function menuGesture(self: World, ev: gesture.GestureEvent?)
+    if ev == nil then
+        return
+    end
+    if ev.kind == 'swipe' then
+        flipDisc(self, -ev.dir)
+    else
+        menuTap(self)
+    end
+end
+
 local function pointerDown(self: World, event: PointerEvent)
     event:hit()
+    if self.mode == 'ready' then
+        self.menuPress = event.position
+        gesture.press(self.menuGest, self.time, event.position.x)
+        return
+    end
     if self.mode ~= 'playing' then
-        if self.mode == 'ready' or self.time - self.endAt >= RESTART_GUARD then
-            startSong(self)
+        -- results: a lost run retries the disc, a finished one goes back to the shelf
+        if self.time - self.endAt >= RESTART_GUARD then
+            if self.mode == 'over' then
+                startSong(self)
+            else
+                toMenu(self)
+            end
         end
+        return
+    end
+    if self.paused then
+        if inButton(self, event.position, RESUME_Y) then
+            resumeSong(self)
+        elseif inButton(self, event.position, MENU_Y) then
+            toMenu(self)
+        end
+        return
+    end
+    if inPauseButton(self, event.position) then
+        if self.resumeAt == 0 then
+            pauseSong(self)
+        end
+        return
+    end
+    if self.resumeAt > 0 then
         return
     end
     gesture.press(self.gest, songNow(self), event.position.x)
 end
 
 local function pointerMove(self: World, event: PointerEvent)
-    if self.mode ~= 'playing' then
+    if self.mode == 'ready' then
+        event:hit()
+        menuGesture(self, gesture.move(self.menuGest, self.time, event.position.x))
+        return
+    end
+    if self.mode ~= 'playing' or self.paused or self.resumeAt > 0 then
         return
     end
     event:hit()
@@ -348,7 +630,12 @@ local function pointerMove(self: World, event: PointerEvent)
 end
 
 local function pointerUp(self: World, event: PointerEvent)
-    if self.mode ~= 'playing' then
+    if self.mode == 'ready' then
+        event:hit()
+        menuGesture(self, gesture.release(self.menuGest, self.time, event.position.x))
+        return
+    end
+    if self.mode ~= 'playing' or self.paused or self.resumeAt > 0 then
         return
     end
     event:hit()
@@ -358,35 +645,81 @@ local function pointerUp(self: World, event: PointerEvent)
     end
 end
 
--- ------------------------------------------------------------------- advance
+-- Keyboard: the same actions as touch.
+--   shelf:   Left/Right (A/D) flip records, Enter/Space play
+--   play:    Left/Right (A/D) swipe, Space pings, Esc/P pause
+--   paused:  Esc/P/Enter/Space resume, M/Backspace main menu
+--   results: Enter/Space as a tap (retry after RIP, shelf after a finish), Esc to the shelf
+local function keyboardEvent(self: World, event: KeyboardEvent): boolean
+    if event.phase ~= 'down' then
+        return false -- no auto-repeat: one press, one lane
+    end
+    local k = event.key
+    local dir = if k == KEY_LEFT or k == KEY_A then -1 elseif k == KEY_RIGHT or k == KEY_D then 1 else 0
+    local confirm = k == KEY_ENTER or k == KEY_KP_ENTER or k == KEY_SPACE
+    local pauseKey = k == KEY_ESCAPE or k == KEY_P
 
--- Heartbeat on every beat in the sections where the song has no kick
--- (intro, bridge), scheduled one beat ahead on the audio clock.
-local function heartbeatWanted(beat: number): boolean
-    if beat < 0 or beat >= beatmap.tapTutorial + 8 then
-        for _, s in beatmap.sections do
-            if s.name == 'bridge' and beat >= s.from and beat < s.from + 16 then
-                return true
+    if self.mode == 'ready' then
+        if dir ~= 0 then
+            flipDisc(self, dir)
+        elseif confirm then
+            startSong(self)
+        else
+            return false
+        end
+        return true
+    end
+    if self.mode ~= 'playing' then
+        if not (confirm or k == KEY_ESCAPE) then
+            return false
+        end
+        if self.time - self.endAt >= RESTART_GUARD then
+            if self.mode == 'over' and confirm then
+                startSong(self)
+            else
+                toMenu(self)
             end
         end
+        return true
+    end
+    if self.paused then
+        if pauseKey or confirm then
+            resumeSong(self)
+        elseif k == KEY_M or k == KEY_BACKSPACE then
+            toMenu(self)
+        else
+            return false
+        end
+        return true
+    end
+    if self.resumeAt > 0 then
+        return dir ~= 0 or confirm or pauseKey -- swallow keys during the count-in
+    end
+    if pauseKey then
+        pauseSong(self)
+    elseif dir ~= 0 then
+        handle(self, { kind = 'swipe', t = songNow(self), dir = dir })
+    elseif k == KEY_SPACE then
+        handle(self, { kind = 'tap', t = songNow(self), dir = 0 })
+    else
         return false
     end
     return true
 end
 
+-- ------------------------------------------------------------------- advance
+
+-- Heartbeat where the song has no kick (beatmap.heartbeats), scheduled one beat
+-- ahead on the audio clock.
 local function scheduleHeartbeat(self: World, beat: number)
     local src = self.sfx.heartbeat
-    if src == nil or not heartbeatWanted(beat) then
+    if src == nil or not beatmap.heartbeatAt(self.map, beat) then
         return
     end
-    local s: AudioSound? = nil
     if self.useAudioClock then
-        s = Audio.playAtTime(src, self.audioStart + beatclock.timeOf(self.clock, beat))
+        playAt(self, src, self.audioStart + beatclock.timeOf(self.clock, beat), 0.9)
     elseif beat == math.floor(self.beat) then
-        s = Audio.play(src)
-    end
-    if s ~= nil then
-        s.volume = 0.9
+        playSfx(src, 0.9)
     end
 end
 
@@ -419,9 +752,12 @@ end
 local function advance(self: World, seconds: number): boolean
     self.time += seconds
     if self.mode ~= 'playing' then
-        -- idle: pulse on an internal 120 BPM clock so the street breathes
-        local bl = beatclock.beatLen(self.clock)
-        local idx = math.floor(self.time / bl)
+        -- idle: the street breathes on the beat (of the menu preview on the shelf)
+        local idx = math.floor(self.time / beatclock.beatLen(self.clock))
+        if self.mode == 'ready' then
+            previewTick(self)
+            idx = math.floor(beatclock.beatAt(self.clock, previewSongTime(self)))
+        end
         if idx ~= self.beatIdx then
             self.beatIdx = idx
             addPulse(self, 0.8, 1, 1.5)
@@ -429,6 +765,16 @@ local function advance(self: World, seconds: number): boolean
         self.beat = 0
         return true
     end
+    if self.paused then
+        return true
+    end
+    if self.resumeAt > 0 then
+        countdownTick(self)
+        if self.resumeAt > 0 then
+            return true
+        end
+    end
+    prunePending(self)
 
     -- the audio clock must actually move; headless runs are silent
     if self.useAudioClock then
@@ -481,7 +827,7 @@ local function advance(self: World, seconds: number): boolean
         table.remove(self.histBeat, 1)
         table.remove(self.histX, 1)
     end
-    local bursts = beatmap.bursts
+    local bursts = self.map.bursts
     while self.burstIdx <= #bursts and self.beat >= bursts[self.burstIdx].beat do
         self.burstAt = self.time
         self.burstPower = bursts[self.burstIdx].power
@@ -493,7 +839,7 @@ local function advance(self: World, seconds: number): boolean
 
     setString(self, 'scoreText', hudtext.thousands(st.score))
     setString(self, 'multText', hudtext.mult(rules.multiplier(st.combo), st.combo))
-    setString(self, 'promptText', hudtext.prompt(beatmap, self.beat))
+    setString(self, 'promptText', hudtext.prompt(self.map, self.beat))
 
     local idx = math.floor(self.beat)
     if idx ~= self.beatIdx then
@@ -655,16 +1001,6 @@ local function circle(p: Path, cx: number, cy: number, r: number)
     p:close()
 end
 
-local function sectionFog(beat: number): number
-    local fog = 0
-    for _, s in beatmap.sections do
-        if beat >= s.from then
-            fog = if s.name == 'bridge' then 1 else 0
-        end
-    end
-    return fog
-end
-
 -- Bat lane position `age` beats ago, from the recorded history.
 local function laneAt(self: World, beat: number): number
     local hb = self.histBeat
@@ -734,9 +1070,11 @@ local function drawTrail(self: World, renderer: Renderer)
     local lvl = self.trailLevel
     local light = math.clamp(lvl, 0, 1)
     local wings = math.clamp(lvl - 1, 0, 1)
+    -- in the Cold Moon freeze the wing trails turn to ice too
+    local palette = if beatmap.frostAt(self.map, self.beat) > 0.5 then LIGHT else WINGS
     ribbon(self, renderer, 1, 0, light * (1 - wings * 0.4), 7, 0.02, LIGHT)
-    ribbon(self, renderer, 1 + TRAIL_SEG, -WING, wings, 12, 0.12, WINGS)
-    ribbon(self, renderer, 1 + TRAIL_SEG * 2, WING, wings, 12, 0.12, WINGS)
+    ribbon(self, renderer, 1 + TRAIL_SEG, -WING, wings, 12, 0.12, palette)
+    ribbon(self, renderer, 1 + TRAIL_SEG * 2, WING, wings, 12, 0.12, palette)
     -- sparkles along the wing trails
     if wings > 0.05 then
         local paint = self.paint
@@ -857,10 +1195,10 @@ local function drawHud(self: World, renderer: Renderer, bx: number, by: number)
         renderer:drawPath(p, self.paint)
     end
 
-    -- hp pips, top right (in game only)
+    -- hp pips, top right beside the pause button (in game only)
     for i = 1, if self.mode == 'playing' then rules.MAX_HP else 0 do
         local p = paths[1 + i]
-        circle(p, w - 24 - (i - 1) * 26, 28, 9)
+        circle(p, w - PAUSE_SIZE - 14 - (i - 1) * 26, 38, 9)
         self.paint.color = if i <= st.hp then Color.rgb(255, 77, 109) else Color.rgb(60, 50, 90)
         renderer:drawPath(p, self.paint)
     end
@@ -899,6 +1237,23 @@ local function draw(self: World, renderer: Renderer)
 
     local pd = self.postData
     local playing = self.mode == 'playing'
+    -- Cold Moon frost (disc 2's breakdown), in seconds for the shader
+    local frost, crackCount, sinceShatter = 0, 0, -1
+    local shatterAge, crackAge = -1, 10
+    local ice = self.map.ice
+    if playing and ice ~= nil then
+        frost, crackCount, sinceShatter = beatmap.frostAt(self.map, self.beat)
+        local bl = beatclock.beatLen(self.clock)
+        if sinceShatter >= 0 and sinceShatter * bl < 1.5 then
+            shatterAge = sinceShatter * bl
+            frost = 1
+        end
+        for _, cb in ice.cracks do
+            if self.beat >= cb then
+                crackAge = (self.beat - cb) * bl
+            end
+        end
+    end
     buffer.writef32(pd, 0, W)
     buffer.writef32(pd, 4, H)
     buffer.writef32(pd, 8, self.time)
@@ -908,13 +1263,13 @@ local function draw(self: World, renderer: Renderer)
     buffer.writef32(pd, 24, NEAR)
     buffer.writef32(pd, 28, FAR)
     buffer.writef32(pd, 32, H * 1.6)
-    buffer.writef32(pd, 36, if playing then sectionFog(self.beat) else 0)
+    buffer.writef32(pd, 36, if playing then beatmap.fogAt(self.map, self.beat) else 0)
     buffer.writef32(pd, 40, 0)
     buffer.writef32(pd, 44, CLASS_TINT)
     buffer.writef32(pd, 48, FOG_TOP)
     buffer.writef32(pd, 52, FOG_DENSITY)
     buffer.writef32(pd, 56, CHROMA)
-    buffer.writef32(pd, 60, 0)
+    buffer.writef32(pd, 60, frost)
     for i, p in self.pulses do
         local o = 64 + (i - 1) * 16
         buffer.writef32(pd, o + 0, p.start)
@@ -926,11 +1281,11 @@ local function draw(self: World, renderer: Renderer)
     buffer.writef32(pd, 192, self.time - self.hitAt)
     buffer.writef32(pd, 196, self.time - self.burstAt)
     buffer.writef32(pd, 200, self.burstPower)
-    buffer.writef32(pd, 204, 0)
+    buffer.writef32(pd, 204, crackCount)
     buffer.writef32(pd, 208, self.time - self.breakAt)
     buffer.writef32(pd, 212, self.breakPower)
-    buffer.writef32(pd, 216, 0)
-    buffer.writef32(pd, 220, 0)
+    buffer.writef32(pd, 216, shatterAge)
+    buffer.writef32(pd, 220, crackAge)
     postUBO:write(pd)
 
     local pass = scene:beginRenderPass({
@@ -976,15 +1331,20 @@ end
 
 local STRING_PROPS = {
     'scoreText', 'multText', 'judgeText', 'countText', 'promptText',
-    'resultTitle', 'gradeText', 'statsText',
+    'resultTitle', 'gradeText', 'statsText', 'againText', 'discTitle', 'discSleeve',
 }
 
 local function init(self: World, context: Context): boolean
     self.context = context
-    self.source = context:audio('echula_theme')
-    if self.source == nil then
-        print('world: audio asset echula_theme not found')
+    for i, d in discs.list do
+        local src = context:audio(d.audio)
+        if src ~= nil then
+            self.sources[i] = src
+        else
+            print('world: audio asset ' .. d.audio .. ' not found')
+        end
     end
+    self.source = self.sources[self.disc]
     self.sfx = {
         streakBreak = context:audio('streak_break'),
         heartbeat = context:audio('heartbeat'),
@@ -1017,11 +1377,16 @@ local function init(self: World, context: Context): boolean
         end
     end
     self.modeProp = vm:getNumber('mode')
+    self.discProp = vm:getNumber('disc')
+    self.discColor = vm:getColor('discColor')
+    self.pausedProp = vm:getBoolean('paused')
+    self.discFire = vm:getTrigger('discFire')
     self.autopilot = vm:getBoolean('_autopilot')
     self.autopilotUntil = vm:getNumber('_autopilotUntil')
     self.judgeFire = vm:getTrigger('judgeFire')
     self.candyFire = vm:getTrigger('candyFire')
     setMode(self, self.mode)
+    selectDisc(self, self.disc, true)
     return true
 end
 
@@ -1080,7 +1445,18 @@ return function(context: Context): Layout<World>
         viewProj = Mat4.identity(),
         invViewProj = Mat4.identity(),
         sampler = ImageSampler('clamp', 'clamp', 'bilinear'),
-        clock = beatclock.new(beatmap.bpm, beatmap.firstBeat, AUDIO_OFFSET),
+        disc = 1,
+        map = discs.list[1].map,
+        sources = {},
+        preview = nil,
+        previewStart = 0,
+        pending = {},
+        menuGest = gesture.new(),
+        menuPress = Vector.xy(0, 0),
+        paused = false,
+        pausedSong = 0,
+        resumeAt = 0,
+        clock = beatclock.new(discs.list[1].map.bpm, discs.list[1].map.firstBeat, AUDIO_OFFSET),
         source = nil,
         sound = nil,
         audioStart = 0,
@@ -1094,7 +1470,7 @@ return function(context: Context): Layout<World>
         beat = 0,
         beatIdx = -1,
         gest = gesture.new(),
-        state = rules.new(beatmap),
+        state = rules.new(discs.list[1].map),
         pulses = newPulses(),
         pulseNext = 1,
         hitAt = -100,
@@ -1103,6 +1479,10 @@ return function(context: Context): Layout<World>
         strings = {},
         lastStrings = {},
         modeProp = nil,
+        discProp = nil,
+        discColor = nil,
+        pausedProp = nil,
+        discFire = nil,
         autopilot = nil,
         autopilotUntil = nil,
         judgeFire = nil,
@@ -1118,5 +1498,6 @@ return function(context: Context): Layout<World>
         pointerDown = pointerDown,
         pointerMove = pointerMove,
         pointerUp = pointerUp,
+        keyboardEvent = keyboardEvent,
     }
 end

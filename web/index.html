@@ -11,6 +11,7 @@
     /* Portrait-first: fill height on desktop (letterboxed), full screen on phones. */
     #stage { position: relative; height: 100dvh; aspect-ratio: 9 / 16; max-width: 100vw; }
     canvas { width: 100%; height: 100%; display: block; touch-action: none; }
+    canvas:focus { outline: none; } /* focused for keyboard play; no ring around the game */
     #hud {
       position: fixed; top: 8px; left: 8px; padding: 4px 8px; border-radius: 6px;
       font: 12px/1.4 ui-monospace, monospace; color: var(--ink); background: #0008;

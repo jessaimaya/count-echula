@@ -1,48 +1,40 @@
--- Harmony of "Echula theme" for musical candy catches.
--- The song is in C major (chroma analysis, docs/MUSIC_PROMPT.md). One chord per half
--- bar (2 beats), estimated from the audio and cleaned to C-major triads.
--- Each catch plays a music-box note from the current chord; the streak walks the
--- arpeggio up and down (ping-pong) so a run of catches sounds like a melody.
+-- Harmony for musical candy catches. Each disc's beatmap lists its chords, two per
+-- bar (estimated from the audio, docs/MUSIC_PROMPT.md). Each catch plays a music-box
+-- note from the current chord; the streak walks the arpeggio up and down (ping-pong)
+-- so a run of catches sounds like a melody.
+local beatmap = require('lib/beatmap')
 
 local M = {}
 
--- pitch classes per chord
-local CHORDS: { [string]: { number } } = {
-    C = { 0, 4, 7 },
-    Dm = { 2, 5, 9 },
-    Em = { 4, 7, 11 },
-    F = { 5, 9, 0 },
-    G = { 7, 11, 2 },
-    Am = { 9, 0, 4 },
-}
-
--- bars 1-36, two chords per bar
-local PROGRESSION = {
-    'Em', 'C', 'G', 'Am', 'Em', 'C', 'F', 'C', -- 1-4
-    'C', 'C', 'Dm', 'C', 'C', 'C', 'F', 'G', -- 5-8
-    'C', 'C', 'F', 'G', 'G', 'G', 'G', 'G', -- 9-12
-    'C', 'G', 'F', 'Em', 'C', 'C', 'G', 'G', -- 13-16
-    'Em', 'C', 'F', 'G', 'G', 'G', 'G', 'G', -- 17-20
-    'C', 'C', 'Dm', 'Dm', 'Am', 'F', 'G', 'Am', -- 21-24
-    'C', 'G', 'F', 'C', 'Em', 'C', 'G', 'G', -- 25-28
-    'C', 'C', 'F', 'G', 'G', 'G', 'G', 'G', -- 29-32
-    'C', 'C', 'F', 'C', 'F', 'C', 'F', 'C', -- 33-36
+local ROOTS: { [string]: number } = {
+    C = 0, ['C#'] = 1, Db = 1, D = 2, Eb = 3, E = 4, F = 5,
+    ['F#'] = 6, Gb = 6, G = 7, Ab = 8, A = 9, Bb = 10, B = 11,
 }
 
 M.LOW = 72 -- C5
 M.HIGH = 96 -- C7
 
--- Available samples: the C major scale from C5 to C7 (assets/audio/notes/note_<midi>.wav).
-M.NOTES = { 72, 74, 76, 77, 79, 81, 83, 84, 86, 88, 89, 91, 93, 95, 96 }
+-- Available samples (assets/audio/notes/note_<midi>.wav): C major from C5 to C7, plus
+-- C# and Bb for the D minor disc.
+M.NOTES = { 72, 73, 74, 76, 77, 79, 81, 82, 83, 84, 85, 86, 88, 89, 91, 93, 94, 95, 96 }
 
-function M.chordAt(beat: number): string
+-- Pitch classes of a major ("C", "Bb") or minor ("Dm") triad.
+function M.pitchClasses(chord: string): { number }
+    local minor = chord:sub(-1) == 'm'
+    local name = if minor then chord:sub(1, -2) else chord
+    local root = ROOTS[name] or 0
+    local third = if minor then 3 else 4
+    return { root, (root + third) % 12, (root + 7) % 12 }
+end
+
+function M.chordAt(map: beatmap.Beatmap, beat: number): string
     local i = math.floor(math.max(0, beat) / 2) + 1
-    return PROGRESSION[math.min(i, #PROGRESSION)]
+    return map.chords[math.min(i, #map.chords)] or 'C'
 end
 
 -- Chord tones between LOW and HIGH, ascending.
 function M.arpeggio(chord: string): { number }
-    local pcs = CHORDS[chord] or CHORDS.C
+    local pcs = M.pitchClasses(chord)
     local out: { number } = {}
     for m = M.LOW, M.HIGH do
         for _, pc in pcs do
@@ -55,8 +47,8 @@ function M.arpeggio(chord: string): { number }
 end
 
 -- Note for the `step`-th candy of a streak (1-based) caught at `beat`.
-function M.noteFor(beat: number, step: number): number
-    local arp = M.arpeggio(M.chordAt(beat))
+function M.noteFor(map: beatmap.Beatmap, beat: number, step: number): number
+    local arp = M.arpeggio(M.chordAt(map, beat))
     local n = #arp
     local period = 2 * (n - 1)
     local k = (math.max(1, step) - 1) % period
@@ -65,8 +57,8 @@ function M.noteFor(beat: number, step: number): number
 end
 
 -- The next chord tone above `note` (for the PERFECT harmony), or the note itself at the top.
-function M.above(beat: number, note: number): number
-    for _, m in M.arpeggio(M.chordAt(beat)) do
+function M.above(map: beatmap.Beatmap, beat: number, note: number): number
+    for _, m in M.arpeggio(M.chordAt(map, beat)) do
         if m > note then
             return m
         end

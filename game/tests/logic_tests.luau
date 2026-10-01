@@ -4,6 +4,9 @@ local rules = require('lib/rules')
 local beatmap = require('lib/beatmap')
 local hudtext = require('lib/hudtext')
 local harmony = require('lib/harmony')
+local discs = require('lib/discs')
+local echula = require('lib/maps/echula')
+local funky = require('lib/maps/funky')
 
 local function emptyMap(): beatmap.Beatmap
     return {
@@ -15,6 +18,9 @@ local function emptyMap(): beatmap.Beatmap
         tapTutorial = 0,
         sections = {},
         bursts = {},
+        heartbeats = {},
+        ice = nil,
+        chords = { 'C' },
         events = {},
     }
 end
@@ -205,56 +211,109 @@ return function(): Tests
                 s.candies = 70
                 expect(rules.grade(s)).is('B')
             end)
-            test.case('beatmap: candy trail, sorted, garlic never on the trail', function(expect)
-                local sorted = true
-                local clash = false
-                local candyAt: { [number]: number } = {}
-                for i, e in beatmap.events do
-                    if i > 1 and e.beat < beatmap.events[i - 1].beat then
-                        sorted = false
+            for _, d in discs.list do
+                local map = d.map
+                test.case(d.title .. ': candy trail, sorted, garlic never on the trail', function(expect)
+                    local sorted = true
+                    local clash = false
+                    local candyAt: { [number]: number } = {}
+                    for i, e in map.events do
+                        if i > 1 and e.beat < map.events[i - 1].beat then
+                            sorted = false
+                        end
+                        if e.kind == 'candy' then
+                            candyAt[e.beat] = e.lane
+                        end
                     end
-                    if e.kind == 'candy' then
-                        candyAt[e.beat] = e.lane
+                    for _, e in map.events do
+                        if e.kind == 'garlic' and candyAt[e.beat] == e.lane then
+                            clash = true
+                        end
+                    end
+                    expect(sorted).is(true)
+                    expect(clash).is(false)
+                    expect(#map.events).greaterThan(100)
+                    expect(map.events[#map.events].beat < map.endBeat).is(true)
+                end)
+                test.case(d.title .. ': two chords per bar, a sample for every catch note', function(expect)
+                    local have: { [number]: boolean } = {}
+                    for _, m in harmony.NOTES do
+                        have[m] = true
+                    end
+                    expect(#map.chords).is(map.endBeat / 2)
+                    local ok = true
+                    for beat = 0, map.endBeat - 1 do
+                        for step = 1, 20 do
+                            local n = harmony.noteFor(map, beat, step)
+                            if not have[n] or not have[harmony.above(map, beat, n)] then
+                                ok = false
+                            end
+                        end
+                    end
+                    expect(ok).is(true)
+                end)
+            end
+            test.case('disc lengths match the tracks', function(expect)
+                expect(echula.endBeat).is(144)
+                expect(funky.endBeat).is(200)
+            end)
+        end)
+
+        test.group('beatmap', function()
+            test.case('fog, heartbeat and frost follow the map', function(expect)
+                expect(beatmap.fogAt(echula, 81)).is(1)
+                expect(beatmap.fogAt(echula, 100)).is(0)
+                expect(beatmap.heartbeatAt(echula, 82)).is(true)
+                expect(beatmap.heartbeatAt(funky, 98)).is(true)
+                expect(beatmap.heartbeatAt(funky, 99)).is(false)
+                expect(beatmap.heartbeatAt(funky, 40)).is(false)
+                local f0 = beatmap.frostAt(funky, 92)
+                local f1, cracks1 = beatmap.frostAt(funky, 100)
+                local _, cracks2 = beatmap.frostAt(funky, 115.2)
+                local f3, _, since = beatmap.frostAt(funky, 116.5)
+                expect(f0).is(0)
+                expect(f1).is(1)
+                expect(cracks1).is(0)
+                expect(cracks2).is(2)
+                expect(f3).is(0)
+                expect(since).is(0.5)
+                expect((beatmap.frostAt(echula, 100))).is(0)
+            end)
+            test.case('the frozen glide has no garlic', function(expect)
+                local ice = funky.ice
+                local garlic = 0
+                if ice ~= nil then
+                    for _, e in funky.events do
+                        if e.kind == 'garlic' and e.beat >= ice.freeze and e.beat < ice.shatter then
+                            garlic += 1
+                        end
                     end
                 end
-                for _, e in beatmap.events do
-                    if e.kind == 'garlic' and candyAt[e.beat] == e.lane then
-                        clash = true
-                    end
-                end
-                expect(sorted).is(true)
-                expect(clash).is(false)
-                expect(beatmap.endBeat).is(144)
-                expect(#beatmap.events).greaterThan(100)
+                expect(garlic).is(0)
+            end)
+            test.case('disc index wraps around the shelf', function(expect)
+                expect(discs.wrap(0)).is(#discs.list)
+                expect(discs.wrap(#discs.list + 1)).is(1)
             end)
         end)
 
         test.group('harmony', function()
-            test.case('notes are chord tones with a sample', function(expect)
-                local have: { [number]: boolean } = {}
-                for _, m in harmony.NOTES do
-                    have[m] = true
-                end
-                local ok = true
-                for beat = 0, 143 do
-                    for step = 1, 20 do
-                        if not have[harmony.noteFor(beat, step)] then
-                            ok = false
-                        end
-                    end
-                end
-                expect(ok).is(true)
-            end)
             test.case('the streak walks the arpeggio up then down', function(expect)
-                local a = harmony.noteFor(16, 1)
-                local b = harmony.noteFor(16, 2)
-                local c = harmony.noteFor(16, 3)
+                local a = harmony.noteFor(echula, 16, 1)
+                local b = harmony.noteFor(echula, 16, 2)
+                local c = harmony.noteFor(echula, 16, 3)
                 expect(b).greaterThan(a)
                 expect(c).greaterThan(b)
-                expect(harmony.noteFor(16, 1)).is(72) -- bar 5 is C: starts on C5
+                expect(a).is(72) -- bar 5 is C: starts on C5
             end)
             test.case('perfect harmony note sits above', function(expect)
-                expect(harmony.above(16, 72)).is(76)
+                expect(harmony.above(echula, 16, 72)).is(76)
+            end)
+            test.case('minor and flat chords', function(expect)
+                expect(harmony.pitchClasses('Dm')[2]).is(5) -- F
+                expect(harmony.pitchClasses('Bb')[1]).is(10)
+                expect(harmony.pitchClasses('A')[2]).is(1) -- C#
+                expect(harmony.noteFor(funky, 4, 1)).is(74) -- bar 2 is Dm: starts on D5
             end)
         end)
 
@@ -271,15 +330,19 @@ return function(): Tests
                 expect(hudtext.thousands(1234567)).is('1,234,567')
             end)
             test.case('tutorial prompts follow the beatmap', function(expect)
-                expect(hudtext.prompt(beatmap, 2)).is('Swipe to catch the candy\non the beat!')
-                expect(hudtext.prompt(beatmap, beatmap.tapTutorial + 1)).is('Every candy sends your sonar.\nLost? Tap for a tiny ping!')
-                expect(hudtext.prompt(beatmap, beatmap.tutorialEnd + 1)).is('')
-                expect(hudtext.prompt(beatmap, 81)).is('The fog is rolling in...\nremember the trail!')
+                expect(hudtext.prompt(echula, 2)).is('Swipe (or arrow keys) to catch\nthe candy on the beat!')
+                expect(hudtext.prompt(echula, echula.tapTutorial + 1)).is('Every candy sends your sonar.\nLost? Tap or Space for a tiny ping!')
+                expect(hudtext.prompt(echula, echula.tutorialEnd + 1)).is('')
+                expect(hudtext.prompt(echula, 81)).is('The fog is rolling in...\nremember the trail!')
+                expect(hudtext.prompt(funky, 95)).is('Brrr... the night froze.\nGlide with the moon...')
             end)
             test.case('results text', function(expect)
                 local s: hudtext.Summary = { over = true, score = 1500, perfect = 1, good = 2, candies = 4, totalCandies = 10, maxCombo = 5, grade = 'fail' }
                 expect(hudtext.resultTitle(s)).is('Stake-d!')
                 expect(hudtext.gradeText(s)).is('RIP')
+                expect(hudtext.again(s)).is('tap to try again')
+                s.over = false
+                expect(hudtext.again(s)).is('tap for the record shelf')
             end)
         end)
     end

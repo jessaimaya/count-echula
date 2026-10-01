@@ -40,13 +40,23 @@
     autoBind: true,
     enableGPUCanvas: true,
     useOffscreenRenderer: false,
+    // Keyboard: the file focuses its World layout on every screen (FocusActionTarget);
+    // this lets that pull browser focus onto the canvas so keys arrive without a click.
+    focusOptions: { allowFocusInterrupt: true },
     layout: new rive.Layout({ fit: rive.Fit.Contain, alignment: rive.Alignment.Center }),
     onLoad: () => {
       r.resizeDrawingSurfaceToCanvas();
+      canvas.focus({ preventScroll: true });
       if (!stateMachine && r.stateMachineNames?.length) r.play(r.stateMachineNames[0]);
       info.loaded = `${src.split("/").pop()} ✓`;
     },
     onLoadError: (e) => showError(`Rive load error: ${e?.data ?? e}`),
+  });
+
+  // Keyboard play: a click on the letterbox must not take focus off the canvas (a canvas
+  // blur clears Rive's focus and the keys go dead until the next click on the game).
+  document.addEventListener("mousedown", (e) => {
+    if (e.target !== canvas) e.preventDefault();
   });
 
   const ro = new ResizeObserver(() => r.resizeDrawingSurfaceToCanvas());

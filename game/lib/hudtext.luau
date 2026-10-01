@@ -49,13 +49,14 @@ function M.prompt(map: beatmap.Beatmap, beat: number): string
     if beat < 0 then
         return ''
     elseif beat < map.tapTutorial then
-        return 'Swipe to catch the candy\non the beat!'
+        return 'Swipe (or arrow keys) to catch\nthe candy on the beat!'
     elseif beat < map.tutorialEnd then
-        return 'Every candy sends your sonar.\nLost? Tap for a tiny ping!'
+        return 'Every candy sends your sonar.\nLost? Tap or Space for a tiny ping!'
     end
     for _, s in map.sections do
-        if s.name == 'bridge' and beat >= s.from and beat < s.from + 8 then
-            return 'The fog is rolling in...\nremember the trail!'
+        local text = s.prompt
+        if text ~= nil and beat >= s.from and beat < s.from + (s.promptBeats or 8) then
+            return text
         end
     end
     return ''
@@ -78,6 +79,11 @@ end
 
 function M.gradeText(s: Summary): string
     return if s.over then 'RIP' else s.grade
+end
+
+-- Results footer: a lost run retries the disc, a finished one returns to the shelf.
+function M.again(s: Summary): string
+    return if s.over then 'tap to try again' else 'tap for the record shelf'
 end
 
 function M.stats(s: Summary): string

@@ -1,10 +1,10 @@
--- Beatmap for "Echula theme" (docs/MUSIC_PROMPT.md, take 1): 120 BPM, first beat 0.340 s,
--- 36 bars of 4 beats. Beat 0 = bar 1 beat 1. Bar b starts at beat (b - 1) * 4.
+-- Beatmap format and the chart builder shared by every disc (lib/maps/*).
+-- Beat 0 = bar 1 beat 1 of the song. Bar b starts at beat (b - 1) * 4.
 --
--- The level is a CANDY TRAIL on the beat: catching candy fires the sonar, so the
+-- A level is a CANDY TRAIL on the beat: catching candy fires the sonar, so the
 -- pulses land on the music. Where the trail changes lane, garlic waits in the lane
 -- being left (not swiping = a hit). Candy sits where the song actually hits (see the
--- rhythm grid in docs/MUSIC_PROMPT.md).
+-- rhythm grids in docs/MUSIC_PROMPT.md).
 
 export type Event = {
     beat: number,
@@ -12,38 +12,55 @@ export type Event = {
     kind: 'candy' | 'garlic',
 }
 
-export type Section = { from: number, name: string }
+-- A stretch of the song. `fog` (0..1) thickens the street fog (sonar.wgsl cfg.y);
+-- `prompt` shows for `promptBeats` beats from `from`.
+export type Section = { from: number, name: string, fog: number?, prompt: string?, promptBeats: number? }
 
 -- A color burst when the music changes (sonar.wgsl "burst"). power 0..1.
 export type Burst = { beat: number, power: number }
+
+-- Heartbeat SFX on every `every` beats in [from, to): where the song has no kick.
+export type Span = { from: number, to: number, every: number }
+
+-- The "Cold Moon" freeze (sonar.wgsl frost): frost creeps in from `freeze` over
+-- `rampBeats`, cracks on each beat of `cracks`, shatters on `shatter`.
+export type Ice = { freeze: number, rampBeats: number, cracks: { number }, shatter: number }
 
 export type Beatmap = {
     bpm: number,
     firstBeat: number,
     endBeat: number,
-    tutorialEnd: number, -- no damage and no echo drain before this beat
+    tutorialEnd: number, -- no damage before this beat
     swipeTutorial: number, -- beat the swipe prompt starts
     tapTutorial: number, -- beat the ping prompt starts
     sections: { Section },
     bursts: { Burst },
+    heartbeats: { Span },
+    ice: Ice?,
+    chords: { string }, -- two per bar from bar 1 (lib/harmony.luau), cleaned from the audio
     events: { Event },
 }
 
-local function bar(b: number): number
+local M = {}
+
+function M.bar(b: number): number
     return (b - 1) * 4
 end
 
-local events: { Event } = {}
-local lastLane = 0
+export type Chart = { events: { Event }, lastLane: number }
 
-local function candy(beat: number, lane: number)
-    local e: Event = { beat = beat, lane = lane, kind = 'candy' }
-    table.insert(events, e)
+function M.chart(): Chart
+    return { events = {}, lastLane = 0 }
 end
 
-local function garlic(beat: number, lane: number)
+function M.candy(c: Chart, beat: number, lane: number)
+    local e: Event = { beat = beat, lane = lane, kind = 'candy' }
+    table.insert(c.events, e)
+end
+
+function M.garlic(c: Chart, beat: number, lane: number)
     local e: Event = { beat = beat, lane = lane, kind = 'garlic' }
-    table.insert(events, e)
+    table.insert(c.events, e)
 end
 
 -- One candy position: `stay` candies are fills that keep the current lane.
@@ -53,17 +70,17 @@ type Slot = { beat: number, stay: boolean }
 -- `fills` (bar -> extra offsets that stay in lane). Lanes cycle through `lanes`,
 -- each held for `hold` candies. `hazards`: garlic in the lane left behind on a
 -- change, plus (every `extra` candies, 0 = never) garlic in the third lane.
-local function trail(fromBar: number, toBar: number, offsets: { number }, fills: { [number]: { number } },
+function M.trail(c: Chart, fromBar: number, toBar: number, offsets: { number }, fills: { [number]: { number } },
     lanes: { number }, hold: number, hazards: boolean, extra: number)
     local slots: { Slot } = {}
     for b = fromBar, toBar - 1 do
         for _, o in offsets do
-            table.insert(slots, { beat = bar(b) + o, stay = false })
+            table.insert(slots, { beat = M.bar(b) + o, stay = false })
         end
         local f = fills[b]
         if f ~= nil then
             for _, o in f do
-                table.insert(slots, { beat = bar(b) + o, stay = true })
+                table.insert(slots, { beat = M.bar(b) + o, stay = true })
             end
         end
     end
@@ -73,77 +90,76 @@ local function trail(fromBar: number, toBar: number, offsets: { number }, fills:
     local k = 0
     for _, slot in slots do
         if slot.stay then
-            candy(slot.beat, lastLane)
+            M.candy(c, slot.beat, c.lastLane)
         else
             local lane = lanes[(math.floor(k / hold) % #lanes) + 1]
-            candy(slot.beat, lane)
+            M.candy(c, slot.beat, lane)
             if hazards then
-                if lane ~= lastLane then
-                    garlic(slot.beat, lastLane)
+                if lane ~= c.lastLane then
+                    M.garlic(c, slot.beat, c.lastLane)
                 elseif extra > 0 and k % extra == extra - 1 then
                     local third = if lane == 0 then (if k % 2 == 0 then 1 else -1) else -lane
-                    garlic(slot.beat, third)
+                    M.garlic(c, slot.beat, third)
                 end
             end
-            lastLane = lane
+            c.lastLane = lane
             k += 1
         end
     end
 end
 
--- Candy positions follow the song's onsets (docs/MUSIC_PROMPT.md, rhythm grid):
--- intro, bridge and outro hit hardest on beats 2 and 4 (claps); bars 5-20 and 25-32
--- hit on every beat; real off-beat fills only at bars 16, 17, 28 and 29.
-local BEATS_1_3 = { 0, 2 }
-local BEATS_2_4 = { 1, 3 }
-local EVERY = { 0, 1, 2, 3 }
-local NONE: { [number]: { number } } = {}
+-- The chart's events, sorted by beat (candy before garlic on the same beat).
+function M.events(c: Chart): { Event }
+    table.sort(c.events, function(a: Event, b: Event): boolean
+        if a.beat == b.beat then
+            return a.kind < b.kind
+        end
+        return a.beat < b.beat
+    end)
+    return c.events
+end
 
--- Intro, bars 2-4: learn to swipe after the candy, on the claps. No garlic yet.
-trail(2, 5, BEATS_2_4, NONE, { 0, 0, -1, -1, 0, 1 }, 1, false, 0)
--- Bars 5-8: the kick arrives; garlic appears (no damage until bar 9).
-trail(5, 9, BEATS_1_3, NONE, { 1, 1, 0, -1, -1, 0, 1, 0 }, 1, true, 0)
--- Verse, bars 9-12: candy on beats 1 and 3.
-trail(9, 13, BEATS_1_3, NONE, { -1, -1, 0, 1, 1, 0, -1, 0 }, 1, true, 3)
--- Chorus, bars 13-20: every beat; lane changes every 2 beats; fills where the song has them.
-trail(13, 21, EVERY, { [16] = { 2.5 }, [17] = { 3.5 } }, { 0, 1, -1, 0, 1, 1, -1, 0 }, 2, true, 4)
--- Bridge, bars 21-24: fog; candy on the claps (2 and 4), a new lane each time.
-trail(21, 25, BEATS_2_4, NONE, { 1, -1, 0, 1, -1, 0, 1, 0 }, 1, true, 0)
--- Finale, bars 25-32: every beat; the drum fill in bar 28 becomes a candy run.
-trail(25, 33, EVERY, { [28] = { 2.5, 3.5 }, [29] = { 3.5 } }, { -1, 0, 1, 0, -1, 1, 0, -1 }, 2, true, 4)
--- Outro, bars 33-35: a candy parade on the claps to the castle gate.
-trail(33, 36, BEATS_2_4, NONE, { 0 }, 1, false, 0)
-
-table.sort(events, function(a: Event, b: Event): boolean
-    if a.beat == b.beat then
-        return a.kind < b.kind
+-- Fog level of `map` at `beat` (the latest section's, 0 when unset).
+function M.fogAt(map: Beatmap, beat: number): number
+    local fog = 0
+    for _, s in map.sections do
+        if beat >= s.from then
+            fog = s.fog or 0
+        end
     end
-    return a.beat < b.beat
-end)
+    return fog
+end
 
-local map: Beatmap = {
-    bpm = 120,
-    firstBeat = 0.340,
-    endBeat = bar(37),
-    tutorialEnd = bar(9),
-    swipeTutorial = bar(1),
-    tapTutorial = bar(5),
-    sections = {
-        { from = bar(1), name = 'intro' },
-        { from = bar(5), name = 'tutorial' },
-        { from = bar(9), name = 'verse' },
-        { from = bar(13), name = 'chorus' },
-        { from = bar(21), name = 'bridge' },
-        { from = bar(25), name = 'finale' },
-        { from = bar(33), name = 'outro' },
-    },
-    -- energy jumps measured in docs/MUSIC_PROMPT.md (take 1 analysis)
-    bursts = {
-        { beat = bar(5), power = 0.6 }, -- the kick comes in
-        { beat = bar(13), power = 1.0 }, -- chorus
-        { beat = bar(25), power = 1.0 }, -- back from the fog bridge
-    },
-    events = events,
-}
+-- Whether a heartbeat belongs on integer beat `beat`.
+function M.heartbeatAt(map: Beatmap, beat: number): boolean
+    for _, s in map.heartbeats do
+        if beat >= s.from and beat < s.to and (beat - s.from) % s.every == 0 then
+            return true
+        end
+    end
+    return false
+end
 
-return map
+-- Frost look at fractional `beat`: amount 0..1, cracks so far (0..#cracks), and
+-- beats since the shatter (negative before it). Frost is 0 again from the shatter.
+function M.frostAt(map: Beatmap, beat: number): (number, number, number)
+    local ice = map.ice
+    if ice == nil then
+        return 0, 0, -1
+    end
+    local since = beat - ice.shatter
+    if beat < ice.freeze or since >= 0 then
+        return 0, 0, since
+    end
+    local t = math.clamp((beat - ice.freeze) / ice.rampBeats, 0, 1)
+    local amount = t * t * (3 - 2 * t)
+    local cracks = 0
+    for _, cb in ice.cracks do
+        if beat >= cb then
+            cracks += 1
+        end
+    end
+    return amount, cracks, since
+end
+
+return M
