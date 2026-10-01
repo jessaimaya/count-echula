@@ -1,0 +1,403 @@
+<Rive version="1" kind="fragment">
+    <!-- Draw order: earlier siblings draw ON TOP. Overlays first, the World layout last. -->
+    <Artboard defaultStateMachineId="0:7" viewModelId="0:40" viewModelInstanceId="0:60" clip="true" width="540" height="960" styleId="0:5" name="Game" id="0:2">
+        <Fill name="Background">
+            <SolidColor colorValue="FF141032" name="Color"/>
+        </Fill>
+        <LayoutComponentStyle name="Artboard Style" id="0:5"/>
+
+        <!-- ============ Results screen (mode 2 = game over, 3 = song done) ============ -->
+        <Node x="0" y="0" opacity="0" name="Results" id="0:300">
+            <Text x="270" y="780" originX="0.5" sizingValue="autoWidth" name="Again" id="0:340">
+                <TextStylePaint fontSize="26" fontAssetId="0:31" familyName="Fredoka" styleName="SemiBold" name="Again Style" id="0:341">
+                    <Fill name="Fill"><SolidColor colorValue="FF9FE8FF" name="C"/></Fill>
+                    <TextStyleAxis tag="2003265652" axisValue="600" name="Weight"/>
+                </TextStylePaint>
+                <TextValueRun styleId="0:341" text="tap to play again" name="Run"/>
+            </Text>
+            <Text x="270" y="540" width="440" originX="0.5" sizingValue="autoHeight" alignValue="center" name="Stats" id="0:330">
+                <TextStylePaint fontSize="24" lineHeight="36" fontAssetId="0:31" familyName="Fredoka" styleName="Medium" name="Stats Style" id="0:331">
+                    <Fill name="Fill"><SolidColor colorValue="FFE8E0FF" name="C"/></Fill>
+                    <TextStyleAxis tag="2003265652" axisValue="500" name="Weight"/>
+                </TextStylePaint>
+                <TextValueRun styleId="0:331" text="Score 0" name="Run">
+                    <DataBindContext sourcePathIds="0:40-0:49" propertyKey="268"/>
+                </TextValueRun>
+            </Text>
+            <Text x="270" y="330" originX="0.5" sizingValue="autoWidth" name="Grade" id="0:320">
+                <TextStylePaint fontSize="150" fontAssetId="0:30" familyName="Creepster" styleName="Regular" name="Grade Style" id="0:321">
+                    <Fill name="Fill"><SolidColor colorValue="FFFF9F3D" name="C"/></Fill>
+                </TextStylePaint>
+                <TextValueRun styleId="0:321" text="S" name="Run">
+                    <DataBindContext sourcePathIds="0:40-0:48" propertyKey="268"/>
+                </TextValueRun>
+            </Text>
+            <Text x="270" y="220" originX="0.5" sizingValue="autoWidth" name="Result Title" id="0:310">
+                <TextStylePaint fontSize="56" fontAssetId="0:30" familyName="Creepster" styleName="Regular" name="Result Title Style" id="0:311">
+                    <Fill name="Fill"><SolidColor colorValue="FFFF6FB5" name="C"/></Fill>
+                </TextStylePaint>
+                <TextValueRun styleId="0:311" text="Happy Halloween!" name="Run">
+                    <DataBindContext sourcePathIds="0:40-0:47" propertyKey="268"/>
+                </TextValueRun>
+            </Text>
+            <Shape x="270" y="500" name="Panel" id="0:301">
+                <Rectangle width="480" height="660" cornerRadiusTL="32" cornerRadiusTR="32" cornerRadiusBL="32" cornerRadiusBR="32" name="Path"/>
+                <Fill name="Fill"><SolidColor colorValue="E0141032" name="C"/></Fill>
+            </Shape>
+        </Node>
+
+        <!-- ============ Title screen (mode 0) ============ -->
+        <Node x="0" y="0" opacity="1" name="Title" id="0:200">
+            <Text x="270" y="700" width="460" originX="0.5" sizingValue="autoHeight" alignValue="center" name="Hint" id="0:230">
+                <TextStylePaint fontSize="20" lineHeight="30" fontAssetId="0:31" familyName="Fredoka" styleName="Medium" name="Hint Style" id="0:231">
+                    <Fill name="Fill"><SolidColor colorValue="FFB8B0E0" name="C"/></Fill>
+                    <TextStyleAxis tag="2003265652" axisValue="500" name="Weight"/>
+                </TextStylePaint>
+                <TextValueRun styleId="0:231" text="Catch the candy on the beat to see in the dark.&#10;Swipe left or right to dodge the garlic." name="Run"/>
+            </Text>
+            <Text x="270" y="620" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Tap To Start" id="0:220">
+                <TextStylePaint fontSize="34" fontAssetId="0:31" familyName="Fredoka" styleName="SemiBold" name="Tap Style" id="0:221">
+                    <Fill name="Fill"><SolidColor colorValue="FF9FE8FF" name="C"/></Fill>
+                    <TextStyleAxis tag="2003265652" axisValue="600" name="Weight"/>
+                </TextStylePaint>
+                <TextValueRun styleId="0:221" text="TAP TO START" name="Run"/>
+            </Text>
+            <Text x="270" y="150" width="500" originX="0.5" sizingValue="autoHeight" alignValue="center" name="Logo" id="0:210">
+                <TextStylePaint fontSize="96" lineHeight="92" fontAssetId="0:30" familyName="Creepster" styleName="Regular" name="Logo Style" id="0:211">
+                    <Fill name="Fill"><SolidColor colorValue="FFFF9F3D" name="C"/></Fill>
+                </TextStylePaint>
+                <TextValueRun styleId="0:211" text="Count&#10;Echula" name="Run"/>
+            </Text>
+        </Node>
+
+        <!-- ============ Judgement pop over the bat ============ -->
+        <Node x="270" y="470" opacity="0" name="Pop" id="0:400">
+            <Text x="0" y="0" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Judge" id="0:401">
+                <TextStylePaint fontSize="40" fontAssetId="0:31" familyName="Fredoka" styleName="Bold" name="Judge Style" id="0:402">
+                    <Fill name="Fill"><SolidColor colorValue="FF7CFFC8" name="C"/></Fill>
+                    <TextStyleAxis tag="2003265652" axisValue="700" name="Weight"/>
+                </TextStylePaint>
+                <TextValueRun styleId="0:402" text="PERFECT!" name="Run">
+                    <DataBindContext sourcePathIds="0:40-0:44" propertyKey="268"/>
+                </TextValueRun>
+            </Text>
+        </Node>
+
+        <!-- ============ Candy counting pop ============ -->
+        <Node x="270" y="170" opacity="0" name="Count" id="0:410">
+            <Text x="0" y="0" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Count Text" id="0:411">
+                <TextStylePaint fontSize="46" fontAssetId="0:30" familyName="Creepster" styleName="Regular" name="Count Style" id="0:412">
+                    <Fill name="Fill"><SolidColor colorValue="FFFF9F3D" name="C"/></Fill>
+                </TextStylePaint>
+                <TextValueRun styleId="0:412" text="One!" name="Run">
+                    <DataBindContext sourcePathIds="0:40-0:45" propertyKey="268"/>
+                </TextValueRun>
+            </Text>
+        </Node>
+
+        <!-- ============ In-game HUD (mode 1) ============ -->
+        <Node x="0" y="0" opacity="0" name="Hud" id="0:500">
+            <Text x="270" y="330" width="480" originX="0.5" sizingValue="autoHeight" alignValue="center" name="Prompt" id="0:530">
+                <TextStylePaint fontSize="32" fontAssetId="0:31" familyName="Fredoka" styleName="SemiBold" name="Prompt Style" id="0:531">
+                    <Fill name="Fill"><SolidColor colorValue="FFFFFFFF" name="C"/></Fill>
+                    <TextStyleAxis tag="2003265652" axisValue="600" name="Weight"/>
+                </TextStylePaint>
+                <TextValueRun styleId="0:531" text="" name="Run">
+                    <DataBindContext sourcePathIds="0:40-0:46" propertyKey="268"/>
+                </TextValueRun>
+            </Text>
+            <Text x="20" y="58" sizingValue="autoWidth" name="Mult" id="0:520">
+                <TextStylePaint fontSize="20" fontAssetId="0:31" familyName="Fredoka" styleName="Medium" name="Mult Style" id="0:521">
+                    <Fill name="Fill"><SolidColor colorValue="FF9FE8FF" name="C"/></Fill>
+                    <TextStyleAxis tag="2003265652" axisValue="500" name="Weight"/>
+                </TextStylePaint>
+                <TextValueRun styleId="0:521" text="x1" name="Run">
+                    <DataBindContext sourcePathIds="0:40-0:43" propertyKey="268"/>
+                </TextValueRun>
+            </Text>
+            <Text x="20" y="14" sizingValue="autoWidth" name="Score" id="0:510">
+                <TextStylePaint fontSize="36" fontAssetId="0:31" familyName="Fredoka" styleName="Bold" name="Score Style" id="0:511">
+                    <Fill name="Fill"><SolidColor colorValue="FFFFFFFF" name="C"/></Fill>
+                    <TextStyleAxis tag="2003265652" axisValue="700" name="Weight"/>
+                </TextStylePaint>
+                <TextValueRun styleId="0:511" text="0" name="Run">
+                    <DataBindContext sourcePathIds="0:40-0:42" propertyKey="268"/>
+                </TextValueRun>
+            </Text>
+        </Node>
+
+        <!-- ============ The playfield (GPU Canvas world + temporary HUD shapes) ============ -->
+        <LayoutComponent width="540" height="960" styleId="0:11" name="Root Layout" id="0:10">
+            <LayoutComponentStyle layoutWidthScaleType="1" layoutHeightScaleType="1" widthUnitsValue="3" heightUnitsValue="3" name="Layout Style" id="0:11"/>
+            <ScriptedLayout scriptAssetId="0:85" name="World" id="0:12"/>
+        </LayoutComponent>
+
+        <!-- ============ State machine ============ -->
+        <StateMachine name="Flow" id="0:7">
+            <!-- Screens: which overlay is visible, from GameVM.mode -->
+            <StateMachineLayer name="Screens" id="0:8">
+                <AnyState x="0" y="-120"/>
+                <ExitState x="600" y="-120"/>
+                <EntryState x="0" y="0">
+                    <StateTransition stateToId="0:601"/>
+                </EntryState>
+                <AnimationState x="200" y="0" animationId="0:701" id="0:601">
+                    <StateTransition stateToId="0:602" duration="250">
+                        <TransitionViewModelCondition opValue="equal">
+                            <TransitionPropertyViewModelComparator>
+                                <BindablePropertyNumber>
+                                    <DataBindContext sourcePathIds="0:40-0:41" propertyKey="636"/>
+                                </BindablePropertyNumber>
+                            </TransitionPropertyViewModelComparator>
+                            <TransitionValueNumberComparator value="1"/>
+                        </TransitionViewModelCondition>
+                    </StateTransition>
+                </AnimationState>
+                <AnimationState x="400" y="0" animationId="0:702" id="0:602">
+                    <StateTransition stateToId="0:603" duration="400">
+                        <TransitionViewModelCondition opValue="greaterThanOrEqual">
+                            <TransitionPropertyViewModelComparator>
+                                <BindablePropertyNumber>
+                                    <DataBindContext sourcePathIds="0:40-0:41" propertyKey="636"/>
+                                </BindablePropertyNumber>
+                            </TransitionPropertyViewModelComparator>
+                            <TransitionValueNumberComparator value="2"/>
+                        </TransitionViewModelCondition>
+                    </StateTransition>
+                </AnimationState>
+                <AnimationState x="400" y="160" animationId="0:703" id="0:603">
+                    <StateTransition stateToId="0:602" duration="250">
+                        <TransitionViewModelCondition opValue="equal">
+                            <TransitionPropertyViewModelComparator>
+                                <BindablePropertyNumber>
+                                    <DataBindContext sourcePathIds="0:40-0:41" propertyKey="636"/>
+                                </BindablePropertyNumber>
+                            </TransitionPropertyViewModelComparator>
+                            <TransitionValueNumberComparator value="1"/>
+                        </TransitionViewModelCondition>
+                    </StateTransition>
+                </AnimationState>
+            </StateMachineLayer>
+
+            <!-- Judgement pop: fires on GameVM.judgeFire -->
+            <StateMachineLayer name="Judge Pop" id="0:9">
+                <AnyState x="0" y="-120">
+                    <StateTransition stateToId="0:612">
+                        <TransitionViewModelCondition>
+                            <TransitionPropertyViewModelComparator>
+                                <BindablePropertyTrigger>
+                                    <DataBindContext sourcePathIds="0:40-0:50" propertyKey="686"/>
+                                </BindablePropertyTrigger>
+                            </TransitionPropertyViewModelComparator>
+                            <TransitionValueTriggerComparator/>
+                        </TransitionViewModelCondition>
+                    </StateTransition>
+                </AnyState>
+                <ExitState x="600" y="-120"/>
+                <EntryState x="0" y="0">
+                    <StateTransition stateToId="0:611"/>
+                </EntryState>
+                <AnimationState x="200" y="0" animationId="0:711" id="0:611"/>
+                <AnimationState x="400" y="0" animationId="0:712" reset="true" id="0:612">
+                    <StateTransition stateToId="0:611" enableExitTime="true" exitTimeIsPercetange="true" exitTime="100"/>
+                </AnimationState>
+            </StateMachineLayer>
+
+            <!-- Candy count pop: fires on GameVM.candyFire -->
+            <StateMachineLayer name="Count Pop" id="0:13">
+                <AnyState x="0" y="-120">
+                    <StateTransition stateToId="0:622">
+                        <TransitionViewModelCondition>
+                            <TransitionPropertyViewModelComparator>
+                                <BindablePropertyTrigger>
+                                    <DataBindContext sourcePathIds="0:40-0:51" propertyKey="686"/>
+                                </BindablePropertyTrigger>
+                            </TransitionPropertyViewModelComparator>
+                            <TransitionValueTriggerComparator/>
+                        </TransitionViewModelCondition>
+                    </StateTransition>
+                </AnyState>
+                <ExitState x="600" y="-120"/>
+                <EntryState x="0" y="0">
+                    <StateTransition stateToId="0:621"/>
+                </EntryState>
+                <AnimationState x="200" y="0" animationId="0:721" id="0:621"/>
+                <AnimationState x="400" y="0" animationId="0:722" reset="true" id="0:622">
+                    <StateTransition stateToId="0:621" enableExitTime="true" exitTimeIsPercetange="true" exitTime="100"/>
+                </AnimationState>
+            </StateMachineLayer>
+
+            <!-- Idle: "TAP TO START" breathes on the beat (120 BPM) -->
+            <StateMachineLayer name="Idle" id="0:14">
+                <AnyState x="0" y="-120"/>
+                <ExitState x="600" y="-120"/>
+                <EntryState x="0" y="0">
+                    <StateTransition stateToId="0:631"/>
+                </EntryState>
+                <AnimationState x="200" y="0" animationId="0:731" id="0:631"/>
+            </StateMachineLayer>
+        </StateMachine>
+
+        <!-- Screens -->
+        <LinearAnimation duration="1" name="Show Title" id="0:701">
+            <KeyedObject objectId="0:200"><KeyedProperty propertyKey="18"><KeyFrameDouble value="1" frame="0"/></KeyedProperty></KeyedObject>
+            <KeyedObject objectId="0:500"><KeyedProperty propertyKey="18"><KeyFrameDouble value="0" frame="0"/></KeyedProperty></KeyedObject>
+            <KeyedObject objectId="0:300"><KeyedProperty propertyKey="18"><KeyFrameDouble value="0" frame="0"/></KeyedProperty></KeyedObject>
+        </LinearAnimation>
+        <LinearAnimation duration="1" name="Show Play" id="0:702">
+            <KeyedObject objectId="0:200"><KeyedProperty propertyKey="18"><KeyFrameDouble value="0" frame="0"/></KeyedProperty></KeyedObject>
+            <KeyedObject objectId="0:500"><KeyedProperty propertyKey="18"><KeyFrameDouble value="1" frame="0"/></KeyedProperty></KeyedObject>
+            <KeyedObject objectId="0:300"><KeyedProperty propertyKey="18"><KeyFrameDouble value="0" frame="0"/></KeyedProperty></KeyedObject>
+        </LinearAnimation>
+        <LinearAnimation duration="1" name="Show Results" id="0:703">
+            <KeyedObject objectId="0:200"><KeyedProperty propertyKey="18"><KeyFrameDouble value="0" frame="0"/></KeyedProperty></KeyedObject>
+            <KeyedObject objectId="0:500"><KeyedProperty propertyKey="18"><KeyFrameDouble value="0" frame="0"/></KeyedProperty></KeyedObject>
+            <KeyedObject objectId="0:300"><KeyedProperty propertyKey="18"><KeyFrameDouble value="1" frame="0"/></KeyedProperty></KeyedObject>
+        </LinearAnimation>
+
+        <!-- Judgement pop -->
+        <LinearAnimation duration="1" name="Judge Hidden" id="0:711">
+            <KeyedObject objectId="0:400"><KeyedProperty propertyKey="18"><KeyFrameDouble value="0" frame="0"/></KeyedProperty></KeyedObject>
+        </LinearAnimation>
+        <LinearAnimation duration="36" name="Judge Pop" id="0:712">
+            <KeyedObject objectId="0:400">
+                <KeyedProperty propertyKey="18">
+                    <KeyFrameDouble value="1" frame="0" interpolationType="linear"/>
+                    <KeyFrameDouble value="1" frame="22" interpolationType="linear"/>
+                    <KeyFrameDouble value="0" frame="36"/>
+                </KeyedProperty>
+                <KeyedProperty propertyKey="16">
+                    <KeyFrameDouble value="0.6" frame="0" interpolationType="cubic"><CubicEaseInterpolator x1="0.2" y1="0" x2="0.3" y2="1"/></KeyFrameDouble>
+                    <KeyFrameDouble value="1.15" frame="8" interpolationType="cubic"><CubicEaseInterpolator x1="0.4" y1="0" x2="0.6" y2="1"/></KeyFrameDouble>
+                    <KeyFrameDouble value="1" frame="14"/>
+                </KeyedProperty>
+                <KeyedProperty propertyKey="17">
+                    <KeyFrameDouble value="0.6" frame="0" interpolationType="cubic"><CubicEaseInterpolator x1="0.2" y1="0" x2="0.3" y2="1"/></KeyFrameDouble>
+                    <KeyFrameDouble value="1.15" frame="8" interpolationType="cubic"><CubicEaseInterpolator x1="0.4" y1="0" x2="0.6" y2="1"/></KeyFrameDouble>
+                    <KeyFrameDouble value="1" frame="14"/>
+                </KeyedProperty>
+                <KeyedProperty propertyKey="14">
+                    <KeyFrameDouble value="480" frame="0" interpolationType="linear"/>
+                    <KeyFrameDouble value="444" frame="36"/>
+                </KeyedProperty>
+            </KeyedObject>
+        </LinearAnimation>
+
+        <!-- Candy count pop -->
+        <LinearAnimation duration="1" name="Count Hidden" id="0:721">
+            <KeyedObject objectId="0:410"><KeyedProperty propertyKey="18"><KeyFrameDouble value="0" frame="0"/></KeyedProperty></KeyedObject>
+        </LinearAnimation>
+        <LinearAnimation duration="48" name="Count Pop" id="0:722">
+            <KeyedObject objectId="0:410">
+                <KeyedProperty propertyKey="18">
+                    <KeyFrameDouble value="1" frame="0" interpolationType="linear"/>
+                    <KeyFrameDouble value="1" frame="30" interpolationType="linear"/>
+                    <KeyFrameDouble value="0" frame="48"/>
+                </KeyedProperty>
+                <KeyedProperty propertyKey="15">
+                    <KeyFrameDouble value="-0.25" frame="0" interpolationType="cubic"><CubicEaseInterpolator x1="0.2" y1="0" x2="0.3" y2="1"/></KeyFrameDouble>
+                    <KeyFrameDouble value="0.08" frame="10" interpolationType="cubic"><CubicEaseInterpolator x1="0.4" y1="0" x2="0.6" y2="1"/></KeyFrameDouble>
+                    <KeyFrameDouble value="0" frame="18"/>
+                </KeyedProperty>
+                <KeyedProperty propertyKey="16">
+                    <KeyFrameDouble value="0.4" frame="0" interpolationType="cubic"><CubicEaseInterpolator x1="0.2" y1="0" x2="0.3" y2="1"/></KeyFrameDouble>
+                    <KeyFrameDouble value="1.2" frame="10" interpolationType="cubic"><CubicEaseInterpolator x1="0.4" y1="0" x2="0.6" y2="1"/></KeyFrameDouble>
+                    <KeyFrameDouble value="1" frame="18"/>
+                </KeyedProperty>
+                <KeyedProperty propertyKey="17">
+                    <KeyFrameDouble value="0.4" frame="0" interpolationType="cubic"><CubicEaseInterpolator x1="0.2" y1="0" x2="0.3" y2="1"/></KeyFrameDouble>
+                    <KeyFrameDouble value="1.2" frame="10" interpolationType="cubic"><CubicEaseInterpolator x1="0.4" y1="0" x2="0.6" y2="1"/></KeyFrameDouble>
+                    <KeyFrameDouble value="1" frame="18"/>
+                </KeyedProperty>
+                <KeyedProperty propertyKey="14">
+                    <KeyFrameDouble value="170" frame="0" interpolationType="linear"/>
+                    <KeyFrameDouble value="140" frame="48"/>
+                </KeyedProperty>
+            </KeyedObject>
+        </LinearAnimation>
+
+        <!-- Idle: tap-to-start breathing, one beat per loop -->
+        <LinearAnimation duration="30" loopValue="loop" name="Tap Breath" id="0:731">
+            <KeyedObject objectId="0:220">
+                <KeyedProperty propertyKey="16">
+                    <KeyFrameDouble value="1.1" frame="0" interpolationType="cubic"><CubicEaseInterpolator x1="0.2" y1="0" x2="0.4" y2="1"/></KeyFrameDouble>
+                    <KeyFrameDouble value="1" frame="30"/>
+                </KeyedProperty>
+                <KeyedProperty propertyKey="17">
+                    <KeyFrameDouble value="1.1" frame="0" interpolationType="cubic"><CubicEaseInterpolator x1="0.2" y1="0" x2="0.4" y2="1"/></KeyFrameDouble>
+                    <KeyFrameDouble value="1" frame="30"/>
+                </KeyedProperty>
+            </KeyedObject>
+        </LinearAnimation>
+    </Artboard>
+
+    <!-- ============ Data ============ -->
+    <ViewModel defaultInstanceId="0:60" name="GameVM" id="0:40">
+        <ViewModelPropertyNumber name="mode" id="0:41"/>
+        <ViewModelPropertyString name="scoreText" id="0:42"/>
+        <ViewModelPropertyString name="multText" id="0:43"/>
+        <ViewModelPropertyString name="judgeText" id="0:44"/>
+        <ViewModelPropertyString name="countText" id="0:45"/>
+        <ViewModelPropertyString name="promptText" id="0:46"/>
+        <ViewModelPropertyString name="resultTitle" id="0:47"/>
+        <ViewModelPropertyString name="gradeText" id="0:48"/>
+        <ViewModelPropertyString name="statsText" id="0:49"/>
+        <ViewModelPropertyTrigger name="judgeFire" id="0:50"/>
+        <ViewModelPropertyTrigger name="candyFire" id="0:51"/>
+        <ViewModelPropertyBoolean name="_autopilot" id="0:53"/>
+        <ViewModelPropertyNumber name="_autopilotUntil" id="0:54"/>
+        <ViewModelInstance exports="true" name="Default" id="0:60">
+            <ViewModelInstanceNumber propertyValue="0" viewModelPropertyId="0:41"/>
+            <ViewModelInstanceString propertyValue="0" viewModelPropertyId="0:42"/>
+            <ViewModelInstanceString propertyValue="x1" viewModelPropertyId="0:43"/>
+            <ViewModelInstanceString propertyValue="" viewModelPropertyId="0:44"/>
+            <ViewModelInstanceString propertyValue="" viewModelPropertyId="0:45"/>
+            <ViewModelInstanceString propertyValue="" viewModelPropertyId="0:46"/>
+            <ViewModelInstanceString propertyValue="" viewModelPropertyId="0:47"/>
+            <ViewModelInstanceString propertyValue="" viewModelPropertyId="0:48"/>
+            <ViewModelInstanceString propertyValue="" viewModelPropertyId="0:49"/>
+            <ViewModelInstanceTrigger viewModelPropertyId="0:50"/>
+            <ViewModelInstanceTrigger viewModelPropertyId="0:51"/>
+            <ViewModelInstanceBoolean propertyValue="false" viewModelPropertyId="0:53"/>
+            <ViewModelInstanceNumber propertyValue="0" viewModelPropertyId="0:54"/>
+        </ViewModelInstance>
+    </ViewModel>
+
+    <!-- ============ Assets ============ -->
+    <FontAsset file="assets/fonts/Creepster-Regular.ttf" name="Creepster" id="0:30"/>
+    <FontAsset file="assets/fonts/Fredoka.ttf" name="Fredoka" id="0:31"/>
+
+    <ScriptAsset file="lib/beatclock.luau" folderPath="lib" isModule="true" name="beatclock" id="0:80"/>
+    <ScriptAsset file="lib/gesture.luau" folderPath="lib" isModule="true" name="gesture" id="0:81"/>
+    <ScriptAsset file="lib/beatmap.luau" folderPath="lib" isModule="true" name="beatmap" id="0:82"/>
+    <ScriptAsset file="lib/rules.luau" folderPath="lib" isModule="true" name="rules" id="0:83"/>
+    <ScriptAsset file="lib/hudtext.luau" folderPath="lib" isModule="true" name="hudtext" id="0:84"/>
+    <ScriptAsset file="lib/harmony.luau" folderPath="lib" isModule="true" name="harmony" id="0:87"/>
+    <ScriptAsset file="world.luau" name="world" id="0:85"/>
+    <ScriptAsset file="tests/logic_tests.luau" folderPath="tests" name="logic_tests" id="0:86"/>
+
+    <AudioAsset file="assets/audio/echula_theme.mp3" name="echula_theme" id="0:70"/>
+    <AudioAsset file="assets/audio/sfx/heartbeat.wav" name="heartbeat" id="0:71"/>
+    <AudioAsset file="assets/audio/sfx/ping_perfect.wav" name="ping_perfect" id="0:72"/>
+    <AudioAsset file="assets/audio/sfx/ping_good.wav" name="ping_good" id="0:73"/>
+    <AudioAsset file="assets/audio/sfx/ping_glitch.wav" name="ping_glitch" id="0:74"/>
+    <AudioAsset file="assets/audio/sfx/candy.wav" name="candy" id="0:75"/>
+    <AudioAsset file="assets/audio/sfx/hit.wav" name="hit" id="0:76"/>
+    <AudioAsset file="assets/audio/sfx/streak_break.wav" name="streak_break" id="0:77"/>
+    <!-- music-box notes, C major C5..C7 (lib/harmony.luau) -->
+    <AudioAsset file="assets/audio/notes/note_72.wav" name="note_72" id="0:1072"/>
+    <AudioAsset file="assets/audio/notes/note_74.wav" name="note_74" id="0:1074"/>
+    <AudioAsset file="assets/audio/notes/note_76.wav" name="note_76" id="0:1076"/>
+    <AudioAsset file="assets/audio/notes/note_77.wav" name="note_77" id="0:1077"/>
+    <AudioAsset file="assets/audio/notes/note_79.wav" name="note_79" id="0:1079"/>
+    <AudioAsset file="assets/audio/notes/note_81.wav" name="note_81" id="0:1081"/>
+    <AudioAsset file="assets/audio/notes/note_83.wav" name="note_83" id="0:1083"/>
+    <AudioAsset file="assets/audio/notes/note_84.wav" name="note_84" id="0:1084"/>
+    <AudioAsset file="assets/audio/notes/note_86.wav" name="note_86" id="0:1086"/>
+    <AudioAsset file="assets/audio/notes/note_88.wav" name="note_88" id="0:1088"/>
+    <AudioAsset file="assets/audio/notes/note_89.wav" name="note_89" id="0:1089"/>
+    <AudioAsset file="assets/audio/notes/note_91.wav" name="note_91" id="0:1091"/>
+    <AudioAsset file="assets/audio/notes/note_93.wav" name="note_93" id="0:1093"/>
+    <AudioAsset file="assets/audio/notes/note_95.wav" name="note_95" id="0:1095"/>
+    <AudioAsset file="assets/audio/notes/note_96.wav" name="note_96" id="0:1096"/>
+</Rive>

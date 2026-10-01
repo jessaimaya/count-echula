@@ -1,0 +1,7 @@
+.DS_Store
+node_modules/
+
+# Build output: keep only the playable game file
+**/build/*
+!game/build/
+!game/build/count-echula.riv

@@ -1,0 +1,286 @@
+local beatclock = require('lib/beatclock')
+local gesture = require('lib/gesture')
+local rules = require('lib/rules')
+local beatmap = require('lib/beatmap')
+local hudtext = require('lib/hudtext')
+local harmony = require('lib/harmony')
+
+local function emptyMap(): beatmap.Beatmap
+    return {
+        bpm = 120,
+        firstBeat = 0,
+        endBeat = 100,
+        tutorialEnd = 0,
+        swipeTutorial = 0,
+        tapTutorial = 0,
+        sections = {},
+        bursts = {},
+        events = {},
+    }
+end
+
+return function(): Tests
+    return function(test: Tester)
+        test.group('beatclock', function()
+            local c = beatclock.new(120, 0.34, 0)
+            test.case('beat 0 is at firstBeat', function(expect)
+                expect(beatclock.beatAt(c, 0.34)).is(0)
+                expect(beatclock.timeOf(c, 4)).is(2.34)
+            end)
+            test.case('judgement windows', function(expect)
+                local j1 = beatclock.judge(c, 0.34 + 0.5 * 10 + 0.03)
+                expect(j1).is('perfect')
+                local j2, n2 = beatclock.judge(c, 0.34 + 0.5 * 10 - 0.08)
+                expect(j2).is('good')
+                expect(n2).is(10)
+                local j3 = beatclock.judge(c, 0.34 + 0.5 * 10 + 0.2)
+                expect(j3).is('miss')
+            end)
+            test.case('offset shifts the grid', function(expect)
+                local c2 = beatclock.new(120, 0.34, 0.02)
+                local j = beatclock.judge(c2, 0.34 - 0.02 + 0.5 * 3)
+                expect(j).is('perfect')
+            end)
+        end)
+
+        test.group('gesture', function()
+            test.case('quick press + release is a tap timed at press', function(expect)
+                local g = gesture.new()
+                gesture.press(g, 1.0, 100)
+                local ev = gesture.release(g, 1.05, 104)
+                expect(ev ~= nil).is(true)
+                if ev then
+                    expect(ev.kind).is('tap')
+                    expect(ev.t).is(1.0)
+                end
+            end)
+            test.case('still press fires the tap after HOLD', function(expect)
+                local g = gesture.new()
+                gesture.press(g, 2.0, 100)
+                expect(gesture.tick(g, 2.05) == nil).is(true)
+                local ev = gesture.tick(g, 2.1)
+                expect(ev ~= nil and ev.kind == 'tap').is(true)
+                expect(gesture.release(g, 2.3, 100) == nil).is(true)
+            end)
+            test.case('drag past the threshold is a swipe and cancels the tap', function(expect)
+                local g = gesture.new()
+                gesture.press(g, 3.0, 100)
+                local ev = gesture.move(g, 3.04, 60)
+                expect(ev ~= nil and ev.kind == 'swipe' and ev.dir == -1).is(true)
+                expect(gesture.tick(g, 3.2) == nil).is(true)
+                expect(gesture.release(g, 3.3, 20) == nil).is(true)
+            end)
+            test.case('one swipe per press', function(expect)
+                local g = gesture.new()
+                gesture.press(g, 4.0, 100)
+                gesture.move(g, 4.02, 140)
+                expect(gesture.move(g, 4.04, 200) == nil).is(true)
+            end)
+        end)
+
+        test.group('rules', function()
+            test.case('multiplier tiers', function(expect)
+                expect(rules.multiplier(0)).is(1)
+                expect(rules.multiplier(10)).is(2)
+                expect(rules.multiplier(25)).is(3)
+                expect(rules.multiplier(50)).is(4)
+            end)
+            test.case('candy is caught on its beat, not before', function(expect)
+                local m = emptyMap()
+                m.events = { { beat = 4, lane = 0, kind = 'candy' } }
+                local s = rules.new(m)
+                local early = rules.update(s, 3.9, 0.016)
+                expect(#early.collected).is(0)
+                local out = rules.update(s, 4, 0.016)
+                expect(#out.collected).is(1)
+                expect(s.candies).is(1)
+                expect(s.combo).is(1)
+            end)
+            test.case('a missed candy resets the combo', function(expect)
+                local m = emptyMap()
+                m.events = {
+                    { beat = 4, lane = 0, kind = 'candy' },
+                    { beat = 6, lane = 1, kind = 'candy' },
+                }
+                local s = rules.new(m)
+                rules.update(s, 4, 0.016)
+                local out = rules.update(s, 6.5, 0.016)
+                expect(out.missed).is(1)
+                expect(s.combo).is(0)
+                expect(s.missed).is(1)
+            end)
+            test.case('ping always works until the run ends', function(expect)
+                local s = rules.new(emptyMap())
+                for _ = 1, 20 do
+                    expect(rules.ping(s)).is(true)
+                end
+                s.over = true
+                expect(rules.ping(s)).is(false)
+                expect(s.pings).is(20)
+            end)
+            test.case('swipe timing into the candy lane is judged', function(expect)
+                local m = emptyMap()
+                m.events = {
+                    { beat = 4, lane = 1, kind = 'candy' },
+                    { beat = 8, lane = 0, kind = 'candy' },
+                }
+                local s = rules.new(m)
+                rules.update(s, 3.9, 0)
+                rules.swipe(s, 1, 3.95) -- 25 ms early at 120 BPM
+                rules.update(s, 4, rules.LANE_TIME)
+                expect(s.perfect).is(1)
+                rules.update(s, 7.5, 0)
+                rules.swipe(s, -1, 7.7) -- 150 ms early
+                local out = rules.update(s, 8, rules.LANE_TIME)
+                expect(s.good).is(1)
+                expect(out.collected[1].judgement).is('good')
+            end)
+            test.case('no judgement when already in the lane', function(expect)
+                local m = emptyMap()
+                m.events = { { beat = 4, lane = 0, kind = 'candy' } }
+                local s = rules.new(m)
+                local out = rules.update(s, 4, 0.016)
+                expect(out.collected[1].judgement).is('none')
+            end)
+            test.case('garlic hits cost hp, then invulnerability', function(expect)
+                local m = emptyMap()
+                m.events = {
+                    { beat = 4, lane = 0, kind = 'garlic' },
+                    { beat = 5, lane = 0, kind = 'garlic' },
+                    { beat = 8, lane = 0, kind = 'garlic' },
+                }
+                local s = rules.new(m)
+                rules.update(s, 4, 0.016)
+                expect(s.hp).is(2)
+                rules.update(s, 5, 0.016)
+                expect(s.hp).is(2)
+                rules.update(s, 8, 0.016)
+                expect(s.hp).is(1)
+            end)
+            test.case('no damage during the tutorial', function(expect)
+                local m = emptyMap()
+                m.tutorialEnd = 32
+                m.events = { { beat = 4, lane = 0, kind = 'garlic' } }
+                local s = rules.new(m)
+                rules.update(s, 4, 0.016)
+                expect(s.hp).is(rules.MAX_HP)
+            end)
+            test.case('three hits is game over', function(expect)
+                local m = emptyMap()
+                m.events = {
+                    { beat = 4, lane = 0, kind = 'garlic' },
+                    { beat = 8, lane = 0, kind = 'garlic' },
+                    { beat = 12, lane = 0, kind = 'garlic' },
+                }
+                local s = rules.new(m)
+                for b = 4, 12, 4 do
+                    rules.update(s, b, 0.016)
+                end
+                expect(s.over).is(true)
+            end)
+            test.case('swipe dodges once the tween passes half way', function(expect)
+                local m = emptyMap()
+                m.events = { { beat = 4, lane = 0, kind = 'garlic' } }
+                local s = rules.new(m)
+                rules.update(s, 3.5, 0)
+                rules.swipe(s, 1, 3.5)
+                rules.update(s, 3.6, rules.LANE_TIME * 0.6)
+                rules.update(s, 4, 0.016)
+                expect(s.hp).is(rules.MAX_HP)
+                expect(s.lane).is(1)
+            end)
+            test.case('lanes clamp at the edges', function(expect)
+                local s = rules.new(emptyMap())
+                rules.swipe(s, 1, 0)
+                rules.swipe(s, 1, 0)
+                expect(s.lane).is(1)
+            end)
+            test.case('grade from the share of candy caught', function(expect)
+                local s = rules.new(emptyMap())
+                s.totalCandies = 100
+                s.candies = 96
+                expect(rules.grade(s)).is('S')
+                s.hits = 1
+                expect(rules.grade(s)).is('A')
+                s.candies = 70
+                expect(rules.grade(s)).is('B')
+            end)
+            test.case('beatmap: candy trail, sorted, garlic never on the trail', function(expect)
+                local sorted = true
+                local clash = false
+                local candyAt: { [number]: number } = {}
+                for i, e in beatmap.events do
+                    if i > 1 and e.beat < beatmap.events[i - 1].beat then
+                        sorted = false
+                    end
+                    if e.kind == 'candy' then
+                        candyAt[e.beat] = e.lane
+                    end
+                end
+                for _, e in beatmap.events do
+                    if e.kind == 'garlic' and candyAt[e.beat] == e.lane then
+                        clash = true
+                    end
+                end
+                expect(sorted).is(true)
+                expect(clash).is(false)
+                expect(beatmap.endBeat).is(144)
+                expect(#beatmap.events).greaterThan(100)
+            end)
+        end)
+
+        test.group('harmony', function()
+            test.case('notes are chord tones with a sample', function(expect)
+                local have: { [number]: boolean } = {}
+                for _, m in harmony.NOTES do
+                    have[m] = true
+                end
+                local ok = true
+                for beat = 0, 143 do
+                    for step = 1, 20 do
+                        if not have[harmony.noteFor(beat, step)] then
+                            ok = false
+                        end
+                    end
+                end
+                expect(ok).is(true)
+            end)
+            test.case('the streak walks the arpeggio up then down', function(expect)
+                local a = harmony.noteFor(16, 1)
+                local b = harmony.noteFor(16, 2)
+                local c = harmony.noteFor(16, 3)
+                expect(b).greaterThan(a)
+                expect(c).greaterThan(b)
+                expect(harmony.noteFor(16, 1)).is(72) -- bar 5 is C: starts on C5
+            end)
+            test.case('perfect harmony note sits above', function(expect)
+                expect(harmony.above(16, 72)).is(76)
+            end)
+        end)
+
+        test.group('hudtext', function()
+            test.case('the Count counts, laughing every third candy', function(expect)
+                expect(hudtext.count(1)).is('One!')
+                expect(hudtext.count(3)).is('Three! Ah-ah-ah!')
+                expect(hudtext.count(22)).is('22!')
+            end)
+            test.case('thousands separators', function(expect)
+                expect(hudtext.thousands(0)).is('0')
+                expect(hudtext.thousands(999)).is('999')
+                expect(hudtext.thousands(1000)).is('1,000')
+                expect(hudtext.thousands(1234567)).is('1,234,567')
+            end)
+            test.case('tutorial prompts follow the beatmap', function(expect)
+                expect(hudtext.prompt(beatmap, 2)).is('Swipe to catch the candy\non the beat!')
+                expect(hudtext.prompt(beatmap, beatmap.tapTutorial + 1)).is('Every candy sends your sonar.\nLost? Tap for a tiny ping!')
+                expect(hudtext.prompt(beatmap, beatmap.tutorialEnd + 1)).is('')
+                expect(hudtext.prompt(beatmap, 81)).is('The fog is rolling in...\nremember the trail!')
+            end)
+            test.case('results text', function(expect)
+                local s: hudtext.Summary = { over = true, score = 1500, perfect = 1, good = 2, candies = 4, totalCandies = 10, maxCombo = 5, grade = 'fail' }
+                expect(hudtext.resultTitle(s)).is('Stake-d!')
+                expect(hudtext.gradeText(s)).is('RIP')
+            end)
+        end)
+    end
+end
