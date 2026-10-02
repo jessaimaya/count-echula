@@ -1,4 +1,5 @@
 name: count-echula
+main: Game
 logs:
   file: build/rive.log
   problems: build/problems.log

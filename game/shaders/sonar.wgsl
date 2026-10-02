@@ -19,6 +19,7 @@ struct Post {
     invViewProj: mat4x4<f32>,
     fx: vec4<f32>,     // x = seconds since a life was lost, y = seconds since a color burst, z = burst power, w = ice cracks so far
     fx2: vec4<f32>,    // x = seconds since a streak broke, y = break power 0..1, z = seconds since the ice shattered (< 0 = not), w = seconds since the last crack
+    art: vec4<f32>,    // props (candy, garlic) keep their color: x = saturation 0..1, y = brightness in a sonar reveal, z = brightness in the dark
 };
 
 @group(0) @binding(0) var<uniform> u: Post;
@@ -213,7 +214,7 @@ fn fs_main(in: VOut) -> @location(0) vec4<f32> {
     sky += hsv(fract(uv.x * 0.7 + time * 0.2), 0.7, 1.0) * burst * 0.3 * skyT;
     let moonC = vec2<f32>(0.66 * u.res.x, 0.085 * u.res.y);
     let md = length(in.pos.xy - moonC) / u.res.y;
-    sky += vec3<f32>(0.85, 0.87, 0.95) * smoothstep(0.034, 0.03, md);
+    // the moon disc itself is svg/moon, drawn over this by world.luau (drawSky)
     sky += vec3<f32>(0.3, 0.3, 0.45) * exp(-md * 18.0) * 0.6;
     let starCell = floor(in.pos.xy / 4.0);
     let star = step(0.9975, hash2(starCell)) * (0.5 + 0.5 * sin(time * 2.0 + hash2(starCell + 3.0) * 6.28));
@@ -246,6 +247,10 @@ fn fs_main(in: VOut) -> @location(0) vec4<f32> {
     var fogLit = mix(vec3<f32>(0.11, 0.1, 0.21), vec3<f32>(0.21, 0.19, 0.34), n * n);
     fogLit = mix(fogLit, rainbow * 0.45, burst * 0.5);
     var obj = vec3<f32>(0.05, 0.045, 0.1) + vec3<f32>(luma(base.rgb)) * 0.08;
+    // props keep a desaturated version of their art's color (houses stay monochrome)
+    let isProp = step(0.7, c0);
+    let propRgb = mix(vec3<f32>(luma(base.rgb)), base.rgb, u.art.x);
+    obj = mix(obj, vec3<f32>(0.05, 0.045, 0.1) + propRgb * u.art.z, isProp);
     obj += vec3<f32>(0.55, 0.58, 0.72) * edge * above * 0.45;
     var col = mix(obj, fogLit, fog);
 
@@ -256,7 +261,7 @@ fn fs_main(in: VOut) -> @location(0) vec4<f32> {
     // --- sonar: cut the fog, soft monochrome outlines, faint desaturated fill
     let clear = reveal * (1.0 - distFog * 0.5);
     col = mix(col, obj, clear * 0.85);
-    col += vec3<f32>(luma(base.rgb)) * 0.1 * clear * step(0.01, c0);
+    col += mix(vec3<f32>(luma(base.rgb)) * 0.1, propRgb * u.art.y, isProp) * clear * step(0.01, c0);
     let lineColor = mix(outlineColor(edgeClass), rainbow, clamp(burst * 1.4 + ring, 0.0, 1.0));
     col += lineColor * edge * (clear + band * 1.4 + ring);
     col += rainbow * ring * 0.55;

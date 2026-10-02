@@ -264,6 +264,13 @@
             <!-- FocusData: the World script's keyboardEvent only runs while this node holds focus -->
             <ScriptedLayout scriptAssetId="0:85" name="World" id="0:12">
                 <FocusData/>
+                <!-- Art from svg/ (art.rml); names match world.luau's Input<Artboard> fields -->
+                <ScriptInputArtboard artboardId="0:5000" name="echulaArt"/>
+                <ScriptInputArtboard artboardId="0:5100" name="garlicArt"/>
+                <ScriptInputArtboard artboardId="0:5200" name="candyPinkArt"/>
+                <ScriptInputArtboard artboardId="0:5300" name="candyOrangeArt"/>
+                <ScriptInputArtboard artboardId="0:5400" name="moonArt"/>
+                <ScriptInputArtboard artboardId="0:5500" name="cloudArt"/>
             </ScriptedLayout>
         </LayoutComponent>
 

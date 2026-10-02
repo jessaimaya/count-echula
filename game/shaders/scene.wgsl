@@ -8,6 +8,11 @@ struct Camera {
 };
 
 @group(0) @binding(0) var<uniform> cam: Camera;
+// Texture props (world.luau drawAtlas): ATLAS_CELLS square cells side by side,
+// 0 = pink candy, 1 = orange candy, 2 = garlic. The instance's color.a picks the cell.
+@group(0) @binding(1) var atlasTex: texture_2d<f32>;
+@group(0) @binding(2) var atlasSampler: sampler;
+const ATLAS_CELLS: f32 = 3.0;
 
 struct VIn {
     @builtin(vertex_index) vi: u32,
@@ -52,6 +57,8 @@ fn fs_main(in: VOut) -> @location(0) vec4<f32> {
     let uv = in.uv;
     var rgb = in.color.rgb;
     var cls = 0.5;
+    // sampled up front: textureSample needs uniform control flow
+    let art = textureSample(atlasTex, atlasSampler, vec2<f32>((in.color.a + uv.x) / ATLAS_CELLS, 1.0 - uv.y));
 
     if (in.kind > 0.9 && in.kind < 1.1) {
         // ground: 3 lanes with scrolling dashes, sidewalks at the edges
@@ -63,16 +70,15 @@ fn fs_main(in: VOut) -> @location(0) vec4<f32> {
         rgb = mix(rgb, vec3<f32>(0.85, 0.8, 1.0), divider * dash * 0.8);
         rgb = rgb * (0.9 + 0.1 * lane);
     } else if (in.kind > 1.9 && in.kind < 2.1) {
-        // candy: circle
+        // candy (svg/pink_candy, svg/orange_candy)
         cls = 0.75;
-        let d = length(uv - vec2<f32>(0.5, 0.5));
-        if (d > 0.5) { discard; }
+        if (art.a < 0.5) { discard; }
+        rgb = art.rgb / art.a;
     } else if (in.kind > 2.9) {
-        // danger: rounded rect
+        // danger: garlic (svg/garlic)
         cls = 1.0;
-        let q = abs(uv - vec2<f32>(0.5, 0.5)) - vec2<f32>(0.3, 0.3);
-        let d = length(max(q, vec2<f32>(0.0, 0.0))) - 0.18;
-        if (d > 0.0) { discard; }
+        if (art.a < 0.5) { discard; }
+        rgb = art.rgb / art.a;
     } else {
         // house: body + roof triangle + window
         cls = 0.5;
