@@ -60,7 +60,7 @@ local map: beatmap.Beatmap = {
     endBeat = bar(41) + 2, -- the last hit rings out to the end of the file (84.9 s)
     tutorialEnd = bar(8),
     swipeTutorial = bar(1),
-    tapTutorial = bar(5),
+    sonarTutorial = bar(5),
     sections = {
         { from = bar(1), name = 'howl' },
         { from = bar(2), name = 'riff' },

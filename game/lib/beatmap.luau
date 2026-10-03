@@ -43,7 +43,7 @@ export type Beatmap = {
     endBeat: number,
     tutorialEnd: number, -- no damage before this beat
     swipeTutorial: number, -- beat the swipe prompt starts
-    tapTutorial: number, -- beat the ping prompt starts
+    sonarTutorial: number, -- beat the "candy sends your sonar" prompt starts
     sections: { Section },
     bursts: { Burst },
     heartbeats: { Span },

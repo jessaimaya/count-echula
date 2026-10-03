@@ -59,7 +59,7 @@ local map: beatmap.Beatmap = {
     endBeat = bar(51),
     tutorialEnd = bar(10),
     swipeTutorial = bar(1),
-    tapTutorial = bar(6),
+    sonarTutorial = bar(6),
     sections = {
         { from = bar(1), name = 'count-in' },
         { from = bar(2), name = 'groove' },

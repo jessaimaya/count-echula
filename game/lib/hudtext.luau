@@ -48,10 +48,10 @@ end
 function M.prompt(map: beatmap.Beatmap, beat: number): string
     if beat < 0 then
         return ''
-    elseif beat < map.tapTutorial then
+    elseif beat < map.sonarTutorial then
         return 'Swipe (or arrow keys) to catch\nthe candy on the beat!'
     elseif beat < map.tutorialEnd then
-        return 'Every candy sends your sonar.\nLost? Tap or Space for a tiny ping!'
+        return 'Catch candy to send your sonar:\nit is your only light in the dark!'
     end
     for _, s in map.sections do
         local text = s.prompt

@@ -1,6 +1,6 @@
--- Pointer gesture classifier: tap = sonar pulse, horizontal swipe = lane change.
--- A tap is timed at press time. A press that becomes a swipe before the tap
--- fires (release or HOLD seconds) cancels the pulse, so one gesture never does both.
+-- Pointer gesture classifier: tap (menus: pick, play, retry), horizontal swipe =
+-- lane change. A tap is timed at press time. A press that becomes a swipe before the
+-- tap fires (release or HOLD seconds) cancels the tap, so one gesture never does both.
 
 export type Gesture = {
     down: boolean,

@@ -9,7 +9,7 @@
 struct Camera {
     viewProj: mat4x4<f32>,
     params: vec4<f32>, // x = scroll (world units), y = time, z = lane spacing (world units)
-    atlas: array<vec4<f32>, 8>, // per atlas cell: u0, v0, u1, v1 (world.luau ATLAS_RECTS)
+    atlas: array<vec4<f32>, 16>, // per atlas cell: u0, v0, u1, v1 (world.luau ATLAS_RECTS)
 };
 
 @group(0) @binding(0) var<uniform> cam: Camera;
@@ -85,7 +85,7 @@ fn fs_main(in: VOut) -> @location(0) vec4<f32> {
     var cls = 0.5;
     // sampled up front: textureSample needs uniform control flow
     // round: the interpolated cell index can arrive as 2.9999
-    let rect = cam.atlas[u32(clamp(round(in.color.a), 0.0, 7.0))];
+    let rect = cam.atlas[u32(clamp(round(in.color.a), 0.0, 15.0))];
     let art = textureSample(atlasTex, atlasSampler, mix(rect.xy, rect.zw, vec2<f32>(uv.x, 1.0 - uv.y)));
 
     if (near(in.kind, 1.0)) {
@@ -138,14 +138,12 @@ fn fs_main(in: VOut) -> @location(0) vec4<f32> {
             rgb = art.rgb / art.a;
         }
     } else {
-        // house: body + roof triangle + window
-        cls = 0.5;
-        let body = uv.y < 0.62;
-        let roof = uv.y >= 0.62 && abs(uv.x - 0.5) < (1.0 - uv.y) * 1.3;
-        if (!(body || roof)) { discard; }
-        let win = step(abs(uv.x - 0.5), 0.12) * step(abs(uv.y - 0.35), 0.1);
-        rgb = mix(rgb, vec3<f32>(1.0, 0.75, 0.3), win);
-        cls = mix(0.5, 0.55, win); // 0.55 = window (glows through the fog)
+        // house (assets/images/houses): scenery; its lit windows glow through the
+        // fog (0.55 = window)
+        if (art.a < 0.5) { discard; }
+        rgb = art.rgb / art.a;
+        let lit = rgb.r > 0.85 && rgb.g > 0.6 && rgb.b < 0.55;
+        cls = select(0.5, 0.55, lit);
     }
     return vec4<f32>(rgb, cls);
 }

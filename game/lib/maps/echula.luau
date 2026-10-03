@@ -34,7 +34,7 @@ local map: beatmap.Beatmap = {
     endBeat = bar(37),
     tutorialEnd = bar(9),
     swipeTutorial = bar(1),
-    tapTutorial = bar(5),
+    sonarTutorial = bar(5),
     sections = {
         { from = bar(1), name = 'intro' },
         { from = bar(5), name = 'tutorial' },

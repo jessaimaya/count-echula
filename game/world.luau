@@ -12,7 +12,7 @@ local discs = require('lib/discs')
 local NEAR = 0.1
 local FAR = 60
 local STRIDE = 40 -- vec3 center, vec2 size, vec4 color, f32 kind
-local MAX_INST = 256
+local MAX_INST = 384
 local LANE = 1.2 -- world units between lanes
 local TILE = 2.0 -- world units per beat at normal speed (sections can speed it up)
 local BAT_Z = -3.0 -- world z of the bat / catch line (further from the camera keeps side lanes on screen)
@@ -40,7 +40,7 @@ local TRAVERSE_TIME = 0.45 -- seconds from leaving one outer lane to reaching th
 -- Texture props for the 3D street: each artboard drawn into its own rect of one
 -- canvas, at the art's aspect. The index is the instance's atlas cell; the rects
 -- go to scene.wgsl in the camera buffer.
-local ATLAS_W, ATLAS_H = 1024, 512
+local ATLAS_W, ATLAS_H = 2176, 1024
 local CELL_PINK, CELL_ORANGE, CELL_GARLIC, CELL_LAMP, CELL_FENCE, CELL_STAKE = 0, 1, 2, 3, 4, 5
 local ATLAS_RECTS = { -- x, y, w, h in pixels, by cell
     { 0, 0, 256, 256 }, -- pink candy
@@ -49,8 +49,20 @@ local ATLAS_RECTS = { -- x, y, w, h in pixels, by cell
     { 768, 0, 104, 512 }, -- lamp
     { 0, 256, 442, 256 }, -- fence (a front view that tiles)
     { 450, 288, 178, 224 }, -- wooden stakes
+    -- houses (assets/images/houses, cut from svg/houses.jpg by scripts/cut_houses.py)
+    { 1024, 0, 380, 480 }, -- house_a
+    { 1404, 0, 373, 480 }, -- cottage_c
+    { 1777, 0, 387, 480 }, -- house_b
+    { 1024, 512, 269, 480 }, -- narrow_d
+    { 1293, 512, 322, 480 }, -- church
+    { 1615, 512, 390, 480 }, -- cottage_e
 }
-local CAM_SIZE = 64 + 16 + 16 * 8 -- viewProj, params, atlas rects (scene.wgsl Camera)
+local FIRST_HOUSE_CELL = 6
+local HOUSE_IMAGES = { 'house_a', 'cottage_c', 'house_b', 'narrow_d', 'church', 'cottage_e' }
+-- world height of each house: their heights relative to each other on the sheet
+local HOUSE_H = { 3.0, 2.78, 2.9, 3.09, 3.4, 2.6 }
+local HOUSE_SCALE = 1.1 -- a little larger than the sheet narrows the gaps between them
+local CAM_SIZE = 64 + 16 + 16 * 16 -- viewProj, params, atlas rects (scene.wgsl Camera)
 
 -- Street dressing: the street is cut into slots, one per house. Each slot may hold a
 -- lamp at the curb and, independently, a fence along the sidewalk, picked by a hash
@@ -61,13 +73,19 @@ local PROP_AHEAD = 44 -- how far ahead slots are filled (the fog hides the rest)
 -- Street layout across x (world units from the center line): three lanes LANE apart,
 -- so the road's lane edges sit at LANE/2 and 3*LANE/2 (1.8); a small gutter, the
 -- curb, the sidewalk, then the houses.
-local HOUSE_X, HOUSE_W = 3.95, 2.4 -- house centers; their fronts start at 2.75
+local HOUSE_X = 3.95 -- house centers; their fronts start around 2.75
 local LAMP_X, LAMP_W, LAMP_H = 2.2, 0.48, 2.4
 local FENCE_X = 2.65 -- at the back of the sidewalk, in front of the houses
 -- The sidewalk on each side: raised paving from the curb to the house line, built as
 -- geometry (scene.wgsl kinds 6 and 7) in svg/left_sidewalk's palette. Lamps and
 -- fences stand on it.
 local CURB_X, WALK_OUT, CURB_H = 1.95, 2.8, 0.12
+-- Behind the sidewalk: the yards the houses stand on (at curb height, out to YARD_OUT)
+-- and a continuous back-garden fence behind the houses, so the gaps between them show
+-- gardens instead of sky.
+local YARD_OUT = 12
+local BACK_FENCE_X = 8 -- well behind the houses, at the far side of the yards
+local BACK_FENCE_TILES = 2 -- per slot: longer, taller sections than the front fence
 local FENCE_TILES = 3 -- fence sections per slot, edge to edge
 local FENCE_LEN = PROP_SLOT / FENCE_TILES -- one section along the street
 local FENCE_H = FENCE_LEN * 256 / 442 -- the art's aspect (ATLAS_RECTS fence)
@@ -98,8 +116,6 @@ local PROP_SATURATION = 0.7 -- candy and obstacle color: 0 = gray, 1 = the art's
 local PROP_REVEAL = 0.85 -- their brightness when the sonar reveals them
 local PROP_DARK = 0.2 -- their brightness in the dark, outside a reveal
 local RESTART_GUARD = 1.0 -- seconds after the results appear before a tap restarts
-local PING_STRENGTH = 0.18 -- manual ping reach (fraction of a full candy pulse)
-local PING_BEATS = 0.6
 local CANDY_STRENGTH = 0.9 -- sonar reach when a candy is caught
 local CANDY_BEATS = 1.6 -- how long that reveal lasts
 
@@ -112,10 +128,13 @@ local ARROW_W = 0.24 -- side strips of the shelf that flip records
 local SHELF_TOP = 0.28
 local SHELF_BOTTOM = 0.62
 local PAUSE_SIZE = 84 -- top-right square of the pause button
-local RESUME_Y = 0.5 -- pause menu buttons: centre y and half height
-local MENU_Y = 0.6
-local BUTTON_H = 0.045
-local BUTTON_W = 0.3 -- half width
+-- The pause menu is laid out in a FRAME_W x FRAME_H frame centered on the screen
+-- (scene.rml binds it to GameVM.frameX/Y). Its buttons, in frame coordinates:
+local FRAME_W, FRAME_H = 540, 960
+local BUTTON_X = 270 -- center
+local RESUME_Y = 480
+local MENU_Y = 576
+local BUTTON_HALF_W, BUTTON_HALF_H = 162, 43
 local COUNTDOWN_BEATS = 3 -- after Resume, the song waits this many beats
 
 -- Keyboard (GLFW key codes, as KeyboardEvent.key reports them). Needs the
@@ -147,9 +166,6 @@ type Shard = { x: number, y: number, vx: number, vy: number, spin: number, size:
 type Sfx = {
     streakBreak: AudioSource?,
     heartbeat: AudioSource?,
-    pingPerfect: AudioSource?,
-    pingGood: AudioSource?,
-    pingGlitch: AudioSource?,
     candy: AudioSource?,
     hit: AudioSource?,
 }
@@ -244,6 +260,11 @@ type World = {
     lastStrings: { [string]: string },
     modeProp: Property<number>?,
     discProp: Property<number>?,
+    pauseX: Property<number>?, -- the pause button's x, pinned to the right edge
+    frameX: Property<number>?, -- where the centered 540 x 960 menu frame starts
+    frameY: Property<number>?,
+    screenW: Property<number>?, -- the screen size, for full-screen dims
+    screenH: Property<number>?,
     discColor: Property<Color>?,
     pausedProp: Property<boolean>?,
     discFire: PropertyTrigger?,
@@ -270,6 +291,7 @@ type World = {
     histRX: { number },
     histRY: { number },
     trailPaths: { Path },
+    warmPath: Path, -- the invisible trail warm-up stroke (drawTrail)
     trailPaint: Paint,
     prevCombo: number,
     breakAt: number,
@@ -533,8 +555,8 @@ local function endSong(self: World, mode: Mode)
     if mode == 'over' then
         playSfx(self.sfx.hit, 1)
     end
-    print(string.format('%s: score %d  grade %s  candy %d/%d  perfect %d good %d  hits %d  pings %d  max combo %d',
-        mode, st.score, summary.grade, st.candies, st.totalCandies, st.perfect, st.good, st.hits, st.pings, st.maxCombo))
+    print(string.format('%s: score %d  grade %s  candy %d/%d  perfect %d good %d  hits %d  max combo %d',
+        mode, st.score, summary.grade, st.candies, st.totalCandies, st.perfect, st.good, st.hits, st.maxCombo))
 end
 
 -- Back to the record shelf (from the pause menu or a finished song).
@@ -593,16 +615,11 @@ local function showJudge(self: World, text: string)
     fire(self.judgeFire)
 end
 
+-- In play only swipes count: the sonar fires only when a candy is caught, so a tap
+-- does nothing.
 local function handle(self: World, ev: gesture.GestureEvent)
-    local st = self.state
     if ev.kind == 'swipe' then
-        rules.swipe(st, ev.dir, beatclock.beatAt(self.clock, ev.t))
-        return
-    end
-    -- tap = manual ping: a small reveal around the bat
-    if rules.ping(st) then
-        addPulse(self, PING_STRENGTH, 1, PING_BEATS)
-        playSfx(self.sfx.pingGood, 0.45)
+        rules.swipe(self.state, ev.dir, beatclock.beatAt(self.clock, ev.t))
     end
 end
 
@@ -644,13 +661,36 @@ local function onCatch(self: World, c: rules.Catch)
     fire(self.candyFire)
 end
 
+local function setNumber(p: Property<number>?, value: number)
+    if p ~= nil then
+        p.value = value
+    end
+end
+
+-- Screen-size dependent HUD placement (the scene binds these): the pause button in
+-- the top-right corner, centered in its hit square; the pause menu frame centered;
+-- its dim covering the whole screen.
+local function placeHud(self: World)
+    local w, h = self.size.x, self.size.y
+    if w <= 0 then
+        return
+    end
+    setNumber(self.pauseX, w - PAUSE_SIZE / 2)
+    setNumber(self.frameX, (w - FRAME_W) / 2)
+    setNumber(self.frameY, (h - FRAME_H) / 2)
+    setNumber(self.screenW, w)
+    setNumber(self.screenH, h)
+end
+
 local function inPauseButton(self: World, p: Vector): boolean
     return p.x >= self.size.x - PAUSE_SIZE and p.y <= PAUSE_SIZE
 end
 
+-- Whether `p` is on the pause menu button centered at frame y `cy`.
 local function inButton(self: World, p: Vector, cy: number): boolean
-    return math.abs(p.x - self.size.x * 0.5) <= self.size.x * BUTTON_W
-        and math.abs(p.y - self.size.y * cy) <= self.size.y * BUTTON_H
+    local fx, fy = (self.size.x - FRAME_W) / 2, (self.size.y - FRAME_H) / 2
+    return math.abs(p.x - (fx + BUTTON_X)) <= BUTTON_HALF_W
+        and math.abs(p.y - (fy + cy)) <= BUTTON_HALF_H
 end
 
 -- Title screen tap: the side strips of the shelf flip records, anywhere else plays.
@@ -802,8 +842,6 @@ local function keyboardEvent(self: World, event: KeyboardEvent): boolean
         pauseSong(self)
     elseif dir ~= 0 then
         handle(self, { kind = 'swipe', t = songNow(self), dir = dir })
-    elseif k == KEY_SPACE then
-        handle(self, { kind = 'tap', t = songNow(self), dir = 0 })
     else
         return false
     end
@@ -1122,6 +1160,13 @@ local function fillProps(self: World, b: buffer, n: number, scroll: number): num
                 writeInst(b, n, side * LAMP_X, CURB_H, z, LAMP_W, LAMP_H, 0.5, 0.45, 0.6, 4, CELL_LAMP)
                 n += 1
             end
+            -- the back-garden fence: every slot, behind the houses
+            local backLen = PROP_SLOT / BACK_FENCE_TILES
+            for j = 0, BACK_FENCE_TILES - 1 do
+                writeInst(b, n, side * BACK_FENCE_X, CURB_H, z + PROP_SLOT / 2 - (j + 0.5) * backLen,
+                    backLen, backLen * 256 / 442, 0.45, 0.35, 0.6, 5, CELL_FENCE)
+                n += 1
+            end
             if hash(key + 0.37) < FENCE_ODDS then
                 -- the whole slot, sections edge to edge, upright along the street
                 for j = 0, FENCE_TILES - 1 do
@@ -1143,19 +1188,30 @@ local function fillWorld(self: World): number
     writeInst(b, n, 0, 0, -25, 2 * HOUSE_X, 60, 0.16, 0.13, 0.3, 1)
     n += 1
     for side = -1, 1, 2 do
+        -- the yards: plain ground at curb height from the sidewalk out
+        writeInst(b, n, side * (WALK_OUT + YARD_OUT) / 2, CURB_H, -25, YARD_OUT - WALK_OUT, 60, 0.13, 0.1, 0.2, 1)
+        n += 1
         -- top (#8f6e8d) and the curb face toward the road (#695179)
         writeInst(b, n, side * (CURB_X + WALK_OUT) / 2, CURB_H, -25, WALK_OUT - CURB_X, 60, 0.561, 0.431, 0.553, 6)
         n += 1
         writeInst(b, n, side * CURB_X, 0, -25, 60, CURB_H, 0.412, 0.318, 0.475, 7)
         n += 1
     end
+    -- houses, one per 4 units on each side; which design goes where is a hash of its
+    -- street position (the same street on every level). The right side is mirrored
+    -- (negative width) so the two sides don't repeat each other
     for k = 0, 13 do
         local z = -(k * 4) + (scroll % 4)
-        local tint = (k % 3) * 0.08
-        writeInst(b, n, -HOUSE_X, 0, z, HOUSE_W, 2.8, 0.45 + tint, 0.3, 0.6, 0)
-        n += 1
-        writeInst(b, n, HOUSE_X, 0, z - 2, HOUSE_W, 2.8, 0.35, 0.3 + tint, 0.55, 0)
-        n += 1
+        for side = -1, 1, 2 do
+            local hz = if side < 0 then z else z - 2
+            local slot = math.floor((scroll - hz) / 2 + 0.5) -- unique per house
+            local i = 1 + math.floor(hash(slot * 1.37 + 0.5) * #HOUSE_IMAGES)
+            local rect = ATLAS_RECTS[FIRST_HOUSE_CELL + i]
+            local h = HOUSE_H[i] * HOUSE_SCALE
+            local w = h * rect[3] / rect[4]
+            writeInst(b, n, side * HOUSE_X, CURB_H, hz, -side * w, h, 0.4, 0.33, 0.58, 0, FIRST_HOUSE_CELL + i - 1)
+            n += 1
+        end
     end
     n = fillProps(self, b, n, scroll)
     local ents = self.state.entities
@@ -1350,7 +1406,27 @@ end
 local LIGHT: { Color } = { Color.rgb(200, 240, 255), Color.rgb(159, 232, 255), Color.rgb(120, 160, 255) }
 local WINGS: { Color } = { Color.rgb(255, 180, 90), Color.rgb(255, 111, 181), Color.rgb(190, 110, 255), Color.rgb(120, 140, 255) }
 
+-- The trails are the only feathered, screen-blended strokes in the game. The renderer
+-- prepares that kind of draw (its shader and coverage space) the first time it sees
+-- one, which used to stall the frame where the first trail, and then the first, wider
+-- rainbow wing trail, appeared. So both sizes are drawn every frame from the start,
+-- tiny and in near-black (screen blend adds nothing), where nobody sees them.
+local function warmTrails(self: World, renderer: Renderer)
+    local paint = self.trailPaint
+    local path = self.warmPath
+    path:reset()
+    path:moveTo(Vector.xy(2, 2))
+    path:lineTo(Vector.xy(30, 2))
+    paint.color = Color.rgba(1, 1, 1, 1)
+    for _, width in { 7, 12 } do -- the body trail and the wing trails (drawTrail)
+        paint.thickness = width
+        paint.feather = 2 + width * 0.6
+        renderer:drawPath(path, paint)
+    end
+end
+
 local function drawTrail(self: World, renderer: Renderer)
+    warmTrails(self, renderer)
     for _, p in self.trailPaths do
         p:reset()
     end
@@ -1494,6 +1570,21 @@ local function drawAtlas(self: World)
         r:transform(Mat2D.withScaleAndTranslation(rect[3] / art.width, rect[4] / art.height, rect[1], rect[2]))
         art:draw(r)
         r:restore()
+    end
+    local ctx = self.context
+    if ctx ~= nil then
+        for i, name in HOUSE_IMAGES do
+            local img = ctx:image(name)
+            local rect = ATLAS_RECTS[FIRST_HOUSE_CELL + i]
+            if img ~= nil then
+                r:save()
+                r:transform(Mat2D.withScaleAndTranslation(rect[3] / img.width, rect[4] / img.height, rect[1], rect[2]))
+                r:drawImage(img, self.sampler, 'srcOver', 1)
+                r:restore()
+            else
+                print('world: image ' .. name .. ' missing')
+            end
+        end
     end
     atlas:endFrame()
     self.atlasReady = true
@@ -1718,9 +1809,6 @@ local function init(self: World, context: Context): boolean
     self.sfx = {
         streakBreak = context:audio('streak_break'),
         heartbeat = context:audio('heartbeat'),
-        pingPerfect = context:audio('ping_perfect'),
-        pingGood = context:audio('ping_good'),
-        pingGlitch = context:audio('ping_glitch'),
         candy = context:audio('candy'),
         hit = context:audio('hit'),
     }
@@ -1748,6 +1836,12 @@ local function init(self: World, context: Context): boolean
     end
     self.modeProp = vm:getNumber('mode')
     self.discProp = vm:getNumber('disc')
+    self.pauseX = vm:getNumber('pauseX')
+    self.frameX = vm:getNumber('frameX')
+    self.frameY = vm:getNumber('frameY')
+    self.screenW = vm:getNumber('screenW')
+    self.screenH = vm:getNumber('screenH')
+    placeHud(self)
     self.discColor = vm:getColor('discColor')
     self.pausedProp = vm:getBoolean('paused')
     self.discFire = vm:getTrigger('discFire')
@@ -1763,6 +1857,7 @@ end
 local function resize(self: World, size: Vector, scale: number)
     self.size = size
     self.scale = scale
+    placeHud(self)
     local ctx = self.context
     if ctx ~= nil and size.x > 0 and size.y > 0 then
         build(self, ctx)
@@ -1794,6 +1889,7 @@ return function(context: Context): Layout<World>
         histRX = {},
         histRY = {},
         trailPaths = trailPaths,
+        warmPath = Path.new(),
         prevCombo = 0,
         breakAt = -100,
         breakPower = 0,
@@ -1884,6 +1980,11 @@ return function(context: Context): Layout<World>
         lastStrings = {},
         modeProp = nil,
         discProp = nil,
+        pauseX = nil,
+        frameX = nil,
+        frameY = nil,
+        screenW = nil,
+        screenH = nil,
         discColor = nil,
         pausedProp = nil,
         discFire = nil,

@@ -7,7 +7,11 @@
         <LayoutComponentStyle name="Artboard Style" id="0:5"/>
 
         <!-- ============ Pause menu (GameVM.paused); hit areas live in world.luau (RESUME_Y, MENU_Y) ============ -->
+        <!-- Laid out in a 540 x 960 frame that world.luau centers on the screen (GameVM.frameX/Y);
+             the dim stretches to the whole screen (GameVM.screenW/H). -->
         <Node x="0" y="0" opacity="0" name="Pause" id="0:2100">
+            <DataBindContext sourcePathIds="0:40-0:2209" propertyKey="13"/>
+            <DataBindContext sourcePathIds="0:40-0:2210" propertyKey="14"/>
             <Text x="270" y="576" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Menu Label" id="0:2141">
                 <TextStylePaint fontSize="28" fontAssetId="0:31" familyName="Fredoka" styleName="SemiBold" name="Menu Label Style" id="0:2142">
                     <Fill name="Fill"><SolidColor colorValue="FF9FE8FF" name="C"/></Fill>
@@ -44,7 +48,10 @@
                 <TextValueRun styleId="0:2151" text="Enter: resume   ·   M: main menu" name="Run"/>
             </Text>
             <Shape x="270" y="480" name="Dim" id="0:2110">
-                <Rectangle width="540" height="960" name="Path"/>
+                <Rectangle width="540" height="960" name="Path">
+                    <DataBindContext sourcePathIds="0:40-0:2211" propertyKey="20"/>
+                    <DataBindContext sourcePathIds="0:40-0:2212" propertyKey="21"/>
+                </Rectangle>
                 <Fill name="Fill"><SolidColor colorValue="D80A0820" name="C"/></Fill>
             </Shape>
         </Node>
@@ -99,7 +106,7 @@
                     <Fill name="Fill"><SolidColor colorValue="FFB8B0E0" name="C"/></Fill>
                     <TextStyleAxis tag="2003265652" axisValue="500" name="Weight"/>
                 </TextStylePaint>
-                <TextValueRun styleId="0:231" text="Swipe to pick a record, tap to play.&#10;Catch the candy on the beat to see in the dark.&#10;Keys: arrows or A/D to move, Enter to play,&#10;Space to ping, Esc to pause" name="Run"/>
+                <TextValueRun styleId="0:231" text="Swipe to pick a record, tap to play.&#10;Catch the candy on the beat to see in the dark.&#10;Keys: arrows or A/D to move,&#10;Enter to play, Esc to pause" name="Run"/>
             </Text>
             <Text x="270" y="730" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Tap To Start" id="0:220">
                 <TextStylePaint fontSize="34" fontAssetId="0:31" familyName="Fredoka" styleName="SemiBold" name="Tap Style" id="0:221">
@@ -213,8 +220,11 @@
 
         <!-- ============ In-game HUD (mode 1) ============ -->
         <Node x="0" y="0" opacity="0" name="Hud" id="0:500">
-            <!-- pause button: world.luau PAUSE_SIZE is its top-right hit square -->
+            <!-- pause button: pinned to the top-right corner at any screen size. Its x is
+                 GameVM.pauseX, which world.luau keeps at (width - PAUSE_SIZE / 2); PAUSE_SIZE
+                 is also its top-right hit square -->
             <Node x="498" y="38" name="Pause Button" id="0:550">
+                <DataBindContext sourcePathIds="0:40-0:2208" propertyKey="13"/>
                 <Shape x="-7" y="0" name="Bar L" id="0:552">
                     <Rectangle width="7" height="22" cornerRadiusTL="2" cornerRadiusTR="2" cornerRadiusBL="2" cornerRadiusBR="2" name="Path"/>
                     <Fill name="Fill"><SolidColor colorValue="FFFFFFFF" name="C"/></Fill>
@@ -629,6 +639,11 @@
         <ViewModelPropertyString name="againText" id="0:2205"/>
         <ViewModelPropertyBoolean name="paused" id="0:2206"/>
         <ViewModelPropertyTrigger name="discFire" id="0:2207"/>
+        <ViewModelPropertyNumber name="pauseX" id="0:2208"/>
+        <ViewModelPropertyNumber name="frameX" id="0:2209"/>
+        <ViewModelPropertyNumber name="frameY" id="0:2210"/>
+        <ViewModelPropertyNumber name="screenW" id="0:2211"/>
+        <ViewModelPropertyNumber name="screenH" id="0:2212"/>
         <ViewModelInstance exports="true" name="Default" id="0:60">
             <ViewModelInstanceNumber propertyValue="0" viewModelPropertyId="0:41"/>
             <ViewModelInstanceString propertyValue="0" viewModelPropertyId="0:42"/>
@@ -650,6 +665,11 @@
             <ViewModelInstanceString propertyValue="tap to play again" viewModelPropertyId="0:2205"/>
             <ViewModelInstanceBoolean propertyValue="false" viewModelPropertyId="0:2206"/>
             <ViewModelInstanceTrigger viewModelPropertyId="0:2207"/>
+            <ViewModelInstanceNumber propertyValue="498" viewModelPropertyId="0:2208"/>
+            <ViewModelInstanceNumber propertyValue="0" viewModelPropertyId="0:2209"/>
+            <ViewModelInstanceNumber propertyValue="0" viewModelPropertyId="0:2210"/>
+            <ViewModelInstanceNumber propertyValue="540" viewModelPropertyId="0:2211"/>
+            <ViewModelInstanceNumber propertyValue="960" viewModelPropertyId="0:2212"/>
         </ViewModelInstance>
     </ViewModel>
 
@@ -673,10 +693,13 @@
     <AudioAsset file="assets/audio/echula_theme.mp3" name="echula_theme" id="0:70"/>
     <AudioAsset file="assets/audio/funky_counting.mp3" name="funky_counting" id="0:78"/>
     <AudioAsset file="assets/audio/werewolf_wipeout.mp3" name="werewolf_wipeout" id="0:79"/>
+    <ImageAsset file="assets/images/houses/house_a.png" name="house_a" id="0:6001"/>
+    <ImageAsset file="assets/images/houses/cottage_c.png" name="cottage_c" id="0:6002"/>
+    <ImageAsset file="assets/images/houses/house_b.png" name="house_b" id="0:6003"/>
+    <ImageAsset file="assets/images/houses/narrow_d.png" name="narrow_d" id="0:6004"/>
+    <ImageAsset file="assets/images/houses/church.png" name="church" id="0:6005"/>
+    <ImageAsset file="assets/images/houses/cottage_e.png" name="cottage_e" id="0:6006"/>
     <AudioAsset file="assets/audio/sfx/heartbeat.wav" name="heartbeat" id="0:71"/>
-    <AudioAsset file="assets/audio/sfx/ping_perfect.wav" name="ping_perfect" id="0:72"/>
-    <AudioAsset file="assets/audio/sfx/ping_good.wav" name="ping_good" id="0:73"/>
-    <AudioAsset file="assets/audio/sfx/ping_glitch.wav" name="ping_glitch" id="0:74"/>
     <AudioAsset file="assets/audio/sfx/candy.wav" name="candy" id="0:75"/>
     <AudioAsset file="assets/audio/sfx/hit.wav" name="hit" id="0:76"/>
     <AudioAsset file="assets/audio/sfx/streak_break.wav" name="streak_break" id="0:77"/>

@@ -16,7 +16,7 @@ local function emptyMap(): beatmap.Beatmap
         endBeat = 100,
         tutorialEnd = 0,
         swipeTutorial = 0,
-        tapTutorial = 0,
+        sonarTutorial = 0,
         sections = {},
         bursts = {},
         heartbeats = {},
@@ -115,15 +115,6 @@ return function(): Tests
                 expect(out.missed).is(1)
                 expect(s.combo).is(0)
                 expect(s.missed).is(1)
-            end)
-            test.case('ping always works until the run ends', function(expect)
-                local s = rules.new(emptyMap())
-                for _ = 1, 20 do
-                    expect(rules.ping(s)).is(true)
-                end
-                s.over = true
-                expect(rules.ping(s)).is(false)
-                expect(s.pings).is(20)
             end)
             test.case('swipe timing into the candy lane is judged', function(expect)
                 local m = emptyMap()
@@ -374,7 +365,7 @@ return function(): Tests
             end)
             test.case('tutorial prompts follow the beatmap', function(expect)
                 expect(hudtext.prompt(echula, 2)).is('Swipe (or arrow keys) to catch\nthe candy on the beat!')
-                expect(hudtext.prompt(echula, echula.tapTutorial + 1)).is('Every candy sends your sonar.\nLost? Tap or Space for a tiny ping!')
+                expect(hudtext.prompt(echula, echula.sonarTutorial + 1)).is('Catch candy to send your sonar:\nit is your only light in the dark!')
                 expect(hudtext.prompt(echula, echula.tutorialEnd + 1)).is('')
                 expect(hudtext.prompt(echula, 81)).is('The fog is rolling in...\nremember the trail!')
                 expect(hudtext.prompt(funky, 95)).is('Brrr... the night froze.\nGlide with the moon...')

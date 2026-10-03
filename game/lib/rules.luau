@@ -2,8 +2,8 @@
 -- Pure logic, no rendering. Beats are fractional beat indices (see beatclock).
 --
 -- Core loop: candy sits on the beat. Catching one fires the sonar automatically
--- (world.luau reads Outcome.collected), so pulses land on the music. A tap is a
--- small manual ping around the bat (no cost).
+-- (world.luau reads Outcome.collected), so pulses land on the music. It is the only
+-- way the sonar fires: there is no manual ping.
 local beatmap = require('lib/beatmap')
 
 export type Entity = {
@@ -40,7 +40,6 @@ export type State = {
     perfect: number,
     good: number,
     hits: number,
-    pings: number,
     lane: number,
     laneFrom: number,
     laneT: number, -- 0..1 lane-change tween progress
@@ -103,7 +102,6 @@ function M.new(map: beatmap.Beatmap): State
         perfect = 0,
         good = 0,
         hits = 0,
-        pings = 0,
         lane = 0,
         laneFrom = 0,
         laneT = 1,
@@ -142,15 +140,6 @@ function M.swipe(s: State, dir: number, beat: number)
     s.laneT = 0
     s.swipeBeat = beat
     s.swipeLane = target
-end
-
--- Manual sonar ping (a small reveal around the bat). Returns false once the run is over.
-function M.ping(s: State): boolean
-    if s.over or s.finished then
-        return false
-    end
-    s.pings += 1
-    return true
 end
 
 local function bump(s: State)
