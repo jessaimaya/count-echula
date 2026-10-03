@@ -284,6 +284,8 @@
                 <ScriptInputArtboard artboardId="0:5600" name="lampArt" id="0:7699"/>
                 <ScriptInputArtboard artboardId="0:5700" name="fenceArt" id="0:7700"/>
                 <ScriptInputArtboard artboardId="0:5800" name="stakeArt" id="0:7701"/>
+                <!-- the level intro (intro.rml) -->
+                <ScriptInputArtboard artboardId="0:21000" name="introArt" id="0:21500"/>
             </ScriptedLayout>
         </LayoutComponent>
 

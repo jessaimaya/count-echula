@@ -37,6 +37,10 @@ local FLIP_BEATS = 1.1 -- the burst roll
 local FLIP_QUICK = 0.55 -- seconds, the traverse roll (snappier)
 local FLIP_POP = 0.22 -- he grows this much mid-roll
 local TRAVERSE_TIME = 0.45 -- seconds from leaving one outer lane to reaching the other
+-- Level intro ("Echula Intro", game/intro.rml): the front view salutes, a smoke puff
+-- pops, and behind it he has turned to fly. It is scrubbed by song time and placed so
+-- the swap lands on the first beat it can reach.
+local INTRO_SWAP = 70 / 60 -- seconds into the intro when the smoke hides the swap
 -- Texture props for the 3D street: each artboard drawn into its own rect of one
 -- canvas, at the art's aspect. The index is the instance's atlas cell; the rects
 -- go to scene.wgsl in the camera buffer.
@@ -203,10 +207,15 @@ type World = {
     cloudArt: Input<Artboard>,
     lampArt: Input<Artboard>,
     fenceArt: Input<Artboard>,
+    introArt: Input<Artboard>,
     bat: Artboard?,
     flap: Animation?,
     tipNodeL: NodeData?, -- WingTipL / WingTipR: markers on the flapping wings
     tipNodeR: NodeData?,
+    intro: Artboard?,
+    introAnim: Animation?,
+    introStart: number, -- song time the intro starts
+    introOn: boolean, -- drawing the intro instead of the bat
     tipL: Vector, -- current wingtip offsets from the bat, world units
     tipR: Vector,
     batRoll: number,
@@ -488,6 +497,31 @@ local function setPaused(self: World, paused: boolean)
     end
 end
 
+-- Song time t of the intro's own timeline (clamped to it); false once it has ended.
+local function poseIntro(self: World, t: number, seconds: number): boolean
+    local intro, anim = self.intro, self.introAnim
+    if intro == nil or anim == nil or t >= anim.duration then
+        return false
+    end
+    anim:setTime(math.max(t, 0))
+    intro:advance(seconds) -- the flying view inside keeps flapping on its own clock
+    return true
+end
+
+-- The swap goes on the first beat at least INTRO_SWAP into the song, so the intro
+-- never starts before the music does.
+local function startIntro(self: World)
+    local swapBeat = math.ceil(beatclock.beatAt(self.clock, INTRO_SWAP))
+    self.introStart = beatclock.timeOf(self.clock, swapBeat) - INTRO_SWAP
+    self.introOn = poseIntro(self, 0, 0)
+end
+
+local function animateIntro(self: World, seconds: number)
+    if self.introOn then
+        self.introOn = poseIntro(self, self.songTime - self.introStart, seconds)
+    end
+end
+
 local function startSong(self: World)
     stopPreview(self)
     setPaused(self, false)
@@ -526,6 +560,7 @@ local function startSong(self: World)
         self.lastAudio = Audio.time()
         self.audioIdle = 0
     end
+    startIntro(self)
     print(string.format('song start: disc %d (%s)  audio=%s', self.disc, discs.list[self.disc].title, tostring(self.useAudioClock)))
 end
 
@@ -1025,6 +1060,7 @@ local function advance(self: World, seconds: number): boolean
 
     self.songTime = songNow(self)
     self.beat = beatclock.beatAt(self.clock, self.songTime)
+    animateIntro(self, seconds)
 
     local ev = gesture.tick(self.gest, self.songTime)
     if ev ~= nil then
@@ -1631,7 +1667,9 @@ local function drawHud(self: World, renderer: Renderer, bx: number, by: number)
         if self.time - self.hitAt < 0.3 then
             renderer:modulateColor(Color.rgb(255, 120, 140))
         end
-        drawArt(renderer, bat, bx, by, BAT_SCALE * self.flipScale, BAT_ORIGIN, self.batRoll + self.flipRot, 1)
+        local intro = self.intro
+        local art = if self.introOn and intro ~= nil and self.mode == 'playing' then intro else bat
+        drawArt(renderer, art, bx, by, BAT_SCALE * self.flipScale, BAT_ORIGIN, self.batRoll + self.flipRot, 1)
         renderer:restore()
     end
 
@@ -1791,6 +1829,12 @@ local function init(self: World, context: Context): boolean
     if self.flap == nil then
         print('world: Echula idle_flap missing')
     end
+    local intro = self.introArt:instance()
+    self.intro = intro
+    self.introAnim = intro:animation('intro')
+    if self.introAnim == nil then
+        print('world: Echula Intro animation missing')
+    end
     local moon = self.moonArt:instance()
     local cloud = self.cloudArt:instance()
     moon:advance(0) -- static art: lay out its shapes once
@@ -1926,10 +1970,15 @@ return function(context: Context): Layout<World>
         cloudArt = late(),
         lampArt = late(),
         fenceArt = late(),
+        introArt = late(),
         bat = nil,
         flap = nil,
         tipNodeL = nil,
         tipNodeR = nil,
+        intro = nil,
+        introAnim = nil,
+        introStart = 0,
+        introOn = false,
         tipL = Vector.xy(-0.4, 0),
         tipR = Vector.xy(0.4, 0),
         batRoll = 0,
