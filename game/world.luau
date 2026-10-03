@@ -123,8 +123,9 @@ local RESTART_GUARD = 1.0 -- seconds after the results appear before a tap resta
 local CANDY_STRENGTH = 0.9 -- sonar reach when a candy is caught
 local CANDY_BEATS = 1.6 -- how long that reveal lasts
 
--- Record shelf (title screen) and pause. Hit areas are fractions of the layout size
--- and match the RML in scene.rml (Title > Shelf, Hud > Pause Button, Pause).
+-- Record shelf (title screen) and pause. Hit areas match the RML in scene.rml
+-- (Frame > Title > Shelf, Hud > Pause Button, Frame > Pause); the shelf's are
+-- fractions of the menu frame.
 local PREVIEW_LEN = 16 -- seconds of chorus the menu plays before looping (8 bars)
 local PREVIEW_FADE = 0.8
 local PREVIEW_VOLUME = 0.8
@@ -132,13 +133,15 @@ local ARROW_W = 0.24 -- side strips of the shelf that flip records
 local SHELF_TOP = 0.28
 local SHELF_BOTTOM = 0.62
 local PAUSE_SIZE = 84 -- top-right square of the pause button
--- The pause menu is laid out in a FRAME_W x FRAME_H frame centered on the screen
--- (scene.rml binds it to GameVM.frameX/Y). Its buttons, in frame coordinates:
+-- Title, results, pause and the centered HUD texts are laid out in a FRAME_W x FRAME_H
+-- frame, scaled to fit the screen and centered (scene.rml binds GameVM.frameX/Y and
+-- frameScale). The pause menu's buttons, in frame coordinates:
 local FRAME_W, FRAME_H = 540, 960
 local BUTTON_X = 270 -- center
 local RESUME_Y = 480
 local MENU_Y = 576
 local BUTTON_HALF_W, BUTTON_HALF_H = 162, 43
+local POP_ABOVE_BAT = 88 -- the judgement pop sits this far above the bat (frame units)
 local COUNTDOWN_BEATS = 3 -- after Resume, the song waits this many beats
 
 -- Keyboard (GLFW key codes, as KeyboardEvent.key reports them). Needs the
@@ -274,6 +277,10 @@ type World = {
     frameY: Property<number>?,
     screenW: Property<number>?, -- the screen size, for full-screen dims
     screenH: Property<number>?,
+    frameScaleProp: Property<number>?,
+    popX: Property<number>?, -- the judgement pop, above the bat
+    popY: Property<number>?,
+    frameScale: number, -- the menu frame's scale on screen
     discColor: Property<Color>?,
     pausedProp: Property<boolean>?,
     discFire: PropertyTrigger?,
@@ -710,18 +717,34 @@ local function setNumber(p: Property<number>?, value: number)
 end
 
 -- Screen-size dependent HUD placement (the scene binds these): the pause button in
--- the top-right corner, centered in its hit square; the pause menu frame centered;
--- its dim covering the whole screen.
+-- the top-right corner, centered in its hit square; the menu frame scaled to fit and
+-- centered; the pause dim covering the whole screen (in frame units, as it is scaled).
 local function placeHud(self: World)
     local w, h = self.size.x, self.size.y
-    if w <= 0 then
+    if w <= 0 or h <= 0 then
         return
     end
+    local s = math.min(w / FRAME_W, h / FRAME_H)
+    self.frameScale = s
     setNumber(self.pauseX, w - PAUSE_SIZE / 2)
-    setNumber(self.frameX, (w - FRAME_W) / 2)
-    setNumber(self.frameY, (h - FRAME_H) / 2)
-    setNumber(self.screenW, w)
-    setNumber(self.screenH, h)
+    setNumber(self.frameScaleProp, s)
+    setNumber(self.frameX, (w - FRAME_W * s) / 2)
+    setNumber(self.frameY, (h - FRAME_H * s) / 2)
+    setNumber(self.screenW, w / s)
+    setNumber(self.screenH, h / s)
+end
+
+-- The judgement pop follows the bat (same projection as draw(), in layout units).
+local function placePop(self: World)
+    local ndc = self.viewProj:transformPoint(rules.laneX(self.state) * LANE, 0.6, BAT_Z)
+    setNumber(self.popX, (ndc.x * 0.5 + 0.5) * self.size.x)
+    setNumber(self.popY, (1 - (ndc.y * 0.5 + 0.5)) * self.size.y - POP_ABOVE_BAT * self.frameScale)
+end
+
+-- A screen point in menu frame coordinates.
+local function toFrame(self: World, p: Vector): Vector
+    local s = self.frameScale
+    return Vector.xy((p.x - (self.size.x - FRAME_W * s) / 2) / s, (p.y - (self.size.y - FRAME_H * s) / 2) / s)
 end
 
 local function inPauseButton(self: World, p: Vector): boolean
@@ -730,18 +753,18 @@ end
 
 -- Whether `p` is on the pause menu button centered at frame y `cy`.
 local function inButton(self: World, p: Vector, cy: number): boolean
-    local fx, fy = (self.size.x - FRAME_W) / 2, (self.size.y - FRAME_H) / 2
-    return math.abs(p.x - (fx + BUTTON_X)) <= BUTTON_HALF_W
-        and math.abs(p.y - (fy + cy)) <= BUTTON_HALF_H
+    local f = toFrame(self, p)
+    return math.abs(f.x - BUTTON_X) <= BUTTON_HALF_W and math.abs(f.y - cy) <= BUTTON_HALF_H
 end
 
--- Title screen tap: the side strips of the shelf flip records, anywhere else plays.
+-- Title screen tap: the side strips of the shelf flip records (out to the screen
+-- edges), anywhere else plays.
 local function menuTap(self: World)
-    local p = self.menuPress
-    local onShelf = p.y >= self.size.y * SHELF_TOP and p.y <= self.size.y * SHELF_BOTTOM
-    if onShelf and p.x < self.size.x * ARROW_W then
+    local p = toFrame(self, self.menuPress)
+    local onShelf = p.y >= FRAME_H * SHELF_TOP and p.y <= FRAME_H * SHELF_BOTTOM
+    if onShelf and p.x < FRAME_W * ARROW_W then
         flipDisc(self, -1)
-    elseif onShelf and p.x > self.size.x * (1 - ARROW_W) then
+    elseif onShelf and p.x > FRAME_W * (1 - ARROW_W) then
         flipDisc(self, 1)
     else
         startSong(self)
@@ -1024,6 +1047,7 @@ end
 
 local function advance(self: World, seconds: number): boolean
     self.time += seconds
+    placePop(self)
     animateBat(self, seconds)
     if self.mode ~= 'playing' then
         -- idle: the street breathes on the beat (of the menu preview on the shelf)
@@ -1886,6 +1910,9 @@ local function init(self: World, context: Context): boolean
     self.frameY = vm:getNumber('frameY')
     self.screenW = vm:getNumber('screenW')
     self.screenH = vm:getNumber('screenH')
+    self.frameScaleProp = vm:getNumber('frameScale')
+    self.popX = vm:getNumber('popX')
+    self.popY = vm:getNumber('popY')
     placeHud(self)
     self.discColor = vm:getColor('discColor')
     self.pausedProp = vm:getBoolean('paused')
@@ -2035,6 +2062,10 @@ return function(context: Context): Layout<World>
         frameY = nil,
         screenW = nil,
         screenH = nil,
+        frameScaleProp = nil,
+        popX = nil,
+        popY = nil,
+        frameScale = 1,
         discColor = nil,
         pausedProp = nil,
         discFire = nil,

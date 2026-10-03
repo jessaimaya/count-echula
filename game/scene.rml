@@ -6,216 +6,234 @@
         </Fill>
         <LayoutComponentStyle name="Artboard Style" id="0:5"/>
 
-        <!-- ============ Pause menu (GameVM.paused); hit areas live in world.luau (RESUME_Y, MENU_Y) ============ -->
-        <!-- Laid out in a 540 x 960 frame that world.luau centers on the screen (GameVM.frameX/Y);
-             the dim stretches to the whole screen (GameVM.screenW/H). -->
-        <Node x="0" y="0" opacity="0" name="Pause" id="0:2100">
-            <DataBindContext sourcePathIds="0:40-0:2209" propertyKey="13" id="0:7554"/>
-            <DataBindContext sourcePathIds="0:40-0:2210" propertyKey="14" id="0:7555"/>
-            <Text x="270" y="576" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Menu Label" id="0:2141">
-                <TextStylePaint fontSize="28" fontAssetId="0:31" familyName="Fredoka" styleName="SemiBold" name="Menu Label Style" id="0:2142">
-                    <Fill name="Fill" id="0:7556"><SolidColor colorValue="FF9FE8FF" name="C" id="0:7557"/></Fill>
-                    <TextStyleAxis tag="2003265652" axisValue="600" name="Weight" id="0:7558"/>
-                </TextStylePaint>
-                <TextValueRun styleId="0:2142" text="Main menu" name="Run" id="0:7559"/>
-            </Text>
-            <Shape x="270" y="576" name="Menu Button" id="0:2140">
-                <Rectangle width="324" height="86" cornerRadiusTL="43" cornerRadiusTR="43" cornerRadiusBL="43" cornerRadiusBR="43" name="Path" id="0:7560"/>
-                <Stroke thickness="3" name="Stroke" id="0:7561"><SolidColor colorValue="FF9FE8FF" name="C" id="0:7562"/></Stroke>
-            </Shape>
-            <Text x="270" y="480" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Resume Label" id="0:2131">
-                <TextStylePaint fontSize="30" fontAssetId="0:31" familyName="Fredoka" styleName="Bold" name="Resume Label Style" id="0:2132">
-                    <Fill name="Fill" id="0:7563"><SolidColor colorValue="FF141032" name="C" id="0:7564"/></Fill>
-                    <TextStyleAxis tag="2003265652" axisValue="700" name="Weight" id="0:7565"/>
-                </TextStylePaint>
-                <TextValueRun styleId="0:2132" text="Resume" name="Run" id="0:7566"/>
-            </Text>
-            <Shape x="270" y="480" name="Resume Button" id="0:2130">
-                <Rectangle width="324" height="86" cornerRadiusTL="43" cornerRadiusTR="43" cornerRadiusBL="43" cornerRadiusBR="43" name="Path" id="0:7567"/>
-                <Fill name="Fill" id="0:7568"><SolidColor colorValue="FF9FE8FF" name="C" id="0:7569"/></Fill>
-            </Shape>
-            <Text x="270" y="330" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Paused Title" id="0:2120">
-                <TextStylePaint fontSize="72" fontAssetId="0:30" familyName="Creepster" styleName="Regular" name="Paused Title Style" id="0:2121">
-                    <Fill name="Fill" id="0:7570"><SolidColor colorValue="FFFF9F3D" name="C" id="0:7571"/></Fill>
-                </TextStylePaint>
-                <TextValueRun styleId="0:2121" text="Paused" name="Run" id="0:7572"/>
-            </Text>
-            <Text x="270" y="680" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Pause Keys" id="0:2150">
-                <TextStylePaint fontSize="18" fontAssetId="0:31" familyName="Fredoka" styleName="Medium" name="Pause Keys Style" id="0:2151">
-                    <Fill name="Fill" id="0:7573"><SolidColor colorValue="FFB8B0E0" name="C" id="0:7574"/></Fill>
-                    <TextStyleAxis tag="2003265652" axisValue="500" name="Weight" id="0:7575"/>
-                </TextStylePaint>
-                <TextValueRun styleId="0:2151" text="Enter: resume   ·   M: main menu" name="Run" id="0:7576"/>
-            </Text>
-            <Shape x="270" y="480" name="Dim" id="0:2110">
-                <Rectangle width="540" height="960" name="Path" id="0:7577">
-                    <DataBindContext sourcePathIds="0:40-0:2211" propertyKey="20" id="0:7578"/>
-                    <DataBindContext sourcePathIds="0:40-0:2212" propertyKey="21" id="0:7579"/>
-                </Rectangle>
-                <Fill name="Fill" id="0:7580"><SolidColor colorValue="D80A0820" name="C" id="0:7581"/></Fill>
-            </Shape>
-        </Node>
-
-        <!-- ============ Results screen (mode 2 = game over, 3 = song done) ============ -->
-        <Node x="0" y="0" opacity="0" name="Results" id="0:300">
-            <Text x="270" y="780" originX="0.5" sizingValue="autoWidth" name="Again" id="0:340">
-                <TextStylePaint fontSize="26" fontAssetId="0:31" familyName="Fredoka" styleName="SemiBold" name="Again Style" id="0:341">
-                    <Fill name="Fill" id="0:7582"><SolidColor colorValue="FF9FE8FF" name="C" id="0:7583"/></Fill>
-                    <TextStyleAxis tag="2003265652" axisValue="600" name="Weight" id="0:7584"/>
-                </TextStylePaint>
-                <TextValueRun styleId="0:341" text="tap to play again" name="Run" id="0:7585">
-                    <DataBindContext sourcePathIds="0:40-0:2205" propertyKey="268" id="0:7586"/>
-                </TextValueRun>
-            </Text>
-            <Text x="270" y="540" width="440" originX="0.5" sizingValue="autoHeight" alignValue="center" name="Stats" id="0:330">
-                <TextStylePaint fontSize="24" lineHeight="36" fontAssetId="0:31" familyName="Fredoka" styleName="Medium" name="Stats Style" id="0:331">
-                    <Fill name="Fill" id="0:7587"><SolidColor colorValue="FFE8E0FF" name="C" id="0:7588"/></Fill>
-                    <TextStyleAxis tag="2003265652" axisValue="500" name="Weight" id="0:7589"/>
-                </TextStylePaint>
-                <TextValueRun styleId="0:331" text="Score 0" name="Run" id="0:7590">
-                    <DataBindContext sourcePathIds="0:40-0:49" propertyKey="268" id="0:7591"/>
-                </TextValueRun>
-            </Text>
-            <Text x="270" y="330" originX="0.5" sizingValue="autoWidth" name="Grade" id="0:320">
-                <TextStylePaint fontSize="150" fontAssetId="0:30" familyName="Creepster" styleName="Regular" name="Grade Style" id="0:321">
-                    <Fill name="Fill" id="0:7592"><SolidColor colorValue="FFFF9F3D" name="C" id="0:7593"/></Fill>
-                </TextStylePaint>
-                <TextValueRun styleId="0:321" text="S" name="Run" id="0:7594">
-                    <DataBindContext sourcePathIds="0:40-0:48" propertyKey="268" id="0:7595"/>
-                </TextValueRun>
-            </Text>
-            <Text x="270" y="220" originX="0.5" sizingValue="autoWidth" name="Result Title" id="0:310">
-                <TextStylePaint fontSize="56" fontAssetId="0:30" familyName="Creepster" styleName="Regular" name="Result Title Style" id="0:311">
-                    <Fill name="Fill" id="0:7596"><SolidColor colorValue="FFFF6FB5" name="C" id="0:7597"/></Fill>
-                </TextStylePaint>
-                <TextValueRun styleId="0:311" text="Happy Halloween!" name="Run" id="0:7598">
-                    <DataBindContext sourcePathIds="0:40-0:47" propertyKey="268" id="0:7599"/>
-                </TextValueRun>
-            </Text>
-            <Shape x="270" y="500" name="Panel" id="0:301">
-                <Rectangle width="480" height="660" cornerRadiusTL="32" cornerRadiusTR="32" cornerRadiusBL="32" cornerRadiusBR="32" name="Path" id="0:7600"/>
-                <Fill name="Fill" id="0:7601"><SolidColor colorValue="E0141032" name="C" id="0:7602"/></Fill>
-            </Shape>
-        </Node>
-
-        <!-- ============ Title screen (mode 0): the record shelf ============ -->
-        <!-- Swipe or tap the side strips to flip records (world.luau ARROW_W, SHELF_TOP/BOTTOM). -->
-        <Node x="0" y="0" opacity="1" name="Title" id="0:200">
-            <Text x="270" y="790" width="480" originX="0.5" sizingValue="autoHeight" alignValue="center" name="Hint" id="0:230">
-                <TextStylePaint fontSize="20" lineHeight="30" fontAssetId="0:31" familyName="Fredoka" styleName="Medium" name="Hint Style" id="0:231">
-                    <Fill name="Fill" id="0:7603"><SolidColor colorValue="FFB8B0E0" name="C" id="0:7604"/></Fill>
-                    <TextStyleAxis tag="2003265652" axisValue="500" name="Weight" id="0:7605"/>
-                </TextStylePaint>
-                <TextValueRun styleId="0:231" text="Swipe to pick a record, tap to play.&#10;Catch the candy on the beat to see in the dark.&#10;Keys: arrows or A/D to move,&#10;Enter to play, Esc to pause" name="Run" id="0:7606"/>
-            </Text>
-            <Text x="270" y="730" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Tap To Start" id="0:220">
-                <TextStylePaint fontSize="34" fontAssetId="0:31" familyName="Fredoka" styleName="SemiBold" name="Tap Style" id="0:221">
-                    <Fill name="Fill" id="0:7607"><SolidColor colorValue="FF9FE8FF" name="C" id="0:7608"/></Fill>
-                    <TextStyleAxis tag="2003265652" axisValue="600" name="Weight" id="0:7609"/>
-                </TextStylePaint>
-                <TextValueRun styleId="0:221" text="TAP TO PLAY" name="Run" id="0:7610"/>
-            </Text>
-            <Text x="270" y="640" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Disc Sleeve" id="0:270">
-                <TextStylePaint fontSize="20" fontAssetId="0:31" familyName="Fredoka" styleName="Medium" name="Sleeve Style" id="0:271">
-                    <Fill name="Fill" id="0:7611"><SolidColor colorValue="FFB8B0E0" name="C" id="0:7612"/></Fill>
-                    <TextStyleAxis tag="2003265652" axisValue="500" name="Weight" id="0:7613"/>
-                </TextStylePaint>
-                <TextValueRun styleId="0:271" text="Side A" name="Run" id="0:7614">
-                    <DataBindContext sourcePathIds="0:40-0:2204" propertyKey="268" id="0:7615"/>
-                </TextValueRun>
-            </Text>
-            <Text x="270" y="598" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Disc Title" id="0:260">
-                <TextStylePaint fontSize="44" fontAssetId="0:30" familyName="Creepster" styleName="Regular" name="Disc Title Style" id="0:261">
-                    <Fill name="Fill" id="0:7616"><SolidColor colorValue="FFFF9F3D" name="C" id="0:7617">
-                        <DataBindContext sourcePathIds="0:40-0:2202" propertyKey="37" id="0:7618"/>
-                    </SolidColor></Fill>
-                </TextStylePaint>
-                <TextValueRun styleId="0:261" text="Echula Theme" name="Run" id="0:7619">
-                    <DataBindContext sourcePathIds="0:40-0:2203" propertyKey="268" id="0:7620"/>
-                </TextValueRun>
-            </Text>
-            <Node x="270" y="420" name="Shelf" id="0:240">
-                <Text x="-222" y="0" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Prev Arrow" id="0:251">
-                    <TextStylePaint fontSize="64" fontAssetId="0:31" familyName="Fredoka" styleName="Bold" name="Arrow Style" id="0:253">
-                        <Fill name="Fill" id="0:7621"><SolidColor colorValue="999FE8FF" name="C" id="0:7622"/></Fill>
-                        <TextStyleAxis tag="2003265652" axisValue="700" name="Weight" id="0:7623"/>
+        <!-- ============ Menu frame: Pause, Results and Title are laid out in a 540 x 960 frame that
+             world.luau fits to the screen (GameVM.frameX/Y, frameScale), like CSS "contain". -->
+        <Node name="Frame" id="0:21520">
+            <DataBindContext sourcePathIds="0:40-0:2209" propertyKey="13" id="0:21521"/>
+            <DataBindContext sourcePathIds="0:40-0:2210" propertyKey="14" id="0:21522"/>
+            <DataBindContext sourcePathIds="0:40-0:2213" propertyKey="16" id="0:21523"/>
+            <DataBindContext sourcePathIds="0:40-0:2213" propertyKey="17" id="0:21524"/>
+            <!-- ============ Pause menu (GameVM.paused); hit areas live in world.luau (RESUME_Y, MENU_Y) ============ -->
+            <!-- The dim stretches to the whole screen: GameVM.screenW/H are the screen size in frame units. -->
+            <Node x="0" y="0" opacity="0" name="Pause" id="0:2100">
+                <Text x="270" y="576" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Menu Label" id="0:2141">
+                    <TextStylePaint fontSize="28" fontAssetId="0:31" familyName="Fredoka" styleName="SemiBold" name="Menu Label Style" id="0:2142">
+                        <Fill name="Fill" id="0:7556"><SolidColor colorValue="FF9FE8FF" name="C" id="0:7557"/></Fill>
+                        <TextStyleAxis tag="2003265652" axisValue="600" name="Weight" id="0:7558"/>
                     </TextStylePaint>
-                    <TextValueRun styleId="0:253" text="&lt;" name="Run" id="0:7624"/>
+                    <TextValueRun styleId="0:2142" text="Main menu" name="Run" id="0:7559"/>
                 </Text>
-                <Text x="222" y="0" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Next Arrow" id="0:252">
-                    <TextStylePaint fontSize="64" fontAssetId="0:31" familyName="Fredoka" styleName="Bold" name="Arrow Style 2" id="0:254">
-                        <Fill name="Fill" id="0:7625"><SolidColor colorValue="999FE8FF" name="C" id="0:7626"/></Fill>
-                        <TextStyleAxis tag="2003265652" axisValue="700" name="Weight" id="0:7627"/>
+                <Shape x="270" y="576" name="Menu Button" id="0:2140">
+                    <Rectangle width="324" height="86" cornerRadiusTL="43" cornerRadiusTR="43" cornerRadiusBL="43" cornerRadiusBR="43" name="Path" id="0:7560"/>
+                    <Stroke thickness="3" name="Stroke" id="0:7561"><SolidColor colorValue="FF9FE8FF" name="C" id="0:7562"/></Stroke>
+                </Shape>
+                <Text x="270" y="480" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Resume Label" id="0:2131">
+                    <TextStylePaint fontSize="30" fontAssetId="0:31" familyName="Fredoka" styleName="Bold" name="Resume Label Style" id="0:2132">
+                        <Fill name="Fill" id="0:7563"><SolidColor colorValue="FF141032" name="C" id="0:7564"/></Fill>
+                        <TextStyleAxis tag="2003265652" axisValue="700" name="Weight" id="0:7565"/>
                     </TextStylePaint>
-                    <TextValueRun styleId="0:254" text="&gt;" name="Run" id="0:7628"/>
+                    <TextValueRun styleId="0:2132" text="Resume" name="Run" id="0:7566"/>
                 </Text>
-                <!-- The LP. "Record" spins (Spin layer); "Flip" pops on GameVM.discFire. Swap in art freely. -->
-                <Node x="0" y="0" name="Flip" id="0:241">
-                    <Node x="0" y="0" name="Record" id="0:242">
-                        <Shape x="0" y="0" name="Spindle" id="0:249">
-                            <Ellipse width="10" height="10" name="Path" id="0:7629"/>
-                            <Fill name="Fill" id="0:7630"><SolidColor colorValue="FF0B0A12" name="C" id="0:7631"/></Fill>
-                        </Shape>
-                        <Shape x="22" y="-18" name="Label Mark" id="0:248">
-                            <Ellipse width="14" height="14" name="Path" id="0:7632"/>
-                            <Fill name="Fill" id="0:7633"><SolidColor colorValue="88FFFFFF" name="C" id="0:7634"/></Fill>
-                        </Shape>
-                        <Shape x="0" y="0" name="Label" id="0:247">
-                            <Ellipse width="96" height="96" name="Path" id="0:7635"/>
-                            <Fill name="Fill" id="0:7636"><SolidColor colorValue="FFFF8A3D" name="C" id="0:7637">
-                                <DataBindContext sourcePathIds="0:40-0:2202" propertyKey="37" id="0:7638"/>
-                            </SolidColor></Fill>
-                        </Shape>
-                        <Shape x="0" y="0" name="Grooves" id="0:246">
-                            <Ellipse width="236" height="236" name="Path" id="0:7639"/>
-                            <Ellipse width="200" height="200" name="Path 2" id="0:7640"/>
-                            <Ellipse width="164" height="164" name="Path 3" id="0:7641"/>
-                            <Ellipse width="128" height="128" name="Path 4" id="0:7642"/>
-                            <Stroke thickness="1.5" name="Stroke" id="0:7643"><SolidColor colorValue="30FFFFFF" name="C" id="0:7644"/></Stroke>
-                        </Shape>
-                        <Shape x="0" y="0" name="Sheen" id="0:245">
-                            <Rectangle width="6" height="250" name="Path" id="0:7645"/>
-                            <Fill name="Fill" id="0:7646"><SolidColor colorValue="14FFFFFF" name="C" id="0:7647"/></Fill>
-                        </Shape>
-                        <Shape x="0" y="0" name="Vinyl" id="0:244">
-                            <Ellipse width="264" height="264" name="Path" id="0:7648"/>
-                            <Fill name="Fill" id="0:7649"><SolidColor colorValue="FF0B0A12" name="C" id="0:7650"/></Fill>
-                            <Stroke thickness="3" name="Rim" id="0:7651"><SolidColor colorValue="FF2C2550" name="C" id="0:7652"/></Stroke>
-                        </Shape>
+                <Shape x="270" y="480" name="Resume Button" id="0:2130">
+                    <Rectangle width="324" height="86" cornerRadiusTL="43" cornerRadiusTR="43" cornerRadiusBL="43" cornerRadiusBR="43" name="Path" id="0:7567"/>
+                    <Fill name="Fill" id="0:7568"><SolidColor colorValue="FF9FE8FF" name="C" id="0:7569"/></Fill>
+                </Shape>
+                <Text x="270" y="330" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Paused Title" id="0:2120">
+                    <TextStylePaint fontSize="72" fontAssetId="0:30" familyName="Creepster" styleName="Regular" name="Paused Title Style" id="0:2121">
+                        <Fill name="Fill" id="0:7570"><SolidColor colorValue="FFFF9F3D" name="C" id="0:7571"/></Fill>
+                    </TextStylePaint>
+                    <TextValueRun styleId="0:2121" text="Paused" name="Run" id="0:7572"/>
+                </Text>
+                <Text x="270" y="680" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Pause Keys" id="0:2150">
+                    <TextStylePaint fontSize="18" fontAssetId="0:31" familyName="Fredoka" styleName="Medium" name="Pause Keys Style" id="0:2151">
+                        <Fill name="Fill" id="0:7573"><SolidColor colorValue="FFB8B0E0" name="C" id="0:7574"/></Fill>
+                        <TextStyleAxis tag="2003265652" axisValue="500" name="Weight" id="0:7575"/>
+                    </TextStylePaint>
+                    <TextValueRun styleId="0:2151" text="Enter: resume   ·   M: main menu" name="Run" id="0:7576"/>
+                </Text>
+                <Shape x="270" y="480" name="Dim" id="0:2110">
+                    <Rectangle width="540" height="960" name="Path" id="0:7577">
+                        <DataBindContext sourcePathIds="0:40-0:2211" propertyKey="20" id="0:7578"/>
+                        <DataBindContext sourcePathIds="0:40-0:2212" propertyKey="21" id="0:7579"/>
+                    </Rectangle>
+                    <Fill name="Fill" id="0:7580"><SolidColor colorValue="D80A0820" name="C" id="0:7581"/></Fill>
+                </Shape>
+            </Node>
+
+            <!-- ============ Results screen (mode 2 = game over, 3 = song done) ============ -->
+            <Node x="0" y="0" opacity="0" name="Results" id="0:300">
+                <Text x="270" y="780" originX="0.5" sizingValue="autoWidth" name="Again" id="0:340">
+                    <TextStylePaint fontSize="26" fontAssetId="0:31" familyName="Fredoka" styleName="SemiBold" name="Again Style" id="0:341">
+                        <Fill name="Fill" id="0:7582"><SolidColor colorValue="FF9FE8FF" name="C" id="0:7583"/></Fill>
+                        <TextStyleAxis tag="2003265652" axisValue="600" name="Weight" id="0:7584"/>
+                    </TextStylePaint>
+                    <TextValueRun styleId="0:341" text="tap to play again" name="Run" id="0:7585">
+                        <DataBindContext sourcePathIds="0:40-0:2205" propertyKey="268" id="0:7586"/>
+                    </TextValueRun>
+                </Text>
+                <Text x="270" y="540" width="440" originX="0.5" sizingValue="autoHeight" alignValue="center" name="Stats" id="0:330">
+                    <TextStylePaint fontSize="24" lineHeight="36" fontAssetId="0:31" familyName="Fredoka" styleName="Medium" name="Stats Style" id="0:331">
+                        <Fill name="Fill" id="0:7587"><SolidColor colorValue="FFE8E0FF" name="C" id="0:7588"/></Fill>
+                        <TextStyleAxis tag="2003265652" axisValue="500" name="Weight" id="0:7589"/>
+                    </TextStylePaint>
+                    <TextValueRun styleId="0:331" text="Score 0" name="Run" id="0:7590">
+                        <DataBindContext sourcePathIds="0:40-0:49" propertyKey="268" id="0:7591"/>
+                    </TextValueRun>
+                </Text>
+                <Text x="270" y="330" originX="0.5" sizingValue="autoWidth" name="Grade" id="0:320">
+                    <TextStylePaint fontSize="150" fontAssetId="0:30" familyName="Creepster" styleName="Regular" name="Grade Style" id="0:321">
+                        <Fill name="Fill" id="0:7592"><SolidColor colorValue="FFFF9F3D" name="C" id="0:7593"/></Fill>
+                    </TextStylePaint>
+                    <TextValueRun styleId="0:321" text="S" name="Run" id="0:7594">
+                        <DataBindContext sourcePathIds="0:40-0:48" propertyKey="268" id="0:7595"/>
+                    </TextValueRun>
+                </Text>
+                <Text x="270" y="220" originX="0.5" sizingValue="autoWidth" name="Result Title" id="0:310">
+                    <TextStylePaint fontSize="56" fontAssetId="0:30" familyName="Creepster" styleName="Regular" name="Result Title Style" id="0:311">
+                        <Fill name="Fill" id="0:7596"><SolidColor colorValue="FFFF6FB5" name="C" id="0:7597"/></Fill>
+                    </TextStylePaint>
+                    <TextValueRun styleId="0:311" text="Happy Halloween!" name="Run" id="0:7598">
+                        <DataBindContext sourcePathIds="0:40-0:47" propertyKey="268" id="0:7599"/>
+                    </TextValueRun>
+                </Text>
+                <Shape x="270" y="500" name="Panel" id="0:301">
+                    <Rectangle width="480" height="660" cornerRadiusTL="32" cornerRadiusTR="32" cornerRadiusBL="32" cornerRadiusBR="32" name="Path" id="0:7600"/>
+                    <Fill name="Fill" id="0:7601"><SolidColor colorValue="E0141032" name="C" id="0:7602"/></Fill>
+                </Shape>
+            </Node>
+
+            <!-- ============ Title screen (mode 0): the record shelf ============ -->
+            <!-- Swipe or tap the side strips to flip records (world.luau ARROW_W, SHELF_TOP/BOTTOM). -->
+            <Node x="0" y="0" opacity="1" name="Title" id="0:200">
+                <Text x="270" y="790" width="480" originX="0.5" sizingValue="autoHeight" alignValue="center" name="Hint" id="0:230">
+                    <TextStylePaint fontSize="20" lineHeight="30" fontAssetId="0:31" familyName="Fredoka" styleName="Medium" name="Hint Style" id="0:231">
+                        <Fill name="Fill" id="0:7603"><SolidColor colorValue="FFB8B0E0" name="C" id="0:7604"/></Fill>
+                        <TextStyleAxis tag="2003265652" axisValue="500" name="Weight" id="0:7605"/>
+                    </TextStylePaint>
+                    <TextValueRun styleId="0:231" text="Swipe to pick a record, tap to play.&#10;Catch the candy on the beat to see in the dark.&#10;Keys: arrows or A/D to move,&#10;Enter to play, Esc to pause" name="Run" id="0:7606"/>
+                </Text>
+                <Text x="270" y="730" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Tap To Start" id="0:220">
+                    <TextStylePaint fontSize="34" fontAssetId="0:31" familyName="Fredoka" styleName="SemiBold" name="Tap Style" id="0:221">
+                        <Fill name="Fill" id="0:7607"><SolidColor colorValue="FF9FE8FF" name="C" id="0:7608"/></Fill>
+                        <TextStyleAxis tag="2003265652" axisValue="600" name="Weight" id="0:7609"/>
+                    </TextStylePaint>
+                    <TextValueRun styleId="0:221" text="TAP TO PLAY" name="Run" id="0:7610"/>
+                </Text>
+                <Text x="270" y="640" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Disc Sleeve" id="0:270">
+                    <TextStylePaint fontSize="20" fontAssetId="0:31" familyName="Fredoka" styleName="Medium" name="Sleeve Style" id="0:271">
+                        <Fill name="Fill" id="0:7611"><SolidColor colorValue="FFB8B0E0" name="C" id="0:7612"/></Fill>
+                        <TextStyleAxis tag="2003265652" axisValue="500" name="Weight" id="0:7613"/>
+                    </TextStylePaint>
+                    <TextValueRun styleId="0:271" text="Side A" name="Run" id="0:7614">
+                        <DataBindContext sourcePathIds="0:40-0:2204" propertyKey="268" id="0:7615"/>
+                    </TextValueRun>
+                </Text>
+                <Text x="270" y="598" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Disc Title" id="0:260">
+                    <TextStylePaint fontSize="44" fontAssetId="0:30" familyName="Creepster" styleName="Regular" name="Disc Title Style" id="0:261">
+                        <Fill name="Fill" id="0:7616"><SolidColor colorValue="FFFF9F3D" name="C" id="0:7617">
+                            <DataBindContext sourcePathIds="0:40-0:2202" propertyKey="37" id="0:7618"/>
+                        </SolidColor></Fill>
+                    </TextStylePaint>
+                    <TextValueRun styleId="0:261" text="Echula Theme" name="Run" id="0:7619">
+                        <DataBindContext sourcePathIds="0:40-0:2203" propertyKey="268" id="0:7620"/>
+                    </TextValueRun>
+                </Text>
+                <Node x="270" y="420" name="Shelf" id="0:240">
+                    <Text x="-222" y="0" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Prev Arrow" id="0:251">
+                        <TextStylePaint fontSize="64" fontAssetId="0:31" familyName="Fredoka" styleName="Bold" name="Arrow Style" id="0:253">
+                            <Fill name="Fill" id="0:7621"><SolidColor colorValue="999FE8FF" name="C" id="0:7622"/></Fill>
+                            <TextStyleAxis tag="2003265652" axisValue="700" name="Weight" id="0:7623"/>
+                        </TextStylePaint>
+                        <TextValueRun styleId="0:253" text="&lt;" name="Run" id="0:7624"/>
+                    </Text>
+                    <Text x="222" y="0" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Next Arrow" id="0:252">
+                        <TextStylePaint fontSize="64" fontAssetId="0:31" familyName="Fredoka" styleName="Bold" name="Arrow Style 2" id="0:254">
+                            <Fill name="Fill" id="0:7625"><SolidColor colorValue="999FE8FF" name="C" id="0:7626"/></Fill>
+                            <TextStyleAxis tag="2003265652" axisValue="700" name="Weight" id="0:7627"/>
+                        </TextStylePaint>
+                        <TextValueRun styleId="0:254" text="&gt;" name="Run" id="0:7628"/>
+                    </Text>
+                    <!-- The LP. "Record" spins (Spin layer); "Flip" pops on GameVM.discFire. Swap in art freely. -->
+                    <Node x="0" y="0" name="Flip" id="0:241">
+                        <Node x="0" y="0" name="Record" id="0:242">
+                            <Shape x="0" y="0" name="Spindle" id="0:249">
+                                <Ellipse width="10" height="10" name="Path" id="0:7629"/>
+                                <Fill name="Fill" id="0:7630"><SolidColor colorValue="FF0B0A12" name="C" id="0:7631"/></Fill>
+                            </Shape>
+                            <Shape x="22" y="-18" name="Label Mark" id="0:248">
+                                <Ellipse width="14" height="14" name="Path" id="0:7632"/>
+                                <Fill name="Fill" id="0:7633"><SolidColor colorValue="88FFFFFF" name="C" id="0:7634"/></Fill>
+                            </Shape>
+                            <Shape x="0" y="0" name="Label" id="0:247">
+                                <Ellipse width="96" height="96" name="Path" id="0:7635"/>
+                                <Fill name="Fill" id="0:7636"><SolidColor colorValue="FFFF8A3D" name="C" id="0:7637">
+                                    <DataBindContext sourcePathIds="0:40-0:2202" propertyKey="37" id="0:7638"/>
+                                </SolidColor></Fill>
+                            </Shape>
+                            <Shape x="0" y="0" name="Grooves" id="0:246">
+                                <Ellipse width="236" height="236" name="Path" id="0:7639"/>
+                                <Ellipse width="200" height="200" name="Path 2" id="0:7640"/>
+                                <Ellipse width="164" height="164" name="Path 3" id="0:7641"/>
+                                <Ellipse width="128" height="128" name="Path 4" id="0:7642"/>
+                                <Stroke thickness="1.5" name="Stroke" id="0:7643"><SolidColor colorValue="30FFFFFF" name="C" id="0:7644"/></Stroke>
+                            </Shape>
+                            <Shape x="0" y="0" name="Sheen" id="0:245">
+                                <Rectangle width="6" height="250" name="Path" id="0:7645"/>
+                                <Fill name="Fill" id="0:7646"><SolidColor colorValue="14FFFFFF" name="C" id="0:7647"/></Fill>
+                            </Shape>
+                            <Shape x="0" y="0" name="Vinyl" id="0:244">
+                                <Ellipse width="264" height="264" name="Path" id="0:7648"/>
+                                <Fill name="Fill" id="0:7649"><SolidColor colorValue="FF0B0A12" name="C" id="0:7650"/></Fill>
+                                <Stroke thickness="3" name="Rim" id="0:7651"><SolidColor colorValue="FF2C2550" name="C" id="0:7652"/></Stroke>
+                            </Shape>
+                        </Node>
                     </Node>
                 </Node>
+                <Text x="270" y="70" width="500" originX="0.5" sizingValue="autoHeight" alignValue="center" name="Logo" id="0:210">
+                    <TextStylePaint fontSize="80" lineHeight="76" fontAssetId="0:30" familyName="Creepster" styleName="Regular" name="Logo Style" id="0:211">
+                        <Fill name="Fill" id="0:7653"><SolidColor colorValue="FFFF9F3D" name="C" id="0:7654"/></Fill>
+                    </TextStylePaint>
+                    <TextValueRun styleId="0:211" text="Count&#10;Echula" name="Run" id="0:7655"/>
+                </Text>
             </Node>
-            <Text x="270" y="70" width="500" originX="0.5" sizingValue="autoHeight" alignValue="center" name="Logo" id="0:210">
-                <TextStylePaint fontSize="80" lineHeight="76" fontAssetId="0:30" familyName="Creepster" styleName="Regular" name="Logo Style" id="0:211">
-                    <Fill name="Fill" id="0:7653"><SolidColor colorValue="FFFF9F3D" name="C" id="0:7654"/></Fill>
-                </TextStylePaint>
-                <TextValueRun styleId="0:211" text="Count&#10;Echula" name="Run" id="0:7655"/>
-            </Text>
         </Node>
 
         <!-- ============ Judgement pop over the bat ============ -->
-        <Node x="270" y="470" opacity="0" name="Pop" id="0:400">
-            <Text x="0" y="0" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Judge" id="0:401">
-                <TextStylePaint fontSize="40" fontAssetId="0:31" familyName="Fredoka" styleName="Bold" name="Judge Style" id="0:402">
-                    <Fill name="Fill" id="0:7656"><SolidColor colorValue="FF7CFFC8" name="C" id="0:7657"/></Fill>
-                    <TextStyleAxis tag="2003265652" axisValue="700" name="Weight" id="0:7658"/>
-                </TextStylePaint>
-                <TextValueRun styleId="0:402" text="PERFECT!" name="Run" id="0:7659">
-                    <DataBindContext sourcePathIds="0:40-0:44" propertyKey="268" id="0:7660"/>
-                </TextValueRun>
-            </Text>
+        <!-- placed above the bat by world.luau (GameVM.popX/Y); "Judge Pop" drifts it up from +10 to -26 -->
+        <Node name="Pop Spot" id="0:21530">
+            <DataBindContext sourcePathIds="0:40-0:2214" propertyKey="13" id="0:21531"/>
+            <DataBindContext sourcePathIds="0:40-0:2215" propertyKey="14" id="0:21532"/>
+            <DataBindContext sourcePathIds="0:40-0:2213" propertyKey="16" id="0:21533"/>
+            <DataBindContext sourcePathIds="0:40-0:2213" propertyKey="17" id="0:21534"/>
+            <Node x="0" y="0" opacity="0" name="Pop" id="0:400">
+                <Text x="0" y="0" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Judge" id="0:401">
+                    <TextStylePaint fontSize="40" fontAssetId="0:31" familyName="Fredoka" styleName="Bold" name="Judge Style" id="0:402">
+                        <Fill name="Fill" id="0:7656"><SolidColor colorValue="FF7CFFC8" name="C" id="0:7657"/></Fill>
+                        <TextStyleAxis tag="2003265652" axisValue="700" name="Weight" id="0:7658"/>
+                    </TextStylePaint>
+                    <TextValueRun styleId="0:402" text="PERFECT!" name="Run" id="0:7659">
+                        <DataBindContext sourcePathIds="0:40-0:44" propertyKey="268" id="0:7660"/>
+                    </TextValueRun>
+                </Text>
+            </Node>
         </Node>
 
         <!-- ============ Candy counting pop ============ -->
-        <Node x="270" y="170" opacity="0" name="Count" id="0:410">
-            <Text x="0" y="0" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Count Text" id="0:411">
-                <TextStylePaint fontSize="46" fontAssetId="0:30" familyName="Creepster" styleName="Regular" name="Count Style" id="0:412">
-                    <Fill name="Fill" id="0:7661"><SolidColor colorValue="FFFF9F3D" name="C" id="0:7662"/></Fill>
-                </TextStylePaint>
-                <TextValueRun styleId="0:412" text="One!" name="Run" id="0:7663">
-                    <DataBindContext sourcePathIds="0:40-0:45" propertyKey="268" id="0:7664"/>
-                </TextValueRun>
-            </Text>
+        <Node name="Count Frame" id="0:21540">
+            <DataBindContext sourcePathIds="0:40-0:2209" propertyKey="13" id="0:21541"/>
+            <DataBindContext sourcePathIds="0:40-0:2210" propertyKey="14" id="0:21542"/>
+            <DataBindContext sourcePathIds="0:40-0:2213" propertyKey="16" id="0:21543"/>
+            <DataBindContext sourcePathIds="0:40-0:2213" propertyKey="17" id="0:21544"/>
+            <Node x="270" y="170" opacity="0" name="Count" id="0:410">
+                <Text x="0" y="0" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Count Text" id="0:411">
+                    <TextStylePaint fontSize="46" fontAssetId="0:30" familyName="Creepster" styleName="Regular" name="Count Style" id="0:412">
+                        <Fill name="Fill" id="0:7661"><SolidColor colorValue="FFFF9F3D" name="C" id="0:7662"/></Fill>
+                    </TextStylePaint>
+                    <TextValueRun styleId="0:412" text="One!" name="Run" id="0:7663">
+                        <DataBindContext sourcePathIds="0:40-0:45" propertyKey="268" id="0:7664"/>
+                    </TextValueRun>
+                </Text>
+            </Node>
         </Node>
 
         <!-- ============ In-game HUD (mode 1) ============ -->
@@ -239,15 +257,22 @@
                     <Stroke thickness="2" name="Stroke" id="0:7675"><SolidColor colorValue="99FFFFFF" name="C" id="0:7676"/></Stroke>
                 </Shape>
             </Node>
-            <Text x="270" y="330" width="480" originX="0.5" sizingValue="autoHeight" alignValue="center" name="Prompt" id="0:530">
-                <TextStylePaint fontSize="32" fontAssetId="0:31" familyName="Fredoka" styleName="SemiBold" name="Prompt Style" id="0:531">
-                    <Fill name="Fill" id="0:7677"><SolidColor colorValue="FFFFFFFF" name="C" id="0:7678"/></Fill>
-                    <TextStyleAxis tag="2003265652" axisValue="600" name="Weight" id="0:7679"/>
-                </TextStylePaint>
-                <TextValueRun styleId="0:531" text="" name="Run" id="0:7680">
-                    <DataBindContext sourcePathIds="0:40-0:46" propertyKey="268" id="0:7681"/>
-                </TextValueRun>
-            </Text>
+            <!-- the tutorial prompt is centered with the menu frame -->
+            <Node name="Hud Frame" id="0:21550">
+                <DataBindContext sourcePathIds="0:40-0:2209" propertyKey="13" id="0:21551"/>
+                <DataBindContext sourcePathIds="0:40-0:2210" propertyKey="14" id="0:21552"/>
+                <DataBindContext sourcePathIds="0:40-0:2213" propertyKey="16" id="0:21553"/>
+                <DataBindContext sourcePathIds="0:40-0:2213" propertyKey="17" id="0:21554"/>
+                <Text x="270" y="330" width="480" originX="0.5" sizingValue="autoHeight" alignValue="center" name="Prompt" id="0:530">
+                    <TextStylePaint fontSize="32" fontAssetId="0:31" familyName="Fredoka" styleName="SemiBold" name="Prompt Style" id="0:531">
+                        <Fill name="Fill" id="0:7677"><SolidColor colorValue="FFFFFFFF" name="C" id="0:7678"/></Fill>
+                        <TextStyleAxis tag="2003265652" axisValue="600" name="Weight" id="0:7679"/>
+                    </TextStylePaint>
+                    <TextValueRun styleId="0:531" text="" name="Run" id="0:7680">
+                        <DataBindContext sourcePathIds="0:40-0:46" propertyKey="268" id="0:7681"/>
+                    </TextValueRun>
+                </Text>
+            </Node>
             <Text x="20" y="58" sizingValue="autoWidth" name="Mult" id="0:520">
                 <TextStylePaint fontSize="20" fontAssetId="0:31" familyName="Fredoka" styleName="Medium" name="Mult Style" id="0:521">
                     <Fill name="Fill" id="0:7682"><SolidColor colorValue="FF9FE8FF" name="C" id="0:7683"/></Fill>
@@ -525,8 +550,8 @@
                     <KeyFrameDouble value="1" frame="14" id="0:7842"/>
                 </KeyedProperty>
                 <KeyedProperty propertyKey="14" id="0:7843">
-                    <KeyFrameDouble value="480" frame="0" interpolationType="linear" id="0:7844"/>
-                    <KeyFrameDouble value="444" frame="36" id="0:7845"/>
+                    <KeyFrameDouble value="10" frame="0" interpolationType="linear" id="0:7844"/>
+                    <KeyFrameDouble value="-26" frame="36" id="0:7845"/>
                 </KeyedProperty>
             </KeyedObject>
         </LinearAnimation>
@@ -646,6 +671,9 @@
         <ViewModelPropertyNumber name="frameY" id="0:2210"/>
         <ViewModelPropertyNumber name="screenW" id="0:2211"/>
         <ViewModelPropertyNumber name="screenH" id="0:2212"/>
+        <ViewModelPropertyNumber name="frameScale" id="0:2213"/>
+        <ViewModelPropertyNumber name="popX" id="0:2214"/>
+        <ViewModelPropertyNumber name="popY" id="0:2215"/>
         <ViewModelInstance exports="true" name="Default" id="0:60">
             <ViewModelInstanceNumber propertyValue="0" viewModelPropertyId="0:41" id="0:7912"/>
             <ViewModelInstanceString propertyValue="0" viewModelPropertyId="0:42" id="0:7913"/>
@@ -672,6 +700,9 @@
             <ViewModelInstanceNumber propertyValue="0" viewModelPropertyId="0:2210" id="0:7934"/>
             <ViewModelInstanceNumber propertyValue="540" viewModelPropertyId="0:2211" id="0:7935"/>
             <ViewModelInstanceNumber propertyValue="960" viewModelPropertyId="0:2212" id="0:7936"/>
+            <ViewModelInstanceNumber propertyValue="1" viewModelPropertyId="0:2213" id="0:21510"/>
+            <ViewModelInstanceNumber propertyValue="270" viewModelPropertyId="0:2214" id="0:21511"/>
+            <ViewModelInstanceNumber propertyValue="470" viewModelPropertyId="0:2215" id="0:21512"/>
         </ViewModelInstance>
     </ViewModel>
 
