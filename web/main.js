@@ -1,10 +1,11 @@
 // Local web harness for signed .riv builds (see scripts/web-dev.sh).
-// Query params: ?src=/path/to/file.riv[&sm=State%20Machine%201][&artboard=Name]
+// Query params: ?src=/path/to/file.riv[&sm=State%20Machine%201][&artboard=Name][&probe=ms]
 (() => {
   const params = new URLSearchParams(location.search);
   const src = params.get("src") || "/game/build/count-echula.riv";
   const stateMachine = params.get("sm") || undefined; // default: the file's first state machine
   const artboard = params.get("artboard") || undefined;
+  const autoBind = true;
 
   const canvas = document.getElementById("canvas");
   const hud = document.getElementById("hud");
@@ -68,7 +69,7 @@
     // animation* (and warn); in the game that is "Show Title", which then fights the
     // Flow machine and keeps the title on screen. onLoad starts the first machine instead.
     autoplay: !!stateMachine,
-    autoBind: true,
+    autoBind,
     enableGPUCanvas: true,
     useOffscreenRenderer: false,
     // Keyboard: the file focuses its World layout on every screen (FocusActionTarget);
@@ -79,10 +80,10 @@
       r.resizeDrawingSurfaceToCanvas();
       canvas.focus({ preventScroll: true });
       if (!stateMachine && r.stateMachineNames?.length) {
-        r.play(r.stateMachineNames[0]);
-        // autoBind bound the view model before this machine existed; a machine added
-        // later is unbound, so its conditions never see GameVM (the title stays up).
-        r.bind();
+        // Restart the artboard with its first state machine named, as if it had been
+        // passed in. A machine started later with play() is never bound to the view
+        // model, so its conditions never see GameVM and the title stays up in play.
+        r.reset({ artboard, stateMachine: r.stateMachineNames[0], autoplay: true, autoBind });
       }
       info.loaded = `${src.split("/").pop()} ✓`;
     },
@@ -98,6 +99,39 @@
   const ro = new ResizeObserver(() => r.resizeDrawingSurfaceToCanvas());
   ro.observe(canvas);
 
+  window.rive_ = r; // for poking at it from devtools
+
+  // What the bound view model instance holds (debug: is the script writing to it?)
+  function vmReadout() {
+    const vm = r.viewModelInstance;
+    if (!vm) return `\nvm: none  sm=${r.playingStateMachineNames?.join(",") || "-"}`;
+    const mode = vm.number("mode")?.value;
+    const score = vm.string("scoreText")?.value;
+    return `\nvm: mode=${mode} score=${score}  sm=${r.playingStateMachineNames?.join(",") || "-"}`;
+  }
+
+  // probe=1 (debug, headless runs): tap "Tap to play" after load, then report what the
+  // bound view model says into <pre id="probe">, for `chrome --headless --dump-dom`.
+  if (params.get("probe")) {
+    const out = document.createElement("pre");
+    out.id = "probe";
+    document.body.appendChild(out);
+    const log = (m) => (out.textContent += m + "\n");
+    const tap = (fx, fy) => {
+      const b = canvas.getBoundingClientRect();
+      const o = { clientX: b.left + b.width * fx, clientY: b.top + b.height * fy, bubbles: true,
+        pointerId: 1, pointerType: "mouse", isPrimary: true, button: 0 };
+      for (const t of ["pointerdown", "mousedown", "pointerup", "mouseup", "click"])
+        canvas.dispatchEvent(t.startsWith("pointer") ? new PointerEvent(t, o) : new MouseEvent(t, o));
+    };
+    const at = (ms, f) => setTimeout(f, ms);
+    rive.Rive.suppressDeprecationWarnings = [...(rive.Rive.suppressDeprecationWarnings || []), "state-change-events"];
+    r.on(rive.EventType.StateChange, (e) => log(`state change: ${JSON.stringify(e.data)}`));
+    const t0 = Number(params.get("probe")) > 1 ? Number(params.get("probe")) : 6000; // ms before the tap
+    at(t0, () => { log(`before: ${vmReadout().trim()}`); tap(0.5, 0.76); log("tapped play"); });
+    at(t0 + 3000, () => log(`after 3s: ${vmReadout().trim()}`));
+  }
+
   // Frame-time readout (browser frames, not Rive internals) for phone perf checks.
   let frames = 0, last = performance.now(), worst = 0, prev = last;
   function tick(now) {
@@ -108,7 +142,7 @@
       const fps = (frames * 1000) / (now - last);
       hud.textContent =
         `${info.loaded}${info.note ? `  (${info.note})` : ""}\n${fps.toFixed(0)} fps  worst ${worst.toFixed(1)} ms\n` +
-        `${canvas.width}×${canvas.height} @${devicePixelRatio}x  webgl2 2.44.0`;
+        `${canvas.width}×${canvas.height} @${devicePixelRatio}x  webgl2 2.44.0` + vmReadout();
       frames = 0; worst = 0; last = now;
     }
     requestAnimationFrame(tick);
