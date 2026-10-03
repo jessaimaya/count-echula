@@ -273,7 +273,7 @@
             </Node>
         </Node>
     </Artboard>
-    <ComponentAsset artboardId="0:5000" name="Echula"/>
+    <ComponentAsset artboardId="0:5000" name="Echula" id="0:159884"/>
     <!-- Garlic: generated from svg/garlic.svg by scripts/svg2rml.py -->
     <Artboard x="1040" y="-400" width="256" height="288" clip="false" name="Garlic" id="0:5100">
         <Shape name="ellipse90" id="0:6268">

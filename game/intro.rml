@@ -654,7 +654,7 @@
             </Node>
         </Node>
     </Artboard>
-    <ComponentAsset artboardId="0:20100" name="Smoke Puff"/>
+    <ComponentAsset artboardId="0:20100" name="Smoke Puff" id="0:159887"/>
     <!-- Echula Intro: front view salutes, smoke pops, and behind it he has turned to fly.
          Nested artboards are placed by their top-left corner; all three are 260 x 220. -->
     <Artboard x="4010" y="-400" width="260" height="220" clip="false" defaultStateMachineId="0:21300" name="Echula Intro" id="0:21000">
