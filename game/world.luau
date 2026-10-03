@@ -509,8 +509,15 @@ local function poseIntro(self: World, t: number, seconds: number): boolean
 end
 
 -- The swap goes on the first beat at least INTRO_SWAP into the song, so the intro
--- never starts before the music does.
+-- never starts before the music does. A fresh instance every time: scrubbing a
+-- played one back to 0 leaves its nested artboards in their end state.
 local function startIntro(self: World)
+    local intro = self.introArt:instance()
+    self.intro = intro
+    self.introAnim = intro:animation('intro')
+    if self.introAnim == nil then
+        print('world: Echula Intro animation missing')
+    end
     local swapBeat = math.ceil(beatclock.beatAt(self.clock, INTRO_SWAP))
     self.introStart = beatclock.timeOf(self.clock, swapBeat) - INTRO_SWAP
     self.introOn = poseIntro(self, 0, 0)
@@ -1828,12 +1835,6 @@ local function init(self: World, context: Context): boolean
     self.tipNodeR = bat:node('WingTipR')
     if self.flap == nil then
         print('world: Echula idle_flap missing')
-    end
-    local intro = self.introArt:instance()
-    self.intro = intro
-    self.introAnim = intro:animation('intro')
-    if self.introAnim == nil then
-        print('world: Echula Intro animation missing')
     end
     local moon = self.moonArt:instance()
     local cloud = self.cloudArt:instance()
