@@ -20,14 +20,14 @@
     #errors {
       position: fixed; bottom: 0; left: 0; right: 0; max-height: 40vh; overflow: auto;
       font: 12px/1.4 ui-monospace, monospace; color: #ffb3c1; background: #200a;
-      white-space: pre-wrap; padding: 8px; display: none; z-index: 3;
+      white-space: pre-wrap; padding: 8px; display: none; z-index: 3; cursor: pointer;
     }
   </style>
 </head>
 <body>
   <div id="stage"><canvas id="canvas"></canvas></div>
   <div id="hud">loading…</div>
-  <div id="errors"></div>
+  <div id="errors" title="tap to dismiss"></div>
   <!-- Pinned: GPU Canvas needs @rive-app/webgl2 >= 2.42.0 -->
   <script src="https://cdn.jsdelivr.net/npm/@rive-app/webgl2@2.44.0/rive.js"></script>
   <script src="main.js"></script>

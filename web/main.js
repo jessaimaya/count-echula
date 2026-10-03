@@ -17,6 +17,10 @@
     errors.style.display = "block";
     errors.textContent += msg + "\n";
   }
+  errors.addEventListener("click", () => {
+    errors.style.display = "none";
+    errors.textContent = "";
+  });
   window.addEventListener("error", (e) => showError(`JS: ${e.message}`));
   window.addEventListener("unhandledrejection", (e) => showError(`Promise: ${e.reason}`));
   // Expected with autoBind on files without a view model (e.g. spikes): a note, not an error.
@@ -31,12 +35,19 @@
     };
   }
 
+  // We start the first state machine ourselves (onLoad), so the runtime's notice about
+  // defaulting to the first linear animation does not apply.
+  if (!stateMachine) rive.Rive.suppressDeprecationWarnings = ["default-state-machine"];
+
   const r = new rive.Rive({
     src: `${src}?t=${Date.now()}`, // bust cache on every reload
     canvas,
     artboard,
     stateMachine,
-    autoplay: true,
+    // With no state machine named, autoplay would run the artboard's first *linear
+    // animation* (and warn); in the game that is "Show Title", which then fights the
+    // Flow machine and keeps the title on screen. onLoad starts the first machine instead.
+    autoplay: !!stateMachine,
     autoBind: true,
     enableGPUCanvas: true,
     useOffscreenRenderer: false,
