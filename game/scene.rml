@@ -1,8 +1,8 @@
 <Rive version="1" kind="fragment">
     <!-- Draw order: earlier siblings draw ON TOP. Overlays first, the World layout last. -->
     <Artboard defaultStateMachineId="0:7" viewModelId="0:40" viewModelInstanceId="0:60" clip="true" width="540" height="960" styleId="0:5" name="Game" id="0:2">
-        <Fill name="Background">
-            <SolidColor colorValue="FF141032" name="Color"/>
+        <Fill name="Background" id="0:7552">
+            <SolidColor colorValue="FF141032" name="Color" id="0:7553"/>
         </Fill>
         <LayoutComponentStyle name="Artboard Style" id="0:5"/>
 
@@ -10,49 +10,49 @@
         <!-- Laid out in a 540 x 960 frame that world.luau centers on the screen (GameVM.frameX/Y);
              the dim stretches to the whole screen (GameVM.screenW/H). -->
         <Node x="0" y="0" opacity="0" name="Pause" id="0:2100">
-            <DataBindContext sourcePathIds="0:40-0:2209" propertyKey="13"/>
-            <DataBindContext sourcePathIds="0:40-0:2210" propertyKey="14"/>
+            <DataBindContext sourcePathIds="0:40-0:2209" propertyKey="13" id="0:7554"/>
+            <DataBindContext sourcePathIds="0:40-0:2210" propertyKey="14" id="0:7555"/>
             <Text x="270" y="576" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Menu Label" id="0:2141">
                 <TextStylePaint fontSize="28" fontAssetId="0:31" familyName="Fredoka" styleName="SemiBold" name="Menu Label Style" id="0:2142">
-                    <Fill name="Fill"><SolidColor colorValue="FF9FE8FF" name="C"/></Fill>
-                    <TextStyleAxis tag="2003265652" axisValue="600" name="Weight"/>
+                    <Fill name="Fill" id="0:7556"><SolidColor colorValue="FF9FE8FF" name="C" id="0:7557"/></Fill>
+                    <TextStyleAxis tag="2003265652" axisValue="600" name="Weight" id="0:7558"/>
                 </TextStylePaint>
-                <TextValueRun styleId="0:2142" text="Main menu" name="Run"/>
+                <TextValueRun styleId="0:2142" text="Main menu" name="Run" id="0:7559"/>
             </Text>
             <Shape x="270" y="576" name="Menu Button" id="0:2140">
-                <Rectangle width="324" height="86" cornerRadiusTL="43" cornerRadiusTR="43" cornerRadiusBL="43" cornerRadiusBR="43" name="Path"/>
-                <Stroke thickness="3" name="Stroke"><SolidColor colorValue="FF9FE8FF" name="C"/></Stroke>
+                <Rectangle width="324" height="86" cornerRadiusTL="43" cornerRadiusTR="43" cornerRadiusBL="43" cornerRadiusBR="43" name="Path" id="0:7560"/>
+                <Stroke thickness="3" name="Stroke" id="0:7561"><SolidColor colorValue="FF9FE8FF" name="C" id="0:7562"/></Stroke>
             </Shape>
             <Text x="270" y="480" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Resume Label" id="0:2131">
                 <TextStylePaint fontSize="30" fontAssetId="0:31" familyName="Fredoka" styleName="Bold" name="Resume Label Style" id="0:2132">
-                    <Fill name="Fill"><SolidColor colorValue="FF141032" name="C"/></Fill>
-                    <TextStyleAxis tag="2003265652" axisValue="700" name="Weight"/>
+                    <Fill name="Fill" id="0:7563"><SolidColor colorValue="FF141032" name="C" id="0:7564"/></Fill>
+                    <TextStyleAxis tag="2003265652" axisValue="700" name="Weight" id="0:7565"/>
                 </TextStylePaint>
-                <TextValueRun styleId="0:2132" text="Resume" name="Run"/>
+                <TextValueRun styleId="0:2132" text="Resume" name="Run" id="0:7566"/>
             </Text>
             <Shape x="270" y="480" name="Resume Button" id="0:2130">
-                <Rectangle width="324" height="86" cornerRadiusTL="43" cornerRadiusTR="43" cornerRadiusBL="43" cornerRadiusBR="43" name="Path"/>
-                <Fill name="Fill"><SolidColor colorValue="FF9FE8FF" name="C"/></Fill>
+                <Rectangle width="324" height="86" cornerRadiusTL="43" cornerRadiusTR="43" cornerRadiusBL="43" cornerRadiusBR="43" name="Path" id="0:7567"/>
+                <Fill name="Fill" id="0:7568"><SolidColor colorValue="FF9FE8FF" name="C" id="0:7569"/></Fill>
             </Shape>
             <Text x="270" y="330" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Paused Title" id="0:2120">
                 <TextStylePaint fontSize="72" fontAssetId="0:30" familyName="Creepster" styleName="Regular" name="Paused Title Style" id="0:2121">
-                    <Fill name="Fill"><SolidColor colorValue="FFFF9F3D" name="C"/></Fill>
+                    <Fill name="Fill" id="0:7570"><SolidColor colorValue="FFFF9F3D" name="C" id="0:7571"/></Fill>
                 </TextStylePaint>
-                <TextValueRun styleId="0:2121" text="Paused" name="Run"/>
+                <TextValueRun styleId="0:2121" text="Paused" name="Run" id="0:7572"/>
             </Text>
             <Text x="270" y="680" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Pause Keys" id="0:2150">
                 <TextStylePaint fontSize="18" fontAssetId="0:31" familyName="Fredoka" styleName="Medium" name="Pause Keys Style" id="0:2151">
-                    <Fill name="Fill"><SolidColor colorValue="FFB8B0E0" name="C"/></Fill>
-                    <TextStyleAxis tag="2003265652" axisValue="500" name="Weight"/>
+                    <Fill name="Fill" id="0:7573"><SolidColor colorValue="FFB8B0E0" name="C" id="0:7574"/></Fill>
+                    <TextStyleAxis tag="2003265652" axisValue="500" name="Weight" id="0:7575"/>
                 </TextStylePaint>
-                <TextValueRun styleId="0:2151" text="Enter: resume   ·   M: main menu" name="Run"/>
+                <TextValueRun styleId="0:2151" text="Enter: resume   ·   M: main menu" name="Run" id="0:7576"/>
             </Text>
             <Shape x="270" y="480" name="Dim" id="0:2110">
-                <Rectangle width="540" height="960" name="Path">
-                    <DataBindContext sourcePathIds="0:40-0:2211" propertyKey="20"/>
-                    <DataBindContext sourcePathIds="0:40-0:2212" propertyKey="21"/>
+                <Rectangle width="540" height="960" name="Path" id="0:7577">
+                    <DataBindContext sourcePathIds="0:40-0:2211" propertyKey="20" id="0:7578"/>
+                    <DataBindContext sourcePathIds="0:40-0:2212" propertyKey="21" id="0:7579"/>
                 </Rectangle>
-                <Fill name="Fill"><SolidColor colorValue="D80A0820" name="C"/></Fill>
+                <Fill name="Fill" id="0:7580"><SolidColor colorValue="D80A0820" name="C" id="0:7581"/></Fill>
             </Shape>
         </Node>
 
@@ -60,41 +60,41 @@
         <Node x="0" y="0" opacity="0" name="Results" id="0:300">
             <Text x="270" y="780" originX="0.5" sizingValue="autoWidth" name="Again" id="0:340">
                 <TextStylePaint fontSize="26" fontAssetId="0:31" familyName="Fredoka" styleName="SemiBold" name="Again Style" id="0:341">
-                    <Fill name="Fill"><SolidColor colorValue="FF9FE8FF" name="C"/></Fill>
-                    <TextStyleAxis tag="2003265652" axisValue="600" name="Weight"/>
+                    <Fill name="Fill" id="0:7582"><SolidColor colorValue="FF9FE8FF" name="C" id="0:7583"/></Fill>
+                    <TextStyleAxis tag="2003265652" axisValue="600" name="Weight" id="0:7584"/>
                 </TextStylePaint>
-                <TextValueRun styleId="0:341" text="tap to play again" name="Run">
-                    <DataBindContext sourcePathIds="0:40-0:2205" propertyKey="268"/>
+                <TextValueRun styleId="0:341" text="tap to play again" name="Run" id="0:7585">
+                    <DataBindContext sourcePathIds="0:40-0:2205" propertyKey="268" id="0:7586"/>
                 </TextValueRun>
             </Text>
             <Text x="270" y="540" width="440" originX="0.5" sizingValue="autoHeight" alignValue="center" name="Stats" id="0:330">
                 <TextStylePaint fontSize="24" lineHeight="36" fontAssetId="0:31" familyName="Fredoka" styleName="Medium" name="Stats Style" id="0:331">
-                    <Fill name="Fill"><SolidColor colorValue="FFE8E0FF" name="C"/></Fill>
-                    <TextStyleAxis tag="2003265652" axisValue="500" name="Weight"/>
+                    <Fill name="Fill" id="0:7587"><SolidColor colorValue="FFE8E0FF" name="C" id="0:7588"/></Fill>
+                    <TextStyleAxis tag="2003265652" axisValue="500" name="Weight" id="0:7589"/>
                 </TextStylePaint>
-                <TextValueRun styleId="0:331" text="Score 0" name="Run">
-                    <DataBindContext sourcePathIds="0:40-0:49" propertyKey="268"/>
+                <TextValueRun styleId="0:331" text="Score 0" name="Run" id="0:7590">
+                    <DataBindContext sourcePathIds="0:40-0:49" propertyKey="268" id="0:7591"/>
                 </TextValueRun>
             </Text>
             <Text x="270" y="330" originX="0.5" sizingValue="autoWidth" name="Grade" id="0:320">
                 <TextStylePaint fontSize="150" fontAssetId="0:30" familyName="Creepster" styleName="Regular" name="Grade Style" id="0:321">
-                    <Fill name="Fill"><SolidColor colorValue="FFFF9F3D" name="C"/></Fill>
+                    <Fill name="Fill" id="0:7592"><SolidColor colorValue="FFFF9F3D" name="C" id="0:7593"/></Fill>
                 </TextStylePaint>
-                <TextValueRun styleId="0:321" text="S" name="Run">
-                    <DataBindContext sourcePathIds="0:40-0:48" propertyKey="268"/>
+                <TextValueRun styleId="0:321" text="S" name="Run" id="0:7594">
+                    <DataBindContext sourcePathIds="0:40-0:48" propertyKey="268" id="0:7595"/>
                 </TextValueRun>
             </Text>
             <Text x="270" y="220" originX="0.5" sizingValue="autoWidth" name="Result Title" id="0:310">
                 <TextStylePaint fontSize="56" fontAssetId="0:30" familyName="Creepster" styleName="Regular" name="Result Title Style" id="0:311">
-                    <Fill name="Fill"><SolidColor colorValue="FFFF6FB5" name="C"/></Fill>
+                    <Fill name="Fill" id="0:7596"><SolidColor colorValue="FFFF6FB5" name="C" id="0:7597"/></Fill>
                 </TextStylePaint>
-                <TextValueRun styleId="0:311" text="Happy Halloween!" name="Run">
-                    <DataBindContext sourcePathIds="0:40-0:47" propertyKey="268"/>
+                <TextValueRun styleId="0:311" text="Happy Halloween!" name="Run" id="0:7598">
+                    <DataBindContext sourcePathIds="0:40-0:47" propertyKey="268" id="0:7599"/>
                 </TextValueRun>
             </Text>
             <Shape x="270" y="500" name="Panel" id="0:301">
-                <Rectangle width="480" height="660" cornerRadiusTL="32" cornerRadiusTR="32" cornerRadiusBL="32" cornerRadiusBR="32" name="Path"/>
-                <Fill name="Fill"><SolidColor colorValue="E0141032" name="C"/></Fill>
+                <Rectangle width="480" height="660" cornerRadiusTL="32" cornerRadiusTR="32" cornerRadiusBL="32" cornerRadiusBR="32" name="Path" id="0:7600"/>
+                <Fill name="Fill" id="0:7601"><SolidColor colorValue="E0141032" name="C" id="0:7602"/></Fill>
             </Shape>
         </Node>
 
@@ -103,93 +103,93 @@
         <Node x="0" y="0" opacity="1" name="Title" id="0:200">
             <Text x="270" y="790" width="480" originX="0.5" sizingValue="autoHeight" alignValue="center" name="Hint" id="0:230">
                 <TextStylePaint fontSize="20" lineHeight="30" fontAssetId="0:31" familyName="Fredoka" styleName="Medium" name="Hint Style" id="0:231">
-                    <Fill name="Fill"><SolidColor colorValue="FFB8B0E0" name="C"/></Fill>
-                    <TextStyleAxis tag="2003265652" axisValue="500" name="Weight"/>
+                    <Fill name="Fill" id="0:7603"><SolidColor colorValue="FFB8B0E0" name="C" id="0:7604"/></Fill>
+                    <TextStyleAxis tag="2003265652" axisValue="500" name="Weight" id="0:7605"/>
                 </TextStylePaint>
-                <TextValueRun styleId="0:231" text="Swipe to pick a record, tap to play.&#10;Catch the candy on the beat to see in the dark.&#10;Keys: arrows or A/D to move,&#10;Enter to play, Esc to pause" name="Run"/>
+                <TextValueRun styleId="0:231" text="Swipe to pick a record, tap to play.&#10;Catch the candy on the beat to see in the dark.&#10;Keys: arrows or A/D to move,&#10;Enter to play, Esc to pause" name="Run" id="0:7606"/>
             </Text>
             <Text x="270" y="730" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Tap To Start" id="0:220">
                 <TextStylePaint fontSize="34" fontAssetId="0:31" familyName="Fredoka" styleName="SemiBold" name="Tap Style" id="0:221">
-                    <Fill name="Fill"><SolidColor colorValue="FF9FE8FF" name="C"/></Fill>
-                    <TextStyleAxis tag="2003265652" axisValue="600" name="Weight"/>
+                    <Fill name="Fill" id="0:7607"><SolidColor colorValue="FF9FE8FF" name="C" id="0:7608"/></Fill>
+                    <TextStyleAxis tag="2003265652" axisValue="600" name="Weight" id="0:7609"/>
                 </TextStylePaint>
-                <TextValueRun styleId="0:221" text="TAP TO PLAY" name="Run"/>
+                <TextValueRun styleId="0:221" text="TAP TO PLAY" name="Run" id="0:7610"/>
             </Text>
             <Text x="270" y="640" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Disc Sleeve" id="0:270">
                 <TextStylePaint fontSize="20" fontAssetId="0:31" familyName="Fredoka" styleName="Medium" name="Sleeve Style" id="0:271">
-                    <Fill name="Fill"><SolidColor colorValue="FFB8B0E0" name="C"/></Fill>
-                    <TextStyleAxis tag="2003265652" axisValue="500" name="Weight"/>
+                    <Fill name="Fill" id="0:7611"><SolidColor colorValue="FFB8B0E0" name="C" id="0:7612"/></Fill>
+                    <TextStyleAxis tag="2003265652" axisValue="500" name="Weight" id="0:7613"/>
                 </TextStylePaint>
-                <TextValueRun styleId="0:271" text="Side A" name="Run">
-                    <DataBindContext sourcePathIds="0:40-0:2204" propertyKey="268"/>
+                <TextValueRun styleId="0:271" text="Side A" name="Run" id="0:7614">
+                    <DataBindContext sourcePathIds="0:40-0:2204" propertyKey="268" id="0:7615"/>
                 </TextValueRun>
             </Text>
             <Text x="270" y="598" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Disc Title" id="0:260">
                 <TextStylePaint fontSize="44" fontAssetId="0:30" familyName="Creepster" styleName="Regular" name="Disc Title Style" id="0:261">
-                    <Fill name="Fill"><SolidColor colorValue="FFFF9F3D" name="C">
-                        <DataBindContext sourcePathIds="0:40-0:2202" propertyKey="37"/>
+                    <Fill name="Fill" id="0:7616"><SolidColor colorValue="FFFF9F3D" name="C" id="0:7617">
+                        <DataBindContext sourcePathIds="0:40-0:2202" propertyKey="37" id="0:7618"/>
                     </SolidColor></Fill>
                 </TextStylePaint>
-                <TextValueRun styleId="0:261" text="Echula Theme" name="Run">
-                    <DataBindContext sourcePathIds="0:40-0:2203" propertyKey="268"/>
+                <TextValueRun styleId="0:261" text="Echula Theme" name="Run" id="0:7619">
+                    <DataBindContext sourcePathIds="0:40-0:2203" propertyKey="268" id="0:7620"/>
                 </TextValueRun>
             </Text>
             <Node x="270" y="420" name="Shelf" id="0:240">
                 <Text x="-222" y="0" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Prev Arrow" id="0:251">
                     <TextStylePaint fontSize="64" fontAssetId="0:31" familyName="Fredoka" styleName="Bold" name="Arrow Style" id="0:253">
-                        <Fill name="Fill"><SolidColor colorValue="999FE8FF" name="C"/></Fill>
-                        <TextStyleAxis tag="2003265652" axisValue="700" name="Weight"/>
+                        <Fill name="Fill" id="0:7621"><SolidColor colorValue="999FE8FF" name="C" id="0:7622"/></Fill>
+                        <TextStyleAxis tag="2003265652" axisValue="700" name="Weight" id="0:7623"/>
                     </TextStylePaint>
-                    <TextValueRun styleId="0:253" text="&lt;" name="Run"/>
+                    <TextValueRun styleId="0:253" text="&lt;" name="Run" id="0:7624"/>
                 </Text>
                 <Text x="222" y="0" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Next Arrow" id="0:252">
                     <TextStylePaint fontSize="64" fontAssetId="0:31" familyName="Fredoka" styleName="Bold" name="Arrow Style 2" id="0:254">
-                        <Fill name="Fill"><SolidColor colorValue="999FE8FF" name="C"/></Fill>
-                        <TextStyleAxis tag="2003265652" axisValue="700" name="Weight"/>
+                        <Fill name="Fill" id="0:7625"><SolidColor colorValue="999FE8FF" name="C" id="0:7626"/></Fill>
+                        <TextStyleAxis tag="2003265652" axisValue="700" name="Weight" id="0:7627"/>
                     </TextStylePaint>
-                    <TextValueRun styleId="0:254" text="&gt;" name="Run"/>
+                    <TextValueRun styleId="0:254" text="&gt;" name="Run" id="0:7628"/>
                 </Text>
                 <!-- The LP. "Record" spins (Spin layer); "Flip" pops on GameVM.discFire. Swap in art freely. -->
                 <Node x="0" y="0" name="Flip" id="0:241">
                     <Node x="0" y="0" name="Record" id="0:242">
                         <Shape x="0" y="0" name="Spindle" id="0:249">
-                            <Ellipse width="10" height="10" name="Path"/>
-                            <Fill name="Fill"><SolidColor colorValue="FF0B0A12" name="C"/></Fill>
+                            <Ellipse width="10" height="10" name="Path" id="0:7629"/>
+                            <Fill name="Fill" id="0:7630"><SolidColor colorValue="FF0B0A12" name="C" id="0:7631"/></Fill>
                         </Shape>
                         <Shape x="22" y="-18" name="Label Mark" id="0:248">
-                            <Ellipse width="14" height="14" name="Path"/>
-                            <Fill name="Fill"><SolidColor colorValue="88FFFFFF" name="C"/></Fill>
+                            <Ellipse width="14" height="14" name="Path" id="0:7632"/>
+                            <Fill name="Fill" id="0:7633"><SolidColor colorValue="88FFFFFF" name="C" id="0:7634"/></Fill>
                         </Shape>
                         <Shape x="0" y="0" name="Label" id="0:247">
-                            <Ellipse width="96" height="96" name="Path"/>
-                            <Fill name="Fill"><SolidColor colorValue="FFFF8A3D" name="C">
-                                <DataBindContext sourcePathIds="0:40-0:2202" propertyKey="37"/>
+                            <Ellipse width="96" height="96" name="Path" id="0:7635"/>
+                            <Fill name="Fill" id="0:7636"><SolidColor colorValue="FFFF8A3D" name="C" id="0:7637">
+                                <DataBindContext sourcePathIds="0:40-0:2202" propertyKey="37" id="0:7638"/>
                             </SolidColor></Fill>
                         </Shape>
                         <Shape x="0" y="0" name="Grooves" id="0:246">
-                            <Ellipse width="236" height="236" name="Path"/>
-                            <Ellipse width="200" height="200" name="Path 2"/>
-                            <Ellipse width="164" height="164" name="Path 3"/>
-                            <Ellipse width="128" height="128" name="Path 4"/>
-                            <Stroke thickness="1.5" name="Stroke"><SolidColor colorValue="30FFFFFF" name="C"/></Stroke>
+                            <Ellipse width="236" height="236" name="Path" id="0:7639"/>
+                            <Ellipse width="200" height="200" name="Path 2" id="0:7640"/>
+                            <Ellipse width="164" height="164" name="Path 3" id="0:7641"/>
+                            <Ellipse width="128" height="128" name="Path 4" id="0:7642"/>
+                            <Stroke thickness="1.5" name="Stroke" id="0:7643"><SolidColor colorValue="30FFFFFF" name="C" id="0:7644"/></Stroke>
                         </Shape>
                         <Shape x="0" y="0" name="Sheen" id="0:245">
-                            <Rectangle width="6" height="250" name="Path"/>
-                            <Fill name="Fill"><SolidColor colorValue="14FFFFFF" name="C"/></Fill>
+                            <Rectangle width="6" height="250" name="Path" id="0:7645"/>
+                            <Fill name="Fill" id="0:7646"><SolidColor colorValue="14FFFFFF" name="C" id="0:7647"/></Fill>
                         </Shape>
                         <Shape x="0" y="0" name="Vinyl" id="0:244">
-                            <Ellipse width="264" height="264" name="Path"/>
-                            <Fill name="Fill"><SolidColor colorValue="FF0B0A12" name="C"/></Fill>
-                            <Stroke thickness="3" name="Rim"><SolidColor colorValue="FF2C2550" name="C"/></Stroke>
+                            <Ellipse width="264" height="264" name="Path" id="0:7648"/>
+                            <Fill name="Fill" id="0:7649"><SolidColor colorValue="FF0B0A12" name="C" id="0:7650"/></Fill>
+                            <Stroke thickness="3" name="Rim" id="0:7651"><SolidColor colorValue="FF2C2550" name="C" id="0:7652"/></Stroke>
                         </Shape>
                     </Node>
                 </Node>
             </Node>
             <Text x="270" y="70" width="500" originX="0.5" sizingValue="autoHeight" alignValue="center" name="Logo" id="0:210">
                 <TextStylePaint fontSize="80" lineHeight="76" fontAssetId="0:30" familyName="Creepster" styleName="Regular" name="Logo Style" id="0:211">
-                    <Fill name="Fill"><SolidColor colorValue="FFFF9F3D" name="C"/></Fill>
+                    <Fill name="Fill" id="0:7653"><SolidColor colorValue="FFFF9F3D" name="C" id="0:7654"/></Fill>
                 </TextStylePaint>
-                <TextValueRun styleId="0:211" text="Count&#10;Echula" name="Run"/>
+                <TextValueRun styleId="0:211" text="Count&#10;Echula" name="Run" id="0:7655"/>
             </Text>
         </Node>
 
@@ -197,11 +197,11 @@
         <Node x="270" y="470" opacity="0" name="Pop" id="0:400">
             <Text x="0" y="0" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Judge" id="0:401">
                 <TextStylePaint fontSize="40" fontAssetId="0:31" familyName="Fredoka" styleName="Bold" name="Judge Style" id="0:402">
-                    <Fill name="Fill"><SolidColor colorValue="FF7CFFC8" name="C"/></Fill>
-                    <TextStyleAxis tag="2003265652" axisValue="700" name="Weight"/>
+                    <Fill name="Fill" id="0:7656"><SolidColor colorValue="FF7CFFC8" name="C" id="0:7657"/></Fill>
+                    <TextStyleAxis tag="2003265652" axisValue="700" name="Weight" id="0:7658"/>
                 </TextStylePaint>
-                <TextValueRun styleId="0:402" text="PERFECT!" name="Run">
-                    <DataBindContext sourcePathIds="0:40-0:44" propertyKey="268"/>
+                <TextValueRun styleId="0:402" text="PERFECT!" name="Run" id="0:7659">
+                    <DataBindContext sourcePathIds="0:40-0:44" propertyKey="268" id="0:7660"/>
                 </TextValueRun>
             </Text>
         </Node>
@@ -210,10 +210,10 @@
         <Node x="270" y="170" opacity="0" name="Count" id="0:410">
             <Text x="0" y="0" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Count Text" id="0:411">
                 <TextStylePaint fontSize="46" fontAssetId="0:30" familyName="Creepster" styleName="Regular" name="Count Style" id="0:412">
-                    <Fill name="Fill"><SolidColor colorValue="FFFF9F3D" name="C"/></Fill>
+                    <Fill name="Fill" id="0:7661"><SolidColor colorValue="FFFF9F3D" name="C" id="0:7662"/></Fill>
                 </TextStylePaint>
-                <TextValueRun styleId="0:412" text="One!" name="Run">
-                    <DataBindContext sourcePathIds="0:40-0:45" propertyKey="268"/>
+                <TextValueRun styleId="0:412" text="One!" name="Run" id="0:7663">
+                    <DataBindContext sourcePathIds="0:40-0:45" propertyKey="268" id="0:7664"/>
                 </TextValueRun>
             </Text>
         </Node>
@@ -224,46 +224,46 @@
                  GameVM.pauseX, which world.luau keeps at (width - PAUSE_SIZE / 2); PAUSE_SIZE
                  is also its top-right hit square -->
             <Node x="498" y="38" name="Pause Button" id="0:550">
-                <DataBindContext sourcePathIds="0:40-0:2208" propertyKey="13"/>
+                <DataBindContext sourcePathIds="0:40-0:2208" propertyKey="13" id="0:7665"/>
                 <Shape x="-7" y="0" name="Bar L" id="0:552">
-                    <Rectangle width="7" height="22" cornerRadiusTL="2" cornerRadiusTR="2" cornerRadiusBL="2" cornerRadiusBR="2" name="Path"/>
-                    <Fill name="Fill"><SolidColor colorValue="FFFFFFFF" name="C"/></Fill>
+                    <Rectangle width="7" height="22" cornerRadiusTL="2" cornerRadiusTR="2" cornerRadiusBL="2" cornerRadiusBR="2" name="Path" id="0:7666"/>
+                    <Fill name="Fill" id="0:7667"><SolidColor colorValue="FFFFFFFF" name="C" id="0:7668"/></Fill>
                 </Shape>
                 <Shape x="7" y="0" name="Bar R" id="0:553">
-                    <Rectangle width="7" height="22" cornerRadiusTL="2" cornerRadiusTR="2" cornerRadiusBL="2" cornerRadiusBR="2" name="Path"/>
-                    <Fill name="Fill"><SolidColor colorValue="FFFFFFFF" name="C"/></Fill>
+                    <Rectangle width="7" height="22" cornerRadiusTL="2" cornerRadiusTR="2" cornerRadiusBL="2" cornerRadiusBR="2" name="Path" id="0:7669"/>
+                    <Fill name="Fill" id="0:7670"><SolidColor colorValue="FFFFFFFF" name="C" id="0:7671"/></Fill>
                 </Shape>
                 <Shape x="0" y="0" name="Ring" id="0:551">
-                    <Ellipse width="52" height="52" name="Path"/>
-                    <Fill name="Fill"><SolidColor colorValue="66141032" name="C"/></Fill>
-                    <Stroke thickness="2" name="Stroke"><SolidColor colorValue="99FFFFFF" name="C"/></Stroke>
+                    <Ellipse width="52" height="52" name="Path" id="0:7672"/>
+                    <Fill name="Fill" id="0:7673"><SolidColor colorValue="66141032" name="C" id="0:7674"/></Fill>
+                    <Stroke thickness="2" name="Stroke" id="0:7675"><SolidColor colorValue="99FFFFFF" name="C" id="0:7676"/></Stroke>
                 </Shape>
             </Node>
             <Text x="270" y="330" width="480" originX="0.5" sizingValue="autoHeight" alignValue="center" name="Prompt" id="0:530">
                 <TextStylePaint fontSize="32" fontAssetId="0:31" familyName="Fredoka" styleName="SemiBold" name="Prompt Style" id="0:531">
-                    <Fill name="Fill"><SolidColor colorValue="FFFFFFFF" name="C"/></Fill>
-                    <TextStyleAxis tag="2003265652" axisValue="600" name="Weight"/>
+                    <Fill name="Fill" id="0:7677"><SolidColor colorValue="FFFFFFFF" name="C" id="0:7678"/></Fill>
+                    <TextStyleAxis tag="2003265652" axisValue="600" name="Weight" id="0:7679"/>
                 </TextStylePaint>
-                <TextValueRun styleId="0:531" text="" name="Run">
-                    <DataBindContext sourcePathIds="0:40-0:46" propertyKey="268"/>
+                <TextValueRun styleId="0:531" text="" name="Run" id="0:7680">
+                    <DataBindContext sourcePathIds="0:40-0:46" propertyKey="268" id="0:7681"/>
                 </TextValueRun>
             </Text>
             <Text x="20" y="58" sizingValue="autoWidth" name="Mult" id="0:520">
                 <TextStylePaint fontSize="20" fontAssetId="0:31" familyName="Fredoka" styleName="Medium" name="Mult Style" id="0:521">
-                    <Fill name="Fill"><SolidColor colorValue="FF9FE8FF" name="C"/></Fill>
-                    <TextStyleAxis tag="2003265652" axisValue="500" name="Weight"/>
+                    <Fill name="Fill" id="0:7682"><SolidColor colorValue="FF9FE8FF" name="C" id="0:7683"/></Fill>
+                    <TextStyleAxis tag="2003265652" axisValue="500" name="Weight" id="0:7684"/>
                 </TextStylePaint>
-                <TextValueRun styleId="0:521" text="x1" name="Run">
-                    <DataBindContext sourcePathIds="0:40-0:43" propertyKey="268"/>
+                <TextValueRun styleId="0:521" text="x1" name="Run" id="0:7685">
+                    <DataBindContext sourcePathIds="0:40-0:43" propertyKey="268" id="0:7686"/>
                 </TextValueRun>
             </Text>
             <Text x="20" y="14" sizingValue="autoWidth" name="Score" id="0:510">
                 <TextStylePaint fontSize="36" fontAssetId="0:31" familyName="Fredoka" styleName="Bold" name="Score Style" id="0:511">
-                    <Fill name="Fill"><SolidColor colorValue="FFFFFFFF" name="C"/></Fill>
-                    <TextStyleAxis tag="2003265652" axisValue="700" name="Weight"/>
+                    <Fill name="Fill" id="0:7687"><SolidColor colorValue="FFFFFFFF" name="C" id="0:7688"/></Fill>
+                    <TextStyleAxis tag="2003265652" axisValue="700" name="Weight" id="0:7689"/>
                 </TextStylePaint>
-                <TextValueRun styleId="0:511" text="0" name="Run">
-                    <DataBindContext sourcePathIds="0:40-0:42" propertyKey="268"/>
+                <TextValueRun styleId="0:511" text="0" name="Run" id="0:7690">
+                    <DataBindContext sourcePathIds="0:40-0:42" propertyKey="268" id="0:7691"/>
                 </TextValueRun>
             </Text>
         </Node>
@@ -273,17 +273,17 @@
             <LayoutComponentStyle layoutWidthScaleType="1" layoutHeightScaleType="1" widthUnitsValue="3" heightUnitsValue="3" name="Layout Style" id="0:11"/>
             <!-- FocusData: the World script's keyboardEvent only runs while this node holds focus -->
             <ScriptedLayout scriptAssetId="0:85" name="World" id="0:12">
-                <FocusData/>
+                <FocusData id="0:7692"/>
                 <!-- Art from svg/ (art.rml); names match world.luau's Input<Artboard> fields -->
-                <ScriptInputArtboard artboardId="0:5000" name="echulaArt"/>
-                <ScriptInputArtboard artboardId="0:5100" name="garlicArt"/>
-                <ScriptInputArtboard artboardId="0:5200" name="candyPinkArt"/>
-                <ScriptInputArtboard artboardId="0:5300" name="candyOrangeArt"/>
-                <ScriptInputArtboard artboardId="0:5400" name="moonArt"/>
-                <ScriptInputArtboard artboardId="0:5500" name="cloudArt"/>
-                <ScriptInputArtboard artboardId="0:5600" name="lampArt"/>
-                <ScriptInputArtboard artboardId="0:5700" name="fenceArt"/>
-                <ScriptInputArtboard artboardId="0:5800" name="stakeArt"/>
+                <ScriptInputArtboard artboardId="0:5000" name="echulaArt" id="0:7693"/>
+                <ScriptInputArtboard artboardId="0:5100" name="garlicArt" id="0:7694"/>
+                <ScriptInputArtboard artboardId="0:5200" name="candyPinkArt" id="0:7695"/>
+                <ScriptInputArtboard artboardId="0:5300" name="candyOrangeArt" id="0:7696"/>
+                <ScriptInputArtboard artboardId="0:5400" name="moonArt" id="0:7697"/>
+                <ScriptInputArtboard artboardId="0:5500" name="cloudArt" id="0:7698"/>
+                <ScriptInputArtboard artboardId="0:5600" name="lampArt" id="0:7699"/>
+                <ScriptInputArtboard artboardId="0:5700" name="fenceArt" id="0:7700"/>
+                <ScriptInputArtboard artboardId="0:5800" name="stakeArt" id="0:7701"/>
             </ScriptedLayout>
         </LayoutComponent>
 
@@ -292,67 +292,67 @@
             <!-- Screens: which overlay is visible, from GameVM.mode. Every screen focuses the
                  World layout so the keyboard works when embedded (the CLI player fakes this). -->
             <StateMachineLayer name="Screens" id="0:8">
-                <AnyState x="0" y="-120"/>
-                <ExitState x="600" y="-120"/>
-                <EntryState x="0" y="0">
-                    <StateTransition stateToId="0:601"/>
+                <AnyState x="0" y="-120" id="0:7702"/>
+                <ExitState x="600" y="-120" id="0:7703"/>
+                <EntryState x="0" y="0" id="0:7704">
+                    <StateTransition stateToId="0:601" id="0:7705"/>
                 </EntryState>
                 <AnimationState x="200" y="0" animationId="0:701" id="0:601">
-                    <FocusActionTarget targetId="0:12"/>
-                    <StateTransition stateToId="0:602" duration="250">
-                        <TransitionViewModelCondition opValue="equal">
-                            <TransitionPropertyViewModelComparator>
-                                <BindablePropertyNumber>
-                                    <DataBindContext sourcePathIds="0:40-0:41" propertyKey="636"/>
+                    <FocusActionTarget targetId="0:12" id="0:7706"/>
+                    <StateTransition stateToId="0:602" duration="250" id="0:7707">
+                        <TransitionViewModelCondition opValue="equal" id="0:7708">
+                            <TransitionPropertyViewModelComparator id="0:7709">
+                                <BindablePropertyNumber id="0:7710">
+                                    <DataBindContext sourcePathIds="0:40-0:41" propertyKey="636" id="0:7711"/>
                                 </BindablePropertyNumber>
                             </TransitionPropertyViewModelComparator>
-                            <TransitionValueNumberComparator value="1"/>
+                            <TransitionValueNumberComparator value="1" id="0:7712"/>
                         </TransitionViewModelCondition>
                     </StateTransition>
                 </AnimationState>
                 <AnimationState x="400" y="0" animationId="0:702" id="0:602">
-                    <FocusActionTarget targetId="0:12"/>
-                    <StateTransition stateToId="0:603" duration="400">
-                        <TransitionViewModelCondition opValue="greaterThanOrEqual">
-                            <TransitionPropertyViewModelComparator>
-                                <BindablePropertyNumber>
-                                    <DataBindContext sourcePathIds="0:40-0:41" propertyKey="636"/>
+                    <FocusActionTarget targetId="0:12" id="0:7713"/>
+                    <StateTransition stateToId="0:603" duration="400" id="0:7714">
+                        <TransitionViewModelCondition opValue="greaterThanOrEqual" id="0:7715">
+                            <TransitionPropertyViewModelComparator id="0:7716">
+                                <BindablePropertyNumber id="0:7717">
+                                    <DataBindContext sourcePathIds="0:40-0:41" propertyKey="636" id="0:7718"/>
                                 </BindablePropertyNumber>
                             </TransitionPropertyViewModelComparator>
-                            <TransitionValueNumberComparator value="2"/>
+                            <TransitionValueNumberComparator value="2" id="0:7719"/>
                         </TransitionViewModelCondition>
                     </StateTransition>
-                    <StateTransition stateToId="0:601" duration="300">
-                        <TransitionViewModelCondition opValue="equal">
-                            <TransitionPropertyViewModelComparator>
-                                <BindablePropertyNumber>
-                                    <DataBindContext sourcePathIds="0:40-0:41" propertyKey="636"/>
+                    <StateTransition stateToId="0:601" duration="300" id="0:7720">
+                        <TransitionViewModelCondition opValue="equal" id="0:7721">
+                            <TransitionPropertyViewModelComparator id="0:7722">
+                                <BindablePropertyNumber id="0:7723">
+                                    <DataBindContext sourcePathIds="0:40-0:41" propertyKey="636" id="0:7724"/>
                                 </BindablePropertyNumber>
                             </TransitionPropertyViewModelComparator>
-                            <TransitionValueNumberComparator value="0"/>
+                            <TransitionValueNumberComparator value="0" id="0:7725"/>
                         </TransitionViewModelCondition>
                     </StateTransition>
                 </AnimationState>
                 <AnimationState x="400" y="160" animationId="0:703" id="0:603">
-                    <FocusActionTarget targetId="0:12"/>
-                    <StateTransition stateToId="0:602" duration="250">
-                        <TransitionViewModelCondition opValue="equal">
-                            <TransitionPropertyViewModelComparator>
-                                <BindablePropertyNumber>
-                                    <DataBindContext sourcePathIds="0:40-0:41" propertyKey="636"/>
+                    <FocusActionTarget targetId="0:12" id="0:7726"/>
+                    <StateTransition stateToId="0:602" duration="250" id="0:7727">
+                        <TransitionViewModelCondition opValue="equal" id="0:7728">
+                            <TransitionPropertyViewModelComparator id="0:7729">
+                                <BindablePropertyNumber id="0:7730">
+                                    <DataBindContext sourcePathIds="0:40-0:41" propertyKey="636" id="0:7731"/>
                                 </BindablePropertyNumber>
                             </TransitionPropertyViewModelComparator>
-                            <TransitionValueNumberComparator value="1"/>
+                            <TransitionValueNumberComparator value="1" id="0:7732"/>
                         </TransitionViewModelCondition>
                     </StateTransition>
-                    <StateTransition stateToId="0:601" duration="300">
-                        <TransitionViewModelCondition opValue="equal">
-                            <TransitionPropertyViewModelComparator>
-                                <BindablePropertyNumber>
-                                    <DataBindContext sourcePathIds="0:40-0:41" propertyKey="636"/>
+                    <StateTransition stateToId="0:601" duration="300" id="0:7733">
+                        <TransitionViewModelCondition opValue="equal" id="0:7734">
+                            <TransitionPropertyViewModelComparator id="0:7735">
+                                <BindablePropertyNumber id="0:7736">
+                                    <DataBindContext sourcePathIds="0:40-0:41" propertyKey="636" id="0:7737"/>
                                 </BindablePropertyNumber>
                             </TransitionPropertyViewModelComparator>
-                            <TransitionValueNumberComparator value="0"/>
+                            <TransitionValueNumberComparator value="0" id="0:7738"/>
                         </TransitionViewModelCondition>
                     </StateTransition>
                 </AnimationState>
@@ -360,90 +360,90 @@
 
             <!-- Judgement pop: fires on GameVM.judgeFire -->
             <StateMachineLayer name="Judge Pop" id="0:9">
-                <AnyState x="0" y="-120">
-                    <StateTransition stateToId="0:612">
-                        <TransitionViewModelCondition>
-                            <TransitionPropertyViewModelComparator>
-                                <BindablePropertyTrigger>
-                                    <DataBindContext sourcePathIds="0:40-0:50" propertyKey="686"/>
+                <AnyState x="0" y="-120" id="0:7739">
+                    <StateTransition stateToId="0:612" id="0:7740">
+                        <TransitionViewModelCondition id="0:7741">
+                            <TransitionPropertyViewModelComparator id="0:7742">
+                                <BindablePropertyTrigger id="0:7743">
+                                    <DataBindContext sourcePathIds="0:40-0:50" propertyKey="686" id="0:7744"/>
                                 </BindablePropertyTrigger>
                             </TransitionPropertyViewModelComparator>
-                            <TransitionValueTriggerComparator/>
+                            <TransitionValueTriggerComparator id="0:7745"/>
                         </TransitionViewModelCondition>
                     </StateTransition>
                 </AnyState>
-                <ExitState x="600" y="-120"/>
-                <EntryState x="0" y="0">
-                    <StateTransition stateToId="0:611"/>
+                <ExitState x="600" y="-120" id="0:7746"/>
+                <EntryState x="0" y="0" id="0:7747">
+                    <StateTransition stateToId="0:611" id="0:7748"/>
                 </EntryState>
                 <AnimationState x="200" y="0" animationId="0:711" id="0:611"/>
                 <AnimationState x="400" y="0" animationId="0:712" reset="true" id="0:612">
-                    <StateTransition stateToId="0:611" enableExitTime="true" exitTimeIsPercetange="true" exitTime="100"/>
+                    <StateTransition stateToId="0:611" enableExitTime="true" exitTimeIsPercetange="true" exitTime="100" id="0:7749"/>
                 </AnimationState>
             </StateMachineLayer>
 
             <!-- Candy count pop: fires on GameVM.candyFire -->
             <StateMachineLayer name="Count Pop" id="0:13">
-                <AnyState x="0" y="-120">
-                    <StateTransition stateToId="0:622">
-                        <TransitionViewModelCondition>
-                            <TransitionPropertyViewModelComparator>
-                                <BindablePropertyTrigger>
-                                    <DataBindContext sourcePathIds="0:40-0:51" propertyKey="686"/>
+                <AnyState x="0" y="-120" id="0:7750">
+                    <StateTransition stateToId="0:622" id="0:7751">
+                        <TransitionViewModelCondition id="0:7752">
+                            <TransitionPropertyViewModelComparator id="0:7753">
+                                <BindablePropertyTrigger id="0:7754">
+                                    <DataBindContext sourcePathIds="0:40-0:51" propertyKey="686" id="0:7755"/>
                                 </BindablePropertyTrigger>
                             </TransitionPropertyViewModelComparator>
-                            <TransitionValueTriggerComparator/>
+                            <TransitionValueTriggerComparator id="0:7756"/>
                         </TransitionViewModelCondition>
                     </StateTransition>
                 </AnyState>
-                <ExitState x="600" y="-120"/>
-                <EntryState x="0" y="0">
-                    <StateTransition stateToId="0:621"/>
+                <ExitState x="600" y="-120" id="0:7757"/>
+                <EntryState x="0" y="0" id="0:7758">
+                    <StateTransition stateToId="0:621" id="0:7759"/>
                 </EntryState>
                 <AnimationState x="200" y="0" animationId="0:721" id="0:621"/>
                 <AnimationState x="400" y="0" animationId="0:722" reset="true" id="0:622">
-                    <StateTransition stateToId="0:621" enableExitTime="true" exitTimeIsPercetange="true" exitTime="100"/>
+                    <StateTransition stateToId="0:621" enableExitTime="true" exitTimeIsPercetange="true" exitTime="100" id="0:7760"/>
                 </AnimationState>
             </StateMachineLayer>
 
             <!-- Idle: "TAP TO START" breathes on the beat (120 BPM) -->
             <StateMachineLayer name="Idle" id="0:14">
-                <AnyState x="0" y="-120"/>
-                <ExitState x="600" y="-120"/>
-                <EntryState x="0" y="0">
-                    <StateTransition stateToId="0:631"/>
+                <AnyState x="0" y="-120" id="0:7761"/>
+                <ExitState x="600" y="-120" id="0:7762"/>
+                <EntryState x="0" y="0" id="0:7763">
+                    <StateTransition stateToId="0:631" id="0:7764"/>
                 </EntryState>
                 <AnimationState x="200" y="0" animationId="0:731" id="0:631"/>
             </StateMachineLayer>
 
             <!-- Pause: the overlay follows GameVM.paused -->
             <StateMachineLayer name="Pause" id="0:15">
-                <AnyState x="0" y="-120"/>
-                <ExitState x="600" y="-120"/>
-                <EntryState x="0" y="0">
-                    <StateTransition stateToId="0:641"/>
+                <AnyState x="0" y="-120" id="0:7765"/>
+                <ExitState x="600" y="-120" id="0:7766"/>
+                <EntryState x="0" y="0" id="0:7767">
+                    <StateTransition stateToId="0:641" id="0:7768"/>
                 </EntryState>
                 <AnimationState x="200" y="0" animationId="0:741" id="0:641">
-                    <StateTransition stateToId="0:642" duration="150">
-                        <TransitionViewModelCondition opValue="equal">
-                            <TransitionPropertyViewModelComparator>
-                                <BindablePropertyBoolean>
-                                    <DataBindContext sourcePathIds="0:40-0:2206" propertyKey="634"/>
+                    <StateTransition stateToId="0:642" duration="150" id="0:7769">
+                        <TransitionViewModelCondition opValue="equal" id="0:7770">
+                            <TransitionPropertyViewModelComparator id="0:7771">
+                                <BindablePropertyBoolean id="0:7772">
+                                    <DataBindContext sourcePathIds="0:40-0:2206" propertyKey="634" id="0:7773"/>
                                 </BindablePropertyBoolean>
                             </TransitionPropertyViewModelComparator>
-                            <TransitionValueBooleanComparator value="true"/>
+                            <TransitionValueBooleanComparator value="true" id="0:7774"/>
                         </TransitionViewModelCondition>
                     </StateTransition>
                 </AnimationState>
                 <AnimationState x="400" y="0" animationId="0:742" id="0:642">
-                    <StateTransition stateToId="0:641" duration="150">
-                        <TransitionViewModelCondition opValue="equal">
-                            <TransitionPropertyViewModelComparator>
-                                <BindablePropertyBoolean>
-                                    <DataBindContext sourcePathIds="0:40-0:2206" propertyKey="634"/>
+                    <StateTransition stateToId="0:641" duration="150" id="0:7775">
+                        <TransitionViewModelCondition opValue="equal" id="0:7776">
+                            <TransitionPropertyViewModelComparator id="0:7777">
+                                <BindablePropertyBoolean id="0:7778">
+                                    <DataBindContext sourcePathIds="0:40-0:2206" propertyKey="634" id="0:7779"/>
                                 </BindablePropertyBoolean>
                             </TransitionPropertyViewModelComparator>
-                            <TransitionValueBooleanComparator value="false"/>
+                            <TransitionValueBooleanComparator value="false" id="0:7780"/>
                         </TransitionViewModelCondition>
                     </StateTransition>
                 </AnimationState>
@@ -451,34 +451,34 @@
 
             <!-- Record flip: pops the LP on GameVM.discFire -->
             <StateMachineLayer name="Record Flip" id="0:16">
-                <AnyState x="0" y="-120">
-                    <StateTransition stateToId="0:652">
-                        <TransitionViewModelCondition>
-                            <TransitionPropertyViewModelComparator>
-                                <BindablePropertyTrigger>
-                                    <DataBindContext sourcePathIds="0:40-0:2207" propertyKey="686"/>
+                <AnyState x="0" y="-120" id="0:7781">
+                    <StateTransition stateToId="0:652" id="0:7782">
+                        <TransitionViewModelCondition id="0:7783">
+                            <TransitionPropertyViewModelComparator id="0:7784">
+                                <BindablePropertyTrigger id="0:7785">
+                                    <DataBindContext sourcePathIds="0:40-0:2207" propertyKey="686" id="0:7786"/>
                                 </BindablePropertyTrigger>
                             </TransitionPropertyViewModelComparator>
-                            <TransitionValueTriggerComparator/>
+                            <TransitionValueTriggerComparator id="0:7787"/>
                         </TransitionViewModelCondition>
                     </StateTransition>
                 </AnyState>
-                <ExitState x="600" y="-120"/>
-                <EntryState x="0" y="0">
-                    <StateTransition stateToId="0:651"/>
+                <ExitState x="600" y="-120" id="0:7788"/>
+                <EntryState x="0" y="0" id="0:7789">
+                    <StateTransition stateToId="0:651" id="0:7790"/>
                 </EntryState>
                 <AnimationState x="200" y="0" animationId="0:751" id="0:651"/>
                 <AnimationState x="400" y="0" animationId="0:752" reset="true" id="0:652">
-                    <StateTransition stateToId="0:651" enableExitTime="true" exitTimeIsPercetange="true" exitTime="100"/>
+                    <StateTransition stateToId="0:651" enableExitTime="true" exitTimeIsPercetange="true" exitTime="100" id="0:7791"/>
                 </AnimationState>
             </StateMachineLayer>
 
             <!-- Spin: the LP turns, one revolution per bar at 120 BPM -->
             <StateMachineLayer name="Spin" id="0:17">
-                <AnyState x="0" y="-120"/>
-                <ExitState x="600" y="-120"/>
-                <EntryState x="0" y="0">
-                    <StateTransition stateToId="0:661"/>
+                <AnyState x="0" y="-120" id="0:7792"/>
+                <ExitState x="600" y="-120" id="0:7793"/>
+                <EntryState x="0" y="0" id="0:7794">
+                    <StateTransition stateToId="0:661" id="0:7795"/>
                 </EntryState>
                 <AnimationState x="200" y="0" animationId="0:761" id="0:661"/>
             </StateMachineLayer>
@@ -486,132 +486,132 @@
 
         <!-- Screens -->
         <LinearAnimation duration="1" name="Show Title" id="0:701">
-            <KeyedObject objectId="0:200"><KeyedProperty propertyKey="18"><KeyFrameDouble value="1" frame="0"/></KeyedProperty></KeyedObject>
-            <KeyedObject objectId="0:500"><KeyedProperty propertyKey="18"><KeyFrameDouble value="0" frame="0"/></KeyedProperty></KeyedObject>
-            <KeyedObject objectId="0:300"><KeyedProperty propertyKey="18"><KeyFrameDouble value="0" frame="0"/></KeyedProperty></KeyedObject>
+            <KeyedObject objectId="0:200" id="0:7796"><KeyedProperty propertyKey="18" id="0:7797"><KeyFrameDouble value="1" frame="0" id="0:7798"/></KeyedProperty></KeyedObject>
+            <KeyedObject objectId="0:500" id="0:7799"><KeyedProperty propertyKey="18" id="0:7800"><KeyFrameDouble value="0" frame="0" id="0:7801"/></KeyedProperty></KeyedObject>
+            <KeyedObject objectId="0:300" id="0:7802"><KeyedProperty propertyKey="18" id="0:7803"><KeyFrameDouble value="0" frame="0" id="0:7804"/></KeyedProperty></KeyedObject>
         </LinearAnimation>
         <LinearAnimation duration="1" name="Show Play" id="0:702">
-            <KeyedObject objectId="0:200"><KeyedProperty propertyKey="18"><KeyFrameDouble value="0" frame="0"/></KeyedProperty></KeyedObject>
-            <KeyedObject objectId="0:500"><KeyedProperty propertyKey="18"><KeyFrameDouble value="1" frame="0"/></KeyedProperty></KeyedObject>
-            <KeyedObject objectId="0:300"><KeyedProperty propertyKey="18"><KeyFrameDouble value="0" frame="0"/></KeyedProperty></KeyedObject>
+            <KeyedObject objectId="0:200" id="0:7805"><KeyedProperty propertyKey="18" id="0:7806"><KeyFrameDouble value="0" frame="0" id="0:7807"/></KeyedProperty></KeyedObject>
+            <KeyedObject objectId="0:500" id="0:7808"><KeyedProperty propertyKey="18" id="0:7809"><KeyFrameDouble value="1" frame="0" id="0:7810"/></KeyedProperty></KeyedObject>
+            <KeyedObject objectId="0:300" id="0:7811"><KeyedProperty propertyKey="18" id="0:7812"><KeyFrameDouble value="0" frame="0" id="0:7813"/></KeyedProperty></KeyedObject>
         </LinearAnimation>
         <LinearAnimation duration="1" name="Show Results" id="0:703">
-            <KeyedObject objectId="0:200"><KeyedProperty propertyKey="18"><KeyFrameDouble value="0" frame="0"/></KeyedProperty></KeyedObject>
-            <KeyedObject objectId="0:500"><KeyedProperty propertyKey="18"><KeyFrameDouble value="0" frame="0"/></KeyedProperty></KeyedObject>
-            <KeyedObject objectId="0:300"><KeyedProperty propertyKey="18"><KeyFrameDouble value="1" frame="0"/></KeyedProperty></KeyedObject>
+            <KeyedObject objectId="0:200" id="0:7814"><KeyedProperty propertyKey="18" id="0:7815"><KeyFrameDouble value="0" frame="0" id="0:7816"/></KeyedProperty></KeyedObject>
+            <KeyedObject objectId="0:500" id="0:7817"><KeyedProperty propertyKey="18" id="0:7818"><KeyFrameDouble value="0" frame="0" id="0:7819"/></KeyedProperty></KeyedObject>
+            <KeyedObject objectId="0:300" id="0:7820"><KeyedProperty propertyKey="18" id="0:7821"><KeyFrameDouble value="1" frame="0" id="0:7822"/></KeyedProperty></KeyedObject>
         </LinearAnimation>
 
         <!-- Judgement pop -->
         <LinearAnimation duration="1" name="Judge Hidden" id="0:711">
-            <KeyedObject objectId="0:400"><KeyedProperty propertyKey="18"><KeyFrameDouble value="0" frame="0"/></KeyedProperty></KeyedObject>
+            <KeyedObject objectId="0:400" id="0:7823"><KeyedProperty propertyKey="18" id="0:7824"><KeyFrameDouble value="0" frame="0" id="0:7825"/></KeyedProperty></KeyedObject>
         </LinearAnimation>
         <LinearAnimation duration="36" name="Judge Pop" id="0:712">
-            <KeyedObject objectId="0:400">
-                <KeyedProperty propertyKey="18">
-                    <KeyFrameDouble value="1" frame="0" interpolationType="linear"/>
-                    <KeyFrameDouble value="1" frame="22" interpolationType="linear"/>
-                    <KeyFrameDouble value="0" frame="36"/>
+            <KeyedObject objectId="0:400" id="0:7826">
+                <KeyedProperty propertyKey="18" id="0:7827">
+                    <KeyFrameDouble value="1" frame="0" interpolationType="linear" id="0:7828"/>
+                    <KeyFrameDouble value="1" frame="22" interpolationType="linear" id="0:7829"/>
+                    <KeyFrameDouble value="0" frame="36" id="0:7830"/>
                 </KeyedProperty>
-                <KeyedProperty propertyKey="16">
-                    <KeyFrameDouble value="0.6" frame="0" interpolationType="cubic"><CubicEaseInterpolator x1="0.2" y1="0" x2="0.3" y2="1"/></KeyFrameDouble>
-                    <KeyFrameDouble value="1.15" frame="8" interpolationType="cubic"><CubicEaseInterpolator x1="0.4" y1="0" x2="0.6" y2="1"/></KeyFrameDouble>
-                    <KeyFrameDouble value="1" frame="14"/>
+                <KeyedProperty propertyKey="16" id="0:7831">
+                    <KeyFrameDouble value="0.6" frame="0" interpolationType="cubic" id="0:7832"><CubicEaseInterpolator x1="0.2" y1="0" x2="0.3" y2="1" id="0:7833"/></KeyFrameDouble>
+                    <KeyFrameDouble value="1.15" frame="8" interpolationType="cubic" id="0:7834"><CubicEaseInterpolator x1="0.4" y1="0" x2="0.6" y2="1" id="0:7835"/></KeyFrameDouble>
+                    <KeyFrameDouble value="1" frame="14" id="0:7836"/>
                 </KeyedProperty>
-                <KeyedProperty propertyKey="17">
-                    <KeyFrameDouble value="0.6" frame="0" interpolationType="cubic"><CubicEaseInterpolator x1="0.2" y1="0" x2="0.3" y2="1"/></KeyFrameDouble>
-                    <KeyFrameDouble value="1.15" frame="8" interpolationType="cubic"><CubicEaseInterpolator x1="0.4" y1="0" x2="0.6" y2="1"/></KeyFrameDouble>
-                    <KeyFrameDouble value="1" frame="14"/>
+                <KeyedProperty propertyKey="17" id="0:7837">
+                    <KeyFrameDouble value="0.6" frame="0" interpolationType="cubic" id="0:7838"><CubicEaseInterpolator x1="0.2" y1="0" x2="0.3" y2="1" id="0:7839"/></KeyFrameDouble>
+                    <KeyFrameDouble value="1.15" frame="8" interpolationType="cubic" id="0:7840"><CubicEaseInterpolator x1="0.4" y1="0" x2="0.6" y2="1" id="0:7841"/></KeyFrameDouble>
+                    <KeyFrameDouble value="1" frame="14" id="0:7842"/>
                 </KeyedProperty>
-                <KeyedProperty propertyKey="14">
-                    <KeyFrameDouble value="480" frame="0" interpolationType="linear"/>
-                    <KeyFrameDouble value="444" frame="36"/>
+                <KeyedProperty propertyKey="14" id="0:7843">
+                    <KeyFrameDouble value="480" frame="0" interpolationType="linear" id="0:7844"/>
+                    <KeyFrameDouble value="444" frame="36" id="0:7845"/>
                 </KeyedProperty>
             </KeyedObject>
         </LinearAnimation>
 
         <!-- Candy count pop -->
         <LinearAnimation duration="1" name="Count Hidden" id="0:721">
-            <KeyedObject objectId="0:410"><KeyedProperty propertyKey="18"><KeyFrameDouble value="0" frame="0"/></KeyedProperty></KeyedObject>
+            <KeyedObject objectId="0:410" id="0:7846"><KeyedProperty propertyKey="18" id="0:7847"><KeyFrameDouble value="0" frame="0" id="0:7848"/></KeyedProperty></KeyedObject>
         </LinearAnimation>
         <LinearAnimation duration="48" name="Count Pop" id="0:722">
-            <KeyedObject objectId="0:410">
-                <KeyedProperty propertyKey="18">
-                    <KeyFrameDouble value="1" frame="0" interpolationType="linear"/>
-                    <KeyFrameDouble value="1" frame="30" interpolationType="linear"/>
-                    <KeyFrameDouble value="0" frame="48"/>
+            <KeyedObject objectId="0:410" id="0:7849">
+                <KeyedProperty propertyKey="18" id="0:7850">
+                    <KeyFrameDouble value="1" frame="0" interpolationType="linear" id="0:7851"/>
+                    <KeyFrameDouble value="1" frame="30" interpolationType="linear" id="0:7852"/>
+                    <KeyFrameDouble value="0" frame="48" id="0:7853"/>
                 </KeyedProperty>
-                <KeyedProperty propertyKey="15">
-                    <KeyFrameDouble value="-0.25" frame="0" interpolationType="cubic"><CubicEaseInterpolator x1="0.2" y1="0" x2="0.3" y2="1"/></KeyFrameDouble>
-                    <KeyFrameDouble value="0.08" frame="10" interpolationType="cubic"><CubicEaseInterpolator x1="0.4" y1="0" x2="0.6" y2="1"/></KeyFrameDouble>
-                    <KeyFrameDouble value="0" frame="18"/>
+                <KeyedProperty propertyKey="15" id="0:7854">
+                    <KeyFrameDouble value="-0.25" frame="0" interpolationType="cubic" id="0:7855"><CubicEaseInterpolator x1="0.2" y1="0" x2="0.3" y2="1" id="0:7856"/></KeyFrameDouble>
+                    <KeyFrameDouble value="0.08" frame="10" interpolationType="cubic" id="0:7857"><CubicEaseInterpolator x1="0.4" y1="0" x2="0.6" y2="1" id="0:7858"/></KeyFrameDouble>
+                    <KeyFrameDouble value="0" frame="18" id="0:7859"/>
                 </KeyedProperty>
-                <KeyedProperty propertyKey="16">
-                    <KeyFrameDouble value="0.4" frame="0" interpolationType="cubic"><CubicEaseInterpolator x1="0.2" y1="0" x2="0.3" y2="1"/></KeyFrameDouble>
-                    <KeyFrameDouble value="1.2" frame="10" interpolationType="cubic"><CubicEaseInterpolator x1="0.4" y1="0" x2="0.6" y2="1"/></KeyFrameDouble>
-                    <KeyFrameDouble value="1" frame="18"/>
+                <KeyedProperty propertyKey="16" id="0:7860">
+                    <KeyFrameDouble value="0.4" frame="0" interpolationType="cubic" id="0:7861"><CubicEaseInterpolator x1="0.2" y1="0" x2="0.3" y2="1" id="0:7862"/></KeyFrameDouble>
+                    <KeyFrameDouble value="1.2" frame="10" interpolationType="cubic" id="0:7863"><CubicEaseInterpolator x1="0.4" y1="0" x2="0.6" y2="1" id="0:7864"/></KeyFrameDouble>
+                    <KeyFrameDouble value="1" frame="18" id="0:7865"/>
                 </KeyedProperty>
-                <KeyedProperty propertyKey="17">
-                    <KeyFrameDouble value="0.4" frame="0" interpolationType="cubic"><CubicEaseInterpolator x1="0.2" y1="0" x2="0.3" y2="1"/></KeyFrameDouble>
-                    <KeyFrameDouble value="1.2" frame="10" interpolationType="cubic"><CubicEaseInterpolator x1="0.4" y1="0" x2="0.6" y2="1"/></KeyFrameDouble>
-                    <KeyFrameDouble value="1" frame="18"/>
+                <KeyedProperty propertyKey="17" id="0:7866">
+                    <KeyFrameDouble value="0.4" frame="0" interpolationType="cubic" id="0:7867"><CubicEaseInterpolator x1="0.2" y1="0" x2="0.3" y2="1" id="0:7868"/></KeyFrameDouble>
+                    <KeyFrameDouble value="1.2" frame="10" interpolationType="cubic" id="0:7869"><CubicEaseInterpolator x1="0.4" y1="0" x2="0.6" y2="1" id="0:7870"/></KeyFrameDouble>
+                    <KeyFrameDouble value="1" frame="18" id="0:7871"/>
                 </KeyedProperty>
-                <KeyedProperty propertyKey="14">
-                    <KeyFrameDouble value="170" frame="0" interpolationType="linear"/>
-                    <KeyFrameDouble value="140" frame="48"/>
+                <KeyedProperty propertyKey="14" id="0:7872">
+                    <KeyFrameDouble value="170" frame="0" interpolationType="linear" id="0:7873"/>
+                    <KeyFrameDouble value="140" frame="48" id="0:7874"/>
                 </KeyedProperty>
             </KeyedObject>
         </LinearAnimation>
 
         <!-- Pause overlay -->
         <LinearAnimation duration="1" name="Pause Hidden" id="0:741">
-            <KeyedObject objectId="0:2100"><KeyedProperty propertyKey="18"><KeyFrameDouble value="0" frame="0"/></KeyedProperty></KeyedObject>
+            <KeyedObject objectId="0:2100" id="0:7875"><KeyedProperty propertyKey="18" id="0:7876"><KeyFrameDouble value="0" frame="0" id="0:7877"/></KeyedProperty></KeyedObject>
         </LinearAnimation>
         <LinearAnimation duration="1" name="Pause Shown" id="0:742">
-            <KeyedObject objectId="0:2100"><KeyedProperty propertyKey="18"><KeyFrameDouble value="1" frame="0"/></KeyedProperty></KeyedObject>
+            <KeyedObject objectId="0:2100" id="0:7878"><KeyedProperty propertyKey="18" id="0:7879"><KeyFrameDouble value="1" frame="0" id="0:7880"/></KeyedProperty></KeyedObject>
         </LinearAnimation>
 
         <!-- Record flip: the LP squashes sideways and springs back with the new label -->
         <LinearAnimation duration="1" name="Record Still" id="0:751">
-            <KeyedObject objectId="0:241">
-                <KeyedProperty propertyKey="16"><KeyFrameDouble value="1" frame="0"/></KeyedProperty>
-                <KeyedProperty propertyKey="17"><KeyFrameDouble value="1" frame="0"/></KeyedProperty>
+            <KeyedObject objectId="0:241" id="0:7881">
+                <KeyedProperty propertyKey="16" id="0:7882"><KeyFrameDouble value="1" frame="0" id="0:7883"/></KeyedProperty>
+                <KeyedProperty propertyKey="17" id="0:7884"><KeyFrameDouble value="1" frame="0" id="0:7885"/></KeyedProperty>
             </KeyedObject>
         </LinearAnimation>
         <LinearAnimation duration="20" name="Record Flip" id="0:752">
-            <KeyedObject objectId="0:241">
-                <KeyedProperty propertyKey="16">
-                    <KeyFrameDouble value="0.05" frame="0" interpolationType="cubic"><CubicEaseInterpolator x1="0.2" y1="0" x2="0.3" y2="1"/></KeyFrameDouble>
-                    <KeyFrameDouble value="1.08" frame="10" interpolationType="cubic"><CubicEaseInterpolator x1="0.4" y1="0" x2="0.6" y2="1"/></KeyFrameDouble>
-                    <KeyFrameDouble value="1" frame="20"/>
+            <KeyedObject objectId="0:241" id="0:7886">
+                <KeyedProperty propertyKey="16" id="0:7887">
+                    <KeyFrameDouble value="0.05" frame="0" interpolationType="cubic" id="0:7888"><CubicEaseInterpolator x1="0.2" y1="0" x2="0.3" y2="1" id="0:7889"/></KeyFrameDouble>
+                    <KeyFrameDouble value="1.08" frame="10" interpolationType="cubic" id="0:7890"><CubicEaseInterpolator x1="0.4" y1="0" x2="0.6" y2="1" id="0:7891"/></KeyFrameDouble>
+                    <KeyFrameDouble value="1" frame="20" id="0:7892"/>
                 </KeyedProperty>
-                <KeyedProperty propertyKey="17">
-                    <KeyFrameDouble value="0.9" frame="0" interpolationType="cubic"><CubicEaseInterpolator x1="0.2" y1="0" x2="0.3" y2="1"/></KeyFrameDouble>
-                    <KeyFrameDouble value="1.04" frame="10" interpolationType="cubic"><CubicEaseInterpolator x1="0.4" y1="0" x2="0.6" y2="1"/></KeyFrameDouble>
-                    <KeyFrameDouble value="1" frame="20"/>
+                <KeyedProperty propertyKey="17" id="0:7893">
+                    <KeyFrameDouble value="0.9" frame="0" interpolationType="cubic" id="0:7894"><CubicEaseInterpolator x1="0.2" y1="0" x2="0.3" y2="1" id="0:7895"/></KeyFrameDouble>
+                    <KeyFrameDouble value="1.04" frame="10" interpolationType="cubic" id="0:7896"><CubicEaseInterpolator x1="0.4" y1="0" x2="0.6" y2="1" id="0:7897"/></KeyFrameDouble>
+                    <KeyFrameDouble value="1" frame="20" id="0:7898"/>
                 </KeyedProperty>
             </KeyedObject>
         </LinearAnimation>
 
         <!-- Spin: one turn per bar (2 s at 120 BPM) -->
         <LinearAnimation duration="120" loopValue="loop" name="Record Spin" id="0:761">
-            <KeyedObject objectId="0:242">
-                <KeyedProperty propertyKey="15">
-                    <KeyFrameDouble value="0" frame="0" interpolationType="linear"/>
-                    <KeyFrameDouble value="6.2831853" frame="120"/>
+            <KeyedObject objectId="0:242" id="0:7899">
+                <KeyedProperty propertyKey="15" id="0:7900">
+                    <KeyFrameDouble value="0" frame="0" interpolationType="linear" id="0:7901"/>
+                    <KeyFrameDouble value="6.2831853" frame="120" id="0:7902"/>
                 </KeyedProperty>
             </KeyedObject>
         </LinearAnimation>
 
         <!-- Idle: tap-to-start breathing, one beat per loop -->
         <LinearAnimation duration="30" loopValue="loop" name="Tap Breath" id="0:731">
-            <KeyedObject objectId="0:220">
-                <KeyedProperty propertyKey="16">
-                    <KeyFrameDouble value="1.1" frame="0" interpolationType="cubic"><CubicEaseInterpolator x1="0.2" y1="0" x2="0.4" y2="1"/></KeyFrameDouble>
-                    <KeyFrameDouble value="1" frame="30"/>
+            <KeyedObject objectId="0:220" id="0:7903">
+                <KeyedProperty propertyKey="16" id="0:7904">
+                    <KeyFrameDouble value="1.1" frame="0" interpolationType="cubic" id="0:7905"><CubicEaseInterpolator x1="0.2" y1="0" x2="0.4" y2="1" id="0:7906"/></KeyFrameDouble>
+                    <KeyFrameDouble value="1" frame="30" id="0:7907"/>
                 </KeyedProperty>
-                <KeyedProperty propertyKey="17">
-                    <KeyFrameDouble value="1.1" frame="0" interpolationType="cubic"><CubicEaseInterpolator x1="0.2" y1="0" x2="0.4" y2="1"/></KeyFrameDouble>
-                    <KeyFrameDouble value="1" frame="30"/>
+                <KeyedProperty propertyKey="17" id="0:7908">
+                    <KeyFrameDouble value="1.1" frame="0" interpolationType="cubic" id="0:7909"><CubicEaseInterpolator x1="0.2" y1="0" x2="0.4" y2="1" id="0:7910"/></KeyFrameDouble>
+                    <KeyFrameDouble value="1" frame="30" id="0:7911"/>
                 </KeyedProperty>
             </KeyedObject>
         </LinearAnimation>
@@ -645,31 +645,31 @@
         <ViewModelPropertyNumber name="screenW" id="0:2211"/>
         <ViewModelPropertyNumber name="screenH" id="0:2212"/>
         <ViewModelInstance exports="true" name="Default" id="0:60">
-            <ViewModelInstanceNumber propertyValue="0" viewModelPropertyId="0:41"/>
-            <ViewModelInstanceString propertyValue="0" viewModelPropertyId="0:42"/>
-            <ViewModelInstanceString propertyValue="x1" viewModelPropertyId="0:43"/>
-            <ViewModelInstanceString propertyValue="" viewModelPropertyId="0:44"/>
-            <ViewModelInstanceString propertyValue="" viewModelPropertyId="0:45"/>
-            <ViewModelInstanceString propertyValue="" viewModelPropertyId="0:46"/>
-            <ViewModelInstanceString propertyValue="" viewModelPropertyId="0:47"/>
-            <ViewModelInstanceString propertyValue="" viewModelPropertyId="0:48"/>
-            <ViewModelInstanceString propertyValue="" viewModelPropertyId="0:49"/>
-            <ViewModelInstanceTrigger viewModelPropertyId="0:50"/>
-            <ViewModelInstanceTrigger viewModelPropertyId="0:51"/>
-            <ViewModelInstanceBoolean propertyValue="false" viewModelPropertyId="0:53"/>
-            <ViewModelInstanceNumber propertyValue="0" viewModelPropertyId="0:54"/>
-            <ViewModelInstanceNumber propertyValue="1" viewModelPropertyId="0:2201"/>
-            <ViewModelInstanceColor propertyValue="FFFF8A3D" viewModelPropertyId="0:2202"/>
-            <ViewModelInstanceString propertyValue="Echula Theme" viewModelPropertyId="0:2203"/>
-            <ViewModelInstanceString propertyValue="" viewModelPropertyId="0:2204"/>
-            <ViewModelInstanceString propertyValue="tap to play again" viewModelPropertyId="0:2205"/>
-            <ViewModelInstanceBoolean propertyValue="false" viewModelPropertyId="0:2206"/>
-            <ViewModelInstanceTrigger viewModelPropertyId="0:2207"/>
-            <ViewModelInstanceNumber propertyValue="498" viewModelPropertyId="0:2208"/>
-            <ViewModelInstanceNumber propertyValue="0" viewModelPropertyId="0:2209"/>
-            <ViewModelInstanceNumber propertyValue="0" viewModelPropertyId="0:2210"/>
-            <ViewModelInstanceNumber propertyValue="540" viewModelPropertyId="0:2211"/>
-            <ViewModelInstanceNumber propertyValue="960" viewModelPropertyId="0:2212"/>
+            <ViewModelInstanceNumber propertyValue="0" viewModelPropertyId="0:41" id="0:7912"/>
+            <ViewModelInstanceString propertyValue="0" viewModelPropertyId="0:42" id="0:7913"/>
+            <ViewModelInstanceString propertyValue="x1" viewModelPropertyId="0:43" id="0:7914"/>
+            <ViewModelInstanceString propertyValue="" viewModelPropertyId="0:44" id="0:7915"/>
+            <ViewModelInstanceString propertyValue="" viewModelPropertyId="0:45" id="0:7916"/>
+            <ViewModelInstanceString propertyValue="" viewModelPropertyId="0:46" id="0:7917"/>
+            <ViewModelInstanceString propertyValue="" viewModelPropertyId="0:47" id="0:7918"/>
+            <ViewModelInstanceString propertyValue="" viewModelPropertyId="0:48" id="0:7919"/>
+            <ViewModelInstanceString propertyValue="" viewModelPropertyId="0:49" id="0:7920"/>
+            <ViewModelInstanceTrigger viewModelPropertyId="0:50" id="0:7921"/>
+            <ViewModelInstanceTrigger viewModelPropertyId="0:51" id="0:7922"/>
+            <ViewModelInstanceBoolean propertyValue="false" viewModelPropertyId="0:53" id="0:7923"/>
+            <ViewModelInstanceNumber propertyValue="0" viewModelPropertyId="0:54" id="0:7924"/>
+            <ViewModelInstanceNumber propertyValue="1" viewModelPropertyId="0:2201" id="0:7925"/>
+            <ViewModelInstanceColor propertyValue="FFFF8A3D" viewModelPropertyId="0:2202" id="0:7926"/>
+            <ViewModelInstanceString propertyValue="Echula Theme" viewModelPropertyId="0:2203" id="0:7927"/>
+            <ViewModelInstanceString propertyValue="" viewModelPropertyId="0:2204" id="0:7928"/>
+            <ViewModelInstanceString propertyValue="tap to play again" viewModelPropertyId="0:2205" id="0:7929"/>
+            <ViewModelInstanceBoolean propertyValue="false" viewModelPropertyId="0:2206" id="0:7930"/>
+            <ViewModelInstanceTrigger viewModelPropertyId="0:2207" id="0:7931"/>
+            <ViewModelInstanceNumber propertyValue="498" viewModelPropertyId="0:2208" id="0:7932"/>
+            <ViewModelInstanceNumber propertyValue="0" viewModelPropertyId="0:2209" id="0:7933"/>
+            <ViewModelInstanceNumber propertyValue="0" viewModelPropertyId="0:2210" id="0:7934"/>
+            <ViewModelInstanceNumber propertyValue="540" viewModelPropertyId="0:2211" id="0:7935"/>
+            <ViewModelInstanceNumber propertyValue="960" viewModelPropertyId="0:2212" id="0:7936"/>
         </ViewModelInstance>
     </ViewModel>
 
