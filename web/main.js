@@ -23,16 +23,36 @@
   });
   window.addEventListener("error", (e) => showError(`JS: ${e.message}`));
   window.addEventListener("unhandledrejection", (e) => showError(`Promise: ${e.reason}`));
-  // Expected with autoBind on files without a view model (e.g. spikes): a note, not an error.
-  const NOTES = [/Could not find a View Model linked to Artboard/];
+  // Expected messages: notes in the corner readout, not errors.
+  const NOTES = [
+    [/Could not find a View Model linked to Artboard/, "no view model"],
+    // the GPU has no pixel-interlock mode: the renderer falls back to 4x MSAA (fine)
+    [/no interlock mode supports this frame/, "MSAA fallback"],
+  ];
   for (const level of ["warn", "error"]) {
     const orig = console[level].bind(console);
     console[level] = (...args) => {
       orig(...args);
       const msg = args.join(" ");
-      if (NOTES.some((re) => re.test(msg))) info.note = "no view model";
+      const note = NOTES.find(([re]) => re.test(msg));
+      if (note) info.note = note[1];
       else showError(`${level}: ${msg}`);
     };
+  }
+
+  // Phones: Rive keeps keyboard focus in a hidden <input> (the World layout takes key
+  // events), and focusing it on a tap would raise the on-screen keyboard. inputmode
+  // "none" keeps the focus but never shows the keyboard.
+  if (matchMedia("(pointer: coarse)").matches) {
+    const quiet = (el) => el.setAttribute("inputmode", "none");
+    document.querySelectorAll("input").forEach(quiet);
+    new MutationObserver((records) => {
+      for (const r of records)
+        for (const n of r.addedNodes) {
+          if (n instanceof HTMLInputElement) quiet(n);
+          else if (n.querySelectorAll) n.querySelectorAll("input").forEach(quiet);
+        }
+    }).observe(document.body, { childList: true, subtree: true });
   }
 
   // We start the first state machine ourselves (onLoad), so the runtime's notice about
@@ -58,7 +78,12 @@
     onLoad: () => {
       r.resizeDrawingSurfaceToCanvas();
       canvas.focus({ preventScroll: true });
-      if (!stateMachine && r.stateMachineNames?.length) r.play(r.stateMachineNames[0]);
+      if (!stateMachine && r.stateMachineNames?.length) {
+        r.play(r.stateMachineNames[0]);
+        // autoBind bound the view model before this machine existed; a machine added
+        // later is unbound, so its conditions never see GameVM (the title stays up).
+        r.bind();
+      }
       info.loaded = `${src.split("/").pop()} ✓`;
     },
     onLoadError: (e) => showError(`Rive load error: ${e?.data ?? e}`),
