@@ -1702,6 +1702,10 @@ local function drawHud(self: World, renderer: Renderer, bx: number, by: number)
         local art = if self.introOn and intro ~= nil and self.mode == 'playing' then intro else bat
         drawArt(renderer, art, bx, by, BAT_SCALE * self.flipScale, BAT_ORIGIN, self.batRoll + self.flipRot, 1)
         renderer:restore()
+        -- On the web runtime (2.44) the screen stayed red after a hit: the hit tint
+        -- seems to outlive restore() and tint every later frame. Nothing here is
+        -- meant to be tinted, so set the modulation back to white outright.
+        renderer:setColorModulation(Color.rgb(255, 255, 255))
     end
 
     -- hp pips, top right beside the pause button (in game only)
