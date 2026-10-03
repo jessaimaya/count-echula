@@ -3,11 +3,8 @@
          SVG (keep its element ids) or the script, then re-run it. -->
     <!-- Echula: generated from svg/echula.svg by scripts/svg2rml.py -->
     <Artboard x="700" y="-400" width="260" height="220" clip="false" name="Echula" id="0:5000">
-        <!-- Wingtips (streak trails start here) -->
-        <Node x="16" y="112" name="WingTipL" id="0:5011"/>
-        <Node x="244" y="112" name="WingTipR" id="0:5012"/>
         <LinearAnimation fps="60" duration="30" loopValue="loop" name="idle_flap" id="0:5013">
-            <KeyedObject objectId="0:5010">
+            <KeyedObject objectId="0:5011">
                 <KeyedProperty propertyKey="15">
                     <KeyFrameDouble value="-0.22" frame="0" interpolationType="cubic"><CubicEaseInterpolator x1="0.45" y1="0" x2="0.55" y2="1"/></KeyFrameDouble>
                     <KeyFrameDouble value="0.5" frame="13" interpolationType="cubic"><CubicEaseInterpolator x1="0.45" y1="0" x2="0.55" y2="1"/></KeyFrameDouble>
@@ -201,6 +198,7 @@
                 </Shape>
             </Node>
             <Node x="17.616" y="0.831" name="WingR" id="0:5009">
+                <Node x="95.566" y="29.586" name="WingTipR" id="0:5010"/>
                 <Shape name="path41">
                     <PointsPath isClosed="true" name="Path">
                         <CubicDetachedVertex x="4.987" y="45.045" inRotation="-1.42" inDistance="14.326" outRotation="-0.616" outDistance="3.864"/>
@@ -246,7 +244,8 @@
                 </PointsPath>
                 <Fill name="Fill"><SolidColor colorValue="FF040216" name="C"/></Fill>
             </Shape>
-            <Node x="-17.616" y="1.021" name="WingL" id="0:5010">
+            <Node x="-17.616" y="1.021" name="WingL" id="0:5011">
+                <Node x="-95.566" y="29.586" name="WingTipL" id="0:5012"/>
                 <Shape name="path45">
                     <PointsPath isClosed="true" name="Path">
                         <CubicDetachedVertex x="-4.987" y="45.045" inRotation="-1.722" inDistance="14.326" outRotation="-2.526" outDistance="3.864"/>
@@ -415,8 +414,595 @@
             <Stroke thickness="1.613" cap="round" join="round" name="Stroke"><SolidColor colorValue="FFCBA1AA" name="C"/></Stroke>
         </Shape>
     </Artboard>
+    <!-- Stake: generated from svg/wooden_stake.svg by scripts/svg2rml.py -->
+    <Artboard x="1376" y="-400" width="232" height="292" clip="false" name="Stake" id="0:5800">
+        <Shape name="path188">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="157.5" y="172.851" inRotation="0" inDistance="0" outRotation="0.708" outDistance="3.582"/>
+                <CubicDetachedVertex x="161.453" y="181.846" inRotation="-1.669" inDistance="3.468" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path187">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="157.286" y="184.765" inRotation="0" inDistance="0" outRotation="0.992" outDistance="2.117"/>
+                <CubicDetachedVertex x="156.678" y="191.086" inRotation="-0.627" inDistance="2.04" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path186">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="151.822" y="186.988" inRotation="0" inDistance="0" outRotation="1.213" outDistance="3.116"/>
+                <CubicDetachedVertex x="151.261" y="193.787" inRotation="-0.731" inDistance="1.585" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path185">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="145.413" y="188.968" inRotation="0" inDistance="0" outRotation="0.959" outDistance="2.683"/>
+                <CubicDetachedVertex x="145.843" y="196.488" inRotation="-0.807" inDistance="1.611" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path184">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="140.101" y="191.179" inRotation="0" inDistance="0" outRotation="1.403" outDistance="3.515"/>
+                <CubicDetachedVertex x="138.388" y="200.324" inRotation="-0.731" inDistance="3.202" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path183">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="129.958" y="192.666" inRotation="0" inDistance="0" outRotation="1.179" outDistance="4.182"/>
+                <CubicDetachedVertex x="128.701" y="201.773" inRotation="-0.459" inDistance="2.448" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path182">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="121.963" y="194.135" inRotation="0" inDistance="0" outRotation="1.021" outDistance="2.795"/>
+                <CubicDetachedVertex x="121.522" y="200.602" inRotation="-1.067" inDistance="0.066" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path181">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="116.951" y="194.712" inRotation="0" inDistance="0" outRotation="1.313" outDistance="2.174"/>
+                <CubicDetachedVertex x="115.425" y="199.501" inRotation="-1.066" inDistance="1.778" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path180">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="158.506" y="190.933" inRotation="0" inDistance="0" outRotation="0.671" outDistance="4.09"/>
+                <CubicDetachedVertex x="160.991" y="197.479" inRotation="-1.066" inDistance="0.837" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path179">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="153.12" y="193.954" inRotation="0" inDistance="0" outRotation="0.351" outDistance="3.011"/>
+                <CubicDetachedVertex x="156.655" y="200.251" inRotation="-1.669" inDistance="2.08" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path178">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="148.249" y="195.966" inRotation="0" inDistance="0" outRotation="0.707" outDistance="2.249"/>
+                <CubicDetachedVertex x="150.094" y="202.244" inRotation="-1.573" inDistance="2.097" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path177">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="142.149" y="199.529" inRotation="0" inDistance="0" outRotation="0.653" outDistance="1.353"/>
+                <CubicDetachedVertex x="144.153" y="202.738" inRotation="-1.946" inDistance="1.28" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path176">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="154.054" y="201.914" inRotation="0" inDistance="0" outRotation="1.141" outDistance="3.723"/>
+                <CubicDetachedVertex x="153.622" y="211.596" inRotation="-0.822" inDistance="2.732" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path175">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="160.038" y="200.291" inRotation="0" inDistance="0" outRotation="1.007" outDistance="2.075"/>
+                <CubicDetachedVertex x="159.605" y="209.973" inRotation="0.652" inDistance="4.866" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path174">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="147.094" y="202.975" inRotation="0" inDistance="0" outRotation="1.629" outDistance="2.892"/>
+                <CubicDetachedVertex x="147.345" y="211.796" inRotation="-2.01" inDistance="1.129" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path173">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="137.618" y="203.442" inRotation="0" inDistance="0" outRotation="1.865" outDistance="2.547"/>
+                <CubicDetachedVertex x="138.28" y="211.747" inRotation="-2.335" inDistance="2.49" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path172">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="131.064" y="202.38" inRotation="0" inDistance="0" outRotation="2.471" outDistance="2.108"/>
+                <CubicDetachedVertex x="131.284" y="210.882" inRotation="-2.202" inDistance="3.758" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path171">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="124.389" y="201.649" inRotation="0" inDistance="0" outRotation="-2.71" outDistance="1.135"/>
+                <CubicDetachedVertex x="121.605" y="209.276" inRotation="-1.066" inDistance="0.744" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path170">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="118.581" y="200.364" inRotation="0" inDistance="0" outRotation="2.578" outDistance="3.491"/>
+                <CubicDetachedVertex x="115.356" y="208.188" inRotation="-1.669" inDistance="3.162" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path169">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="109.402" y="197.591" inRotation="0" inDistance="0" outRotation="2.497" outDistance="1.448"/>
+                <CubicDetachedVertex x="108.098" y="206.22" inRotation="-1.787" inDistance="3.749" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path168">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="128.558" y="211.27" inRotation="0" inDistance="0" outRotation="1.802" outDistance="1.116"/>
+                <CubicDetachedVertex x="128.172" y="215.16" inRotation="-1.442" inDistance="0.006" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path167">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="122.293" y="210.023" inRotation="0" inDistance="0" outRotation="1.605" outDistance="1.877"/>
+                <CubicDetachedVertex x="123.098" y="215.1" inRotation="-1.975" inDistance="1.73" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path166">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="116.82" y="209.031" inRotation="0" inDistance="0" outRotation="2.227" outDistance="2.708"/>
+                <CubicDetachedVertex x="117.63" y="215.716" inRotation="-2.164" inDistance="2.097" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path165">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="110.934" y="206.949" inRotation="0" inDistance="0" outRotation="2.119" outDistance="1.358"/>
+                <CubicDetachedVertex x="112.009" y="216.344" inRotation="-2.202" inDistance="3.188" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path164">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="102.458" y="205.082" inRotation="0" inDistance="0" outRotation="2.276" outDistance="4.503"/>
+                <CubicDetachedVertex x="102.639" y="216.32" inRotation="-2.111" inDistance="4.025" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path163">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="96.103" y="204.485" inRotation="0" inDistance="0" outRotation="2.843" outDistance="4.184"/>
+                <CubicDetachedVertex x="93.937" y="215.276" inRotation="-2.111" inDistance="3.477" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path162">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="88.967" y="202.185" inRotation="0" inDistance="0" outRotation="2.773" outDistance="2.98"/>
+                <CubicDetachedVertex x="88.144" y="214.15" inRotation="-2.335" inDistance="3.946" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path161">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="81.635" y="201.027" inRotation="0" inDistance="0" outRotation="1.92" outDistance="3.527"/>
+                <CubicDetachedVertex x="81.344" y="212.144" inRotation="-2.335" inDistance="3.559" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path160">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="104.308" y="195.764" inRotation="0" inDistance="0" outRotation="3.132" outDistance="3.542"/>
+                <CubicDetachedVertex x="101.435" y="204.041" inRotation="-2.262" inDistance="3.422" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path159">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="98.285" y="193.854" inRotation="0" inDistance="0" outRotation="3.025" outDistance="4.198"/>
+                <CubicDetachedVertex x="94.693" y="201.066" inRotation="-1.774" inDistance="3.661" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path158">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="90.903" y="190.61" inRotation="0" inDistance="0" outRotation="2.061" outDistance="3.416"/>
+                <CubicDetachedVertex x="89.541" y="200.208" inRotation="-1.975" inDistance="3.436" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path157">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="85.993" y="189.089" inRotation="0" inDistance="0" outRotation="2.699" outDistance="1.882"/>
+                <CubicDetachedVertex x="84.795" y="197.227" inRotation="-1.975" inDistance="4.214" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path156">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="80.349" y="186.344" inRotation="0" inDistance="0" outRotation="2.709" outDistance="2.087"/>
+                <CubicDetachedVertex x="79.412" y="195.585" inRotation="-1.975" inDistance="3.619" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path155">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="144.716" y="178.737" inRotation="0" inDistance="0" outRotation="1.116" outDistance="2.856"/>
+                <CubicDetachedVertex x="146.522" y="187.751" inRotation="-1.323" inDistance="2.775" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path154">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="113.177" y="184.416" inRotation="0" inDistance="0" outRotation="1.297" outDistance="3.303"/>
+                <CubicDetachedVertex x="114.467" y="194.437" inRotation="-1.459" inDistance="3.01" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path153">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="105.041" y="184.45" inRotation="0" inDistance="0" outRotation="1.915" outDistance="3.349"/>
+                <CubicDetachedVertex x="104.777" y="194.278" inRotation="-2.01" inDistance="3.373" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path152">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="95.893" y="181.996" inRotation="0" inDistance="0" outRotation="2.882" outDistance="5.054"/>
+                <CubicDetachedVertex x="93.235" y="190.898" inRotation="-2.202" inDistance="4.369" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path151">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="87.277" y="178.694" inRotation="0" inDistance="0" outRotation="3.016" outDistance="4.753"/>
+                <CubicDetachedVertex x="83.825" y="187.34" inRotation="-1.877" inDistance="4.107" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path150">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="80.32" y="175.093" inRotation="0" inDistance="0" outRotation="2.872" outDistance="4.72"/>
+                <CubicDetachedVertex x="78.024" y="183" inRotation="-1.774" inDistance="3.386" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path149">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="122.438" y="183.324" inRotation="0" inDistance="0" outRotation="1.324" outDistance="3.322"/>
+                <CubicDetachedVertex x="124.353" y="193.453" inRotation="-1.459" inDistance="3.25" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path148">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="134.804" y="181.009" inRotation="0" inDistance="0" outRotation="0.988" outDistance="2.668"/>
+                <CubicDetachedVertex x="136.23" y="190.858" inRotation="-1.127" inDistance="2.742" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path147">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="151.825" y="176.056" inRotation="0" inDistance="0" outRotation="0.511" outDistance="2.074"/>
+                <CubicDetachedVertex x="153.662" y="185.388" inRotation="-0.807" inDistance="2.187" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path146">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="161.105" y="170.461" inRotation="0" inDistance="0" outRotation="0.36" outDistance="1.982"/>
+                <CubicDetachedVertex x="166.246" y="179.036" inRotation="-1.55" inDistance="4.122" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path142">
+            <PointsPath isClosed="true" name="Path">
+                <CubicDetachedVertex x="78.29" y="185.711" inRotation="0" inDistance="0" outRotation="2.993" outDistance="2.449"/>
+                <CubicDetachedVertex x="77.932" y="194.583" inRotation="-2.546" inDistance="1.788" outRotation="0.595" outDistance="1.788"/>
+                <CubicDetachedVertex x="159.215" y="212.256" inRotation="3.051" inDistance="41.247" outRotation="-0.091" outDistance="10.643"/>
+                <CubicDetachedVertex x="162.178" y="197.058" inRotation="-0.933" inDistance="3.731" outRotation="2.209" outDistance="6.682"/>
+                <CubicDetachedVertex x="130.455" y="202.431" inRotation="0.112" inDistance="17.346" outRotation="-3.029" outDistance="17.346"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path143">
+            <PointsPath isClosed="true" name="Path">
+                <CubicDetachedVertex x="110.75" y="206.642" inRotation="0.168" inDistance="9.615" outRotation="-2.973" outDistance="29.88"/>
+                <CubicDetachedVertex x="76.047" y="208.244" inRotation="-1.413" inDistance="12.963" outRotation="1.728" outDistance="3.223"/>
+                <CubicDetachedVertex x="127.715" y="215.198" inRotation="3.008" inDistance="34.869" outRotation="-0.134" outDistance="11.613"/>
+                <CubicDetachedVertex x="148.943" y="210.86" inRotation="1.333" inDistance="1.984" outRotation="-1.809" outDistance="4.378"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path141">
+            <PointsPath isClosed="true" name="Path">
+                <CubicDetachedVertex x="78.105" y="172.865" inRotation="2.619" inDistance="12.415" outRotation="0.692" outDistance="8.469"/>
+                <CubicDetachedVertex x="112.994" y="184.11" inRotation="3.07" inDistance="14.524" outRotation="-0.072" outDistance="14.524"/>
+                <CubicDetachedVertex x="154.153" y="174.737" inRotation="2.588" inDistance="4.595" outRotation="-0.553" outDistance="4.595"/>
+                <CubicDetachedVertex x="163.412" y="167.375" inRotation="1.964" inDistance="1.622" outRotation="-1.178" outDistance="1.622"/>
+                <CubicDetachedVertex x="168.479" y="170.491" inRotation="-1.835" inDistance="2.769" outRotation="1.307" outDistance="2.769"/>
+                <CubicDetachedVertex x="163.145" y="181.866" inRotation="-0.544" inDistance="5.761" outRotation="2.597" outDistance="5.761"/>
+                <CubicDetachedVertex x="104.945" y="194.425" inRotation="0.194" inDistance="19.945" outRotation="-2.948" outDistance="19.945"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path144">
+            <PointsPath isClosed="true" name="Path">
+                <CubicDetachedVertex x="161.09" y="182.841" inRotation="-1.975" inDistance="2.026" outRotation="1.42" outDistance="2.89"/>
+                <CubicDetachedVertex x="156.467" y="192.068" inRotation="-0.34" inDistance="5.668" outRotation="2.801" outDistance="5.668"/>
+                <CubicDetachedVertex x="123.007" y="203.211" inRotation="0.153" inDistance="12.308" outRotation="-2.988" outDistance="12.308"/>
+                <CubicDetachedVertex x="91.184" y="193.48" inRotation="1.947" inDistance="2.68" outRotation="-1.195" outDistance="2.68"/>
+                <CubicDetachedVertex x="97.445" y="186.85" inRotation="-2.681" inDistance="9.912" outRotation="0.461" outDistance="9.912"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path145">
+            <PointsPath isClosed="true" name="Path">
+                <CubicDetachedVertex x="159.779" y="188.255" inRotation="0" inDistance="0" outRotation="-0.083" outDistance="1.834"/>
+                <CubicDetachedVertex x="164.56" y="193.163" inRotation="-1.748" inDistance="1.931" outRotation="1.394" outDistance="1.931"/>
+                <CubicDetachedVertex x="161.745" y="200.47" inRotation="-0.178" inDistance="1.687" outRotation="2.964" outDistance="1.687"/>
+                <StraightVertex x="141.982" y="205.652"/>
+                <StraightVertex x="127.487" y="203.482"/>
+                <CubicDetachedVertex x="130.919" y="199.338" inRotation="2.766" inDistance="1.112" outRotation="-0.375" outDistance="1.112"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="0.863" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path140">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="119.212" y="171.886" inRotation="0" inDistance="0" outRotation="0.381" outDistance="11.194"/>
+                <CubicDetachedVertex x="140.742" y="194.737" inRotation="-2.256" inDistance="9.861" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Stroke thickness="2.299" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path139">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="96.067" y="171.804" inRotation="0" inDistance="0" outRotation="-2.034" outDistance="5.366"/>
+                <CubicDetachedVertex x="88.049" y="157.619" inRotation="1.015" inDistance="5.169" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Stroke thickness="2.299" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path138">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="95.29" y="145.494" inRotation="0" inDistance="0" outRotation="-2.478" outDistance="2.684"/>
+                <CubicDetachedVertex x="90.678" y="139.412" inRotation="0.987" inDistance="2.536" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Stroke thickness="2.299" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path137">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="198.375" y="256.529" inRotation="0" inDistance="0" outRotation="-2.228" outDistance="4.301"/>
+                <CubicDetachedVertex x="189.965" y="246.499" inRotation="0.909" inDistance="4.1" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Stroke thickness="2.299" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path136">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="148.291" y="208.786" inRotation="0" inDistance="0" outRotation="0.5" outDistance="8.726"/>
+                <CubicDetachedVertex x="164.001" y="227.576" inRotation="-2.358" inDistance="8.089" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Stroke thickness="2.299" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path135">
+            <PointsPath isClosed="true" name="Path">
+                <CubicDetachedVertex x="4" y="69.746" inRotation="0" inDistance="0" outRotation="1.187" outDistance="3.426"/>
+                <StraightVertex x="33.594" y="126.944"/>
+                <StraightVertex x="40.984" y="132.882"/>
+                <StraightVertex x="40.205" y="126.129"/>
+                <StraightVertex x="50.734" y="131.616"/>
+                <StraightVertex x="47.342" y="113.811"/>
+                <StraightVertex x="68.009" y="124.858"/>
+                <StraightVertex x="56.841" y="106.851"/>
+                <StraightVertex x="72.275" y="111.584"/>
+                <StraightVertex x="63.741" y="102.285"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="4.859" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="rect134">
+            <PointsPath isClosed="true" name="Path">
+                <StraightVertex x="35.195" y="128.415"/>
+                <StraightVertex x="64.326" y="103.538"/>
+                <StraightVertex x="228" y="263.338"/>
+                <StraightVertex x="198.868" y="288.214"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FF86594B" name="C"/></Fill>
+            <Stroke thickness="5.047" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path128">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="147.822" y="167.25" inRotation="0" inDistance="0" outRotation="1.736" outDistance="10.458"/>
+                <CubicDetachedVertex x="129.337" y="192.26" inRotation="-0.863" inDistance="9.879" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Stroke thickness="2.299" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path127">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="141.991" y="146.621" inRotation="0" inDistance="0" outRotation="-0.649" outDistance="5.559"/>
+                <CubicDetachedVertex x="154.832" y="135.856" inRotation="2.404" inDistance="5.283" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Stroke thickness="2.299" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path126">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="169.411" y="139.204" inRotation="0" inDistance="0" outRotation="-1.092" outDistance="2.596"/>
+                <CubicDetachedVertex x="174.617" y="133.543" inRotation="2.378" inDistance="2.581" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Stroke thickness="2.299" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path125">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="79.204" y="259.37" inRotation="0" inDistance="0" outRotation="-0.835" outDistance="4.328"/>
+                <CubicDetachedVertex x="87.583" y="249.318" inRotation="2.302" inDistance="4.123" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Stroke thickness="2.299" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path124">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="116.519" y="202.572" inRotation="0" inDistance="0" outRotation="1.87" outDistance="8.255"/>
+                <CubicDetachedVertex x="100.81" y="221.363" inRotation="-0.967" inDistance="7.972" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Stroke thickness="2.299" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path123">
+            <PointsPath isClosed="true" name="Path">
+                <CubicDetachedVertex x="225.592" y="38.559" inRotation="0" inDistance="0" outRotation="2.565" outDistance="3.586"/>
+                <StraightVertex x="173.113" y="79.53"/>
+                <StraightVertex x="168.769" y="87.627"/>
+                <StraightVertex x="175.659" y="85.208"/>
+                <StraightVertex x="172.59" y="95.985"/>
+                <StraightVertex x="190.414" y="88.413"/>
+                <StraightVertex x="184.1" y="109.639"/>
+                <StraightVertex x="200.149" y="95.092"/>
+                <StraightVertex x="199.125" y="110.044"/>
+                <StraightVertex x="206.705" y="100.068"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="4.859" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="rect123">
+            <PointsPath isClosed="true" name="Path">
+                <StraightVertex x="171.979" y="81.331"/>
+                <StraightVertex x="205.539" y="100.91"/>
+                <StraightVertex x="79.629" y="287.487"/>
+                <StraightVertex x="46.068" y="267.908"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FF86594B" name="C"/></Fill>
+            <Stroke thickness="5.047" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path134">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="127.199" y="153.707" inRotation="0" inDistance="0" outRotation="1.074" outDistance="10.621"/>
+                <CubicDetachedVertex x="127.787" y="183.957" inRotation="-1.515" inDistance="9.559" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Stroke thickness="2.299" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path133">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="109.505" y="139.965" inRotation="0" inDistance="0" outRotation="-1.283" outDistance="5.317"/>
+                <CubicDetachedVertex x="113.241" y="124.348" inRotation="1.762" inDistance="5.073" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Stroke thickness="2.299" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path132">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="127.243" y="119.329" inRotation="0" inDistance="0" outRotation="-1.755" outDistance="2.561"/>
+                <CubicDetachedVertex x="127.944" y="111.938" inRotation="1.734" inDistance="2.481" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Stroke thickness="2.299" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path131">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="128.931" y="265.408" inRotation="0" inDistance="0" outRotation="-1.485" outDistance="4.18"/>
+                <CubicDetachedVertex x="129.47" y="252.745" inRotation="1.652" inDistance="3.983" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Stroke thickness="2.299" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path130">
+            <PointsPath isClosed="false" name="Path">
+                <CubicDetachedVertex x="123.787" y="199.193" inRotation="0" inDistance="0" outRotation="1.205" outDistance="8.281"/>
+                <CubicDetachedVertex x="122.743" y="222.888" inRotation="-1.624" inDistance="7.776" outRotation="0" outDistance="0"/>
+            </PointsPath>
+            <Stroke thickness="2.299" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path129">
+            <PointsPath isClosed="true" name="Path">
+                <CubicDetachedVertex x="110.013" y="7.281" inRotation="0" inDistance="0" outRotation="1.938" outDistance="3.423"/>
+                <StraightVertex x="92.852" y="68.638"/>
+                <StraightVertex x="94.382" y="77.56"/>
+                <StraightVertex x="98.491" y="71.921"/>
+                <StraightVertex x="102.742" y="82.351"/>
+                <StraightVertex x="112.548" y="66.692"/>
+                <StraightVertex x="120.7" y="87.379"/>
+                <StraightVertex x="124.682" y="66.968"/>
+                <StraightVertex x="133.221" y="79.72"/>
+                <StraightVertex x="133.156" y="67.544"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFC99779" name="C"/></Fill>
+            <Stroke thickness="4.859" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+        <Shape name="rect128">
+            <PointsPath isClosed="true" name="Path">
+                <StraightVertex x="93.055" y="70.712"/>
+                <StraightVertex x="132.731" y="68.851"/>
+                <StraightVertex x="146.906" y="288.139"/>
+                <StraightVertex x="107.23" y="290"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FF86594B" name="C"/></Fill>
+            <Stroke thickness="5.047" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF3E1715" name="C"/></Stroke>
+        </Shape>
+    </Artboard>
     <!-- CandyPink: generated from svg/pink_candy.svg by scripts/svg2rml.py -->
-    <Artboard x="1376" y="-400" width="128" height="128" clip="false" name="CandyPink" id="0:5200">
+    <Artboard x="1688" y="-400" width="128" height="128" clip="false" name="CandyPink" id="0:5200">
         <Shape name="path55">
             <PointsPath isClosed="true" name="Path">
                 <CubicDetachedVertex x="51.663" y="38.531" inRotation="-0.633" inDistance="3.613" outRotation="-0.101" outDistance="7.001"/>
@@ -488,7 +1074,7 @@
         </Shape>
     </Artboard>
     <!-- CandyOrange: generated from svg/orange_candy.svg by scripts/svg2rml.py -->
-    <Artboard x="1584" y="-400" width="128" height="128" clip="false" name="CandyOrange" id="0:5300">
+    <Artboard x="1896" y="-400" width="128" height="128" clip="false" name="CandyOrange" id="0:5300">
         <Shape name="path64">
             <PointsPath isClosed="true" name="Path">
                 <CubicDetachedVertex x="51.663" y="38.531" inRotation="-0.633" inDistance="3.613" outRotation="-0.101" outDistance="7.001"/>
@@ -559,8 +1145,337 @@
             <Fill name="Fill"><SolidColor colorValue="FFFD742E" name="C"/></Fill>
         </Shape>
     </Artboard>
+    <!-- Lamp: generated from svg/lamp.svg by scripts/svg2rml.py -->
+    <Artboard x="2104" y="-400" width="104" height="512" clip="false" name="Lamp" id="0:5600">
+        <Shape name="path104">
+            <PointsPath isClosed="true" name="Path">
+                <CubicDetachedVertex x="61.771" y="11.98" inRotation="-1.571" inDistance="5.322" outRotation="1.571" outDistance="5.322"/>
+                <CubicDetachedVertex x="52.134" y="21.616" inRotation="0" inDistance="5.322" outRotation="3.142" outDistance="5.322"/>
+                <CubicDetachedVertex x="42.498" y="11.98" inRotation="1.571" inDistance="5.322" outRotation="-1.571" outDistance="5.322"/>
+                <CubicDetachedVertex x="52.134" y="2.343" inRotation="3.142" inDistance="5.322" outRotation="0" outDistance="5.322"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FF5E4F6C" name="C"/></Fill>
+            <Stroke thickness="1.821" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF211639" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path103">
+            <PointsPath isClosed="true" name="Path">
+                <CubicDetachedVertex x="62.695" y="21.352" inRotation="-1.571" inDistance="2.297" outRotation="1.571" outDistance="2.297"/>
+                <CubicDetachedVertex x="52.365" y="25.511" inRotation="0" inDistance="5.705" outRotation="3.142" outDistance="5.705"/>
+                <CubicDetachedVertex x="42.036" y="21.352" inRotation="1.571" inDistance="2.297" outRotation="-1.571" outDistance="2.297"/>
+                <CubicDetachedVertex x="52.365" y="17.194" inRotation="3.142" inDistance="5.705" outRotation="0" outDistance="5.705"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FF5E4F6C" name="C"/></Fill>
+            <Stroke thickness="1.821" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF211639" name="C"/></Stroke>
+        </Shape>
+        <Shape name="ellipse103">
+            <PointsPath isClosed="true" name="Path">
+                <CubicDetachedVertex x="62.431" y="27.755" inRotation="-1.547" inDistance="8.173" outRotation="1.595" outDistance="2.297"/>
+                <CubicDetachedVertex x="52.101" y="31.913" inRotation="0" inDistance="5.705" outRotation="3.142" outDistance="5.705"/>
+                <CubicDetachedVertex x="41.772" y="27.755" inRotation="1.554" inDistance="2.297" outRotation="-1.588" outDistance="7.644"/>
+                <CubicDetachedVertex x="51.639" y="19.636" inRotation="-3.141" inDistance="9.302" outRotation="0.001" outDistance="11.051"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FF5E4F6C" name="C"/></Fill>
+            <Stroke thickness="1.821" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF211639" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path101">
+            <PointsPath isClosed="true" name="Path">
+                <StraightVertex x="35.148" y="31.967"/>
+                <StraightVertex x="50.011" y="38.634"/>
+                <StraightVertex x="52.37" y="75.918"/>
+                <StraightVertex x="12.617" y="59.498"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FF2C243C" name="C"/></Fill>
+        </Shape>
+        <Shape name="path100">
+            <PointsPath isClosed="true" name="Path">
+                <StraightVertex x="53.728" y="38.881"/>
+                <StraightVertex x="55.252" y="74.807"/>
+                <StraightVertex x="92.988" y="59.622"/>
+                <StraightVertex x="68.495" y="31.844"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FF2C243C" name="C"/></Fill>
+        </Shape>
+        <Shape name="path102">
+            <PointsPath isClosed="true" name="Path">
+                <StraightVertex x="39.407" y="26.906"/>
+                <StraightVertex x="33.852" y="27.646"/>
+                <StraightVertex x="11.383" y="56.165"/>
+                <StraightVertex x="2.37" y="58.757"/>
+                <StraightVertex x="2" y="66.659"/>
+                <StraightVertex x="52.247" y="86.659"/>
+                <StraightVertex x="102" y="67.152"/>
+                <StraightVertex x="101.876" y="59.251"/>
+                <StraightVertex x="93.111" y="55.794"/>
+                <StraightVertex x="69.778" y="27.152"/>
+                <StraightVertex x="66.938" y="27.523"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FF5E4F6C" name="C"/></Fill>
+            <Stroke thickness="2.408" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF211639" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path98">
+            <PointsPath isClosed="true" name="Path">
+                <StraightVertex x="56.198" y="85.301"/>
+                <StraightVertex x="88.543" y="72.091"/>
+                <StraightVertex x="75.457" y="134.93"/>
+                <StraightVertex x="56.198" y="142.955"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFFEDC84" name="C"/></Fill>
+        </Shape>
+        <Shape name="path97">
+            <PointsPath isClosed="true" name="Path">
+                <StraightVertex x="15.457" y="72.338"/>
+                <StraightVertex x="48.42" y="84.93"/>
+                <StraightVertex x="48.296" y="143.078"/>
+                <StraightVertex x="28.42" y="134.683"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FFFEDC84" name="C"/></Fill>
+        </Shape>
+        <Shape name="path99">
+            <PointsPath isClosed="true" name="Path">
+                <StraightVertex x="7.432" y="66.041"/>
+                <CubicDetachedVertex x="52.494" y="83.449" inRotation="3.142" inDistance="0.617" outRotation="0" outDistance="0.617"/>
+                <StraightVertex x="97.062" y="65.424"/>
+                <StraightVertex x="79.901" y="137.029"/>
+                <StraightVertex x="53.235" y="149.498"/>
+                <StraightVertex x="23.605" y="136.535"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FF5E4F6C" name="C"/></Fill>
+            <Stroke thickness="2.408" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF211639" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path96">
+            <PointsPath isClosed="true" name="Path">
+                <StraightVertex x="27.802" y="134.066"/>
+                <StraightVertex x="20.148" y="137.646"/>
+                <StraightVertex x="20.395" y="144.93"/>
+                <StraightVertex x="51.753" y="157.893"/>
+                <StraightVertex x="83.235" y="144.436"/>
+                <StraightVertex x="83.728" y="137.893"/>
+                <StraightVertex x="76.074" y="133.943"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FF5E4F6C" name="C"/></Fill>
+            <Stroke thickness="2.408" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF211639" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path95">
+            <PointsPath isClosed="true" name="Path">
+                <StraightVertex x="34.192" y="144.946"/>
+                <StraightVertex x="39.692" y="160.397"/>
+                <StraightVertex x="37.16" y="164.587"/>
+                <CubicDetachedVertex x="50.866" y="173.928" inRotation="-3.129" inDistance="14.323" outRotation="0.012" outDistance="14.405"/>
+                <CubicDetachedVertex x="65.095" y="160.746" inRotation="1.083" inDistance="8.201" outRotation="-1.396" outDistance="6.028"/>
+                <StraightVertex x="71.38" y="145.382"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FF3F374E" name="C"/></Fill>
+            <Stroke thickness="2.408" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF211639" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path94">
+            <PointsPath isClosed="true" name="Path">
+                <StraightVertex x="43.654" y="170.677"/>
+                <CubicDetachedVertex x="43.654" y="399.92" inRotation="0" inDistance="0" outRotation="1.947" outDistance="0.572"/>
+                <CubicDetachedVertex x="43.338" y="401.551" inRotation="-1.571" inDistance="0.551" outRotation="1.571" outDistance="3.509"/>
+                <CubicDetachedVertex x="52.791" y="407.906" inRotation="3.142" inDistance="5.22" outRotation="0" outDistance="5.22"/>
+                <CubicDetachedVertex x="62.243" y="401.551" inRotation="1.571" inDistance="3.509" outRotation="-1.571" outDistance="0.613"/>
+                <CubicDetachedVertex x="61.851" y="399.741" inRotation="1.154" inDistance="0.643" outRotation="0" outDistance="0"/>
+                <StraightVertex x="61.851" y="170.677"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FF3F374E" name="C"/></Fill>
+            <Stroke thickness="2.023" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF211639" name="C"/></Stroke>
+        </Shape>
+        <Shape name="ellipse93">
+            <PointsPath isClosed="true" name="Path">
+                <CubicDetachedVertex x="69.137" y="404.936" inRotation="-1.571" inDistance="4.739" outRotation="1.571" outDistance="4.739"/>
+                <CubicDetachedVertex x="52.896" y="413.516" inRotation="0" inDistance="8.97" outRotation="3.142" outDistance="8.97"/>
+                <CubicDetachedVertex x="36.655" y="404.936" inRotation="1.571" inDistance="4.739" outRotation="-1.571" outDistance="4.739"/>
+                <CubicDetachedVertex x="52.896" y="396.356" inRotation="3.142" inDistance="8.97" outRotation="0" outDistance="8.97"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FF3F374E" name="C"/></Fill>
+            <Stroke thickness="1.486" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF211639" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path93">
+            <PointsPath isClosed="true" name="Path">
+                <CubicDetachedVertex x="70.561" y="413.553" inRotation="-1.571" inDistance="4.718" outRotation="1.571" outDistance="4.718"/>
+                <CubicDetachedVertex x="52.764" y="422.095" inRotation="0" inDistance="9.829" outRotation="-3.142" outDistance="9.829"/>
+                <CubicDetachedVertex x="34.968" y="413.553" inRotation="1.571" inDistance="4.718" outRotation="-1.571" outDistance="4.718"/>
+                <CubicDetachedVertex x="53.16" y="397.098" inRotation="3.127" inDistance="17.314" outRotation="-0.015" outDistance="16.69"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FF3F374E" name="C"/></Fill>
+            <Stroke thickness="1.552" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF211639" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path92">
+            <PointsPath isClosed="true" name="Path">
+                <CubicDetachedVertex x="28.571" y="481.304" inRotation="-1.536" inDistance="18.929" outRotation="0.887" outDistance="11.746"/>
+                <CubicDetachedVertex x="77.053" y="479.666" inRotation="2.006" inDistance="10.783" outRotation="-1.649" outDistance="12.209"/>
+                <CubicDetachedVertex x="71.287" y="415.131" inRotation="0.519" inDistance="1.991" outRotation="2.56" outDistance="12.988"/>
+                <CubicDetachedVertex x="36.719" y="414.637" inRotation="0.735" inDistance="12.333" outRotation="-2.407" outDistance="3.736"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FF3F374E" name="C"/></Fill>
+            <Stroke thickness="2.408" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF211639" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path91">
+            <PointsPath isClosed="true" name="Path">
+                <CubicDetachedVertex x="83.014" y="480.723" inRotation="-1.571" inDistance="8.085" outRotation="1.571" outDistance="8.085"/>
+                <CubicDetachedVertex x="52.748" y="495.362" inRotation="0" inDistance="16.715" outRotation="3.142" outDistance="16.715"/>
+                <CubicDetachedVertex x="22.483" y="480.723" inRotation="1.571" inDistance="8.085" outRotation="-1.571" outDistance="8.085"/>
+                <CubicDetachedVertex x="52.748" y="466.083" inRotation="3.142" inDistance="16.715" outRotation="0" outDistance="16.715"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FF3F374E" name="C"/></Fill>
+            <Stroke thickness="2.65" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF211639" name="C"/></Stroke>
+        </Shape>
+        <Shape name="ellipse91">
+            <PointsPath isClosed="true" name="Path">
+                <CubicDetachedVertex x="85.666" y="495.425" inRotation="-1.571" inDistance="8.049" outRotation="1.571" outDistance="8.049"/>
+                <CubicDetachedVertex x="52.502" y="510" inRotation="0" inDistance="18.316" outRotation="-3.142" outDistance="18.316"/>
+                <CubicDetachedVertex x="19.338" y="495.425" inRotation="1.571" inDistance="8.049" outRotation="-1.571" outDistance="8.049"/>
+                <CubicDetachedVertex x="53.24" y="467.348" inRotation="3.128" inDistance="32.265" outRotation="-0.014" outDistance="31.101"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FF3F374E" name="C"/></Fill>
+            <Stroke thickness="2.768" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF211639" name="C"/></Stroke>
+        </Shape>
+    </Artboard>
+    <!-- Fence: generated from svg/fence.svg by scripts/svg2rml.py -->
+    <Artboard x="2288" y="-400" width="442" height="256" clip="false" name="Fence" id="0:5700">
+        <Shape name="rect121">
+            <PointsPath isClosed="true" name="Path">
+                <StraightVertex x="1.597" y="190.217"/>
+                <StraightVertex x="442" y="190.217"/>
+                <StraightVertex x="442" y="216.085"/>
+                <StraightVertex x="1.597" y="216.085"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FF8D5C76" name="C"/></Fill>
+            <Stroke thickness="1.101" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF370E2E" name="C"/></Stroke>
+        </Shape>
+        <Shape name="rect120">
+            <PointsPath isClosed="true" name="Path">
+                <StraightVertex x="0" y="77.481"/>
+                <StraightVertex x="440.403" y="77.481"/>
+                <StraightVertex x="440.403" y="103.35"/>
+                <StraightVertex x="0" y="103.35"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FF8D5C76" name="C"/></Fill>
+            <Stroke thickness="1.101" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF370E2E" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path120">
+            <PointsPath isClosed="true" name="Path">
+                <StraightVertex x="387.16" y="22.556"/>
+                <StraightVertex x="383.249" y="29.262"/>
+                <StraightVertex x="382.923" y="255.681"/>
+                <StraightVertex x="406.388" y="256"/>
+                <StraightVertex x="414.21" y="252.487"/>
+                <StraightVertex x="412.906" y="29.582"/>
+                <StraightVertex x="408.018" y="22.556"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FF8D5C76" name="C"/></Fill>
+            <Stroke thickness="1.113" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF370E2E" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path119">
+            <PointsPath isClosed="true" name="Path">
+                <StraightVertex x="32.256" y="21.912"/>
+                <StraightVertex x="28.423" y="28.618"/>
+                <StraightVertex x="28.104" y="255.048"/>
+                <StraightVertex x="51.098" y="255.367"/>
+                <StraightVertex x="58.763" y="251.854"/>
+                <StraightVertex x="57.486" y="28.938"/>
+                <StraightVertex x="52.695" y="21.912"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FF8D5C76" name="C"/></Fill>
+            <Stroke thickness="1.101" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF370E2E" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path118">
+            <PointsPath isClosed="true" name="Path">
+                <StraightVertex x="89.755" y="0.88"/>
+                <StraightVertex x="75.448" y="24.985"/>
+                <StraightVertex x="74.117" y="246.946"/>
+                <StraightVertex x="76.114" y="248.955"/>
+                <StraightVertex x="104.726" y="246.946"/>
+                <StraightVertex x="104.394" y="25.319"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FF8D5C76" name="C"/></Fill>
+            <Stroke thickness="1.151" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF370E2E" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path117">
+            <PointsPath isClosed="true" name="Path">
+                <StraightVertex x="132.869" y="17.117"/>
+                <StraightVertex x="118.541" y="39.552"/>
+                <StraightVertex x="117.208" y="246.143"/>
+                <StraightVertex x="119.207" y="248.013"/>
+                <StraightVertex x="147.865" y="246.143"/>
+                <StraightVertex x="147.531" y="39.864"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FF8D5C76" name="C"/></Fill>
+            <Stroke thickness="1.111" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF370E2E" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path116">
+            <PointsPath isClosed="true" name="Path">
+                <StraightVertex x="176.432" y="18.995"/>
+                <StraightVertex x="163.424" y="41.22"/>
+                <StraightVertex x="162.214" y="245.875"/>
+                <StraightVertex x="164.029" y="247.727"/>
+                <StraightVertex x="190.045" y="245.875"/>
+                <StraightVertex x="189.743" y="41.529"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FF8D5C76" name="C"/></Fill>
+            <Stroke thickness="1.054" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF370E2E" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path115">
+            <PointsPath isClosed="true" name="Path">
+                <StraightVertex x="309.145" y="12.65"/>
+                <StraightVertex x="295.412" y="35.644"/>
+                <StraightVertex x="294.134" y="247.383"/>
+                <StraightVertex x="296.051" y="249.299"/>
+                <StraightVertex x="323.516" y="247.383"/>
+                <StraightVertex x="323.197" y="35.964"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FF8D5C76" name="C"/></Fill>
+            <Stroke thickness="1.101" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF370E2E" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path114">
+            <PointsPath isClosed="true" name="Path">
+                <StraightVertex x="353.869" y="16.8"/>
+                <StraightVertex x="339.542" y="39.328"/>
+                <StraightVertex x="338.209" y="246.773"/>
+                <StraightVertex x="340.208" y="248.651"/>
+                <StraightVertex x="368.863" y="246.773"/>
+                <StraightVertex x="368.53" y="39.641"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FF8D5C76" name="C"/></Fill>
+            <Stroke thickness="1.113" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF370E2E" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path113">
+            <PointsPath isClosed="true" name="Path">
+                <StraightVertex x="265.725" y="17.749"/>
+                <StraightVertex x="251.393" y="39.968"/>
+                <StraightVertex x="250.06" y="244.567"/>
+                <StraightVertex x="252.06" y="246.418"/>
+                <StraightVertex x="280.723" y="244.567"/>
+                <StraightVertex x="280.39" y="40.277"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FF8D5C76" name="C"/></Fill>
+            <Stroke thickness="1.106" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF370E2E" name="C"/></Stroke>
+        </Shape>
+        <Shape name="path112">
+            <PointsPath isClosed="true" name="Path">
+                <StraightVertex x="221" y="10.415"/>
+                <StraightVertex x="207.267" y="33.409"/>
+                <StraightVertex x="205.99" y="245.147"/>
+                <StraightVertex x="207.906" y="247.063"/>
+                <StraightVertex x="235.371" y="245.147"/>
+                <StraightVertex x="235.052" y="33.728"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FF8D5C76" name="C"/></Fill>
+            <Stroke thickness="1.101" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF370E2E" name="C"/></Stroke>
+        </Shape>
+        <Shape name="rect122">
+            <PointsPath isClosed="true" name="Path">
+                <StraightVertex x="33.698" y="196.979"/>
+                <StraightVertex x="413.862" y="81.681"/>
+                <StraightVertex x="420.757" y="103.613"/>
+                <StraightVertex x="40.593" y="218.911"/>
+            </PointsPath>
+            <Fill name="Fill"><SolidColor colorValue="FF8D5C76" name="C"/></Fill>
+            <Stroke thickness="0.986" cap="round" join="round" name="Stroke"><SolidColor colorValue="FF370E2E" name="C"/></Stroke>
+        </Shape>
+    </Artboard>
     <!-- Moon: generated from svg/moon.svg by scripts/svg2rml.py -->
-    <Artboard x="1792" y="-400" width="160" height="160" clip="false" name="Moon" id="0:5400">
+    <Artboard x="2810" y="-400" width="160" height="160" clip="false" name="Moon" id="0:5400">
         <Shape name="ellipse69">
             <PointsPath isClosed="true" name="Path">
                 <CubicDetachedVertex x="19.836" y="102.747" inRotation="-2.088" inDistance="3.933" outRotation="1.054" outDistance="3.933"/>
@@ -617,7 +1532,7 @@
         </Shape>
     </Artboard>
     <!-- Cloud: generated from svg/cloud.svg by scripts/svg2rml.py -->
-    <Artboard x="2032" y="-400" width="260" height="90" clip="false" name="Cloud" id="0:5500">
+    <Artboard x="3050" y="-400" width="260" height="90" clip="false" name="Cloud" id="0:5500">
         <Shape name="path78">
             <PointsPath isClosed="true" name="Path">
                 <CubicDetachedVertex x="76.661" y="74.748" inRotation="-0.301" inDistance="53.014" outRotation="-2.826" outDistance="6.071"/>

@@ -7,6 +7,7 @@ local harmony = require('lib/harmony')
 local discs = require('lib/discs')
 local echula = require('lib/maps/echula')
 local funky = require('lib/maps/funky')
+local werewolf = require('lib/maps/werewolf')
 
 local function emptyMap(): beatmap.Beatmap
     return {
@@ -256,6 +257,7 @@ return function(): Tests
             test.case('disc lengths match the tracks', function(expect)
                 expect(echula.endBeat).is(144)
                 expect(funky.endBeat).is(200)
+                expect(werewolf.endBeat).is(162)
             end)
         end)
 
@@ -267,6 +269,10 @@ return function(): Tests
                 expect(beatmap.heartbeatAt(funky, 98)).is(true)
                 expect(beatmap.heartbeatAt(funky, 99)).is(false)
                 expect(beatmap.heartbeatAt(funky, 40)).is(false)
+                expect(beatmap.heartbeatAt(werewolf, 95)).is(true) -- the blackout
+                expect(beatmap.heartbeatAt(werewolf, 120)).is(false)
+                expect(beatmap.fogAt(werewolf, 95)).is(1)
+                expect(beatmap.fogAt(werewolf, 102)).is(0)
                 local f0 = beatmap.frostAt(funky, 92)
                 local f1, cracks1 = beatmap.frostAt(funky, 100)
                 local _, cracks2 = beatmap.frostAt(funky, 115.2)
@@ -287,6 +293,43 @@ return function(): Tests
                         if e.kind == 'garlic' and e.beat >= ice.freeze and e.beat < ice.shatter then
                             garlic += 1
                         end
+                    end
+                end
+                expect(garlic).is(0)
+            end)
+            test.case('the street keeps accelerating after the blackout', function(expect)
+                local storm = beatmap.bar(26) + 2
+                local last = beatmap.bar(41)
+                local function speed(b: number): number
+                    return (beatmap.distanceAt(werewolf, b + 0.005) - beatmap.distanceAt(werewolf, b - 0.005)) / 0.01
+                end
+                -- normal speed before (and on the other discs)
+                expect(beatmap.distanceAt(werewolf, 10)).is(10)
+                expect(beatmap.distanceAt(echula, 100)).is(100)
+                expect(math.abs(speed(storm - 1) - 1) < 1e-6).is(true)
+                -- the lift to x1.2, then x1.6 on the last hit
+                expect(math.abs(speed(beatmap.bar(27)) - 1.2) < 1e-3).is(true)
+                expect(math.abs(speed(last + 1) - 1.6) < 1e-6).is(true)
+                -- it never stops speeding up, and never jumps
+                local rising = true
+                local prev = speed(storm)
+                local b = storm
+                while b < last do
+                    b += 0.25
+                    local v = speed(b)
+                    if v < prev - 1e-6 or v - prev > 0.05 then
+                        rising = false
+                    end
+                    prev = v
+                end
+                expect(rising).is(true)
+                expect(speed(beatmap.bar(34)) > speed(beatmap.bar(30))).is(true)
+            end)
+            test.case('the blackout has no garlic', function(expect)
+                local garlic = 0
+                for _, e in werewolf.events do
+                    if e.kind == 'garlic' and e.beat > beatmap.bar(24) and e.beat < beatmap.bar(26) + 2 then
+                        garlic += 1
                     end
                 end
                 expect(garlic).is(0)
@@ -335,6 +378,7 @@ return function(): Tests
                 expect(hudtext.prompt(echula, echula.tutorialEnd + 1)).is('')
                 expect(hudtext.prompt(echula, 81)).is('The fog is rolling in...\nremember the trail!')
                 expect(hudtext.prompt(funky, 95)).is('Brrr... the night froze.\nGlide with the moon...')
+                expect(hudtext.prompt(werewolf, 95)).is('Lights out... something howls.\nFollow your heartbeat!')
             end)
             test.case('results text', function(expect)
                 local s: hudtext.Summary = { over = true, score = 1500, perfect = 1, good = 2, candies = 4, totalCandies = 10, maxCombo = 5, grade = 'fail' }

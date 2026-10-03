@@ -271,6 +271,9 @@
                 <ScriptInputArtboard artboardId="0:5300" name="candyOrangeArt"/>
                 <ScriptInputArtboard artboardId="0:5400" name="moonArt"/>
                 <ScriptInputArtboard artboardId="0:5500" name="cloudArt"/>
+                <ScriptInputArtboard artboardId="0:5600" name="lampArt"/>
+                <ScriptInputArtboard artboardId="0:5700" name="fenceArt"/>
+                <ScriptInputArtboard artboardId="0:5800" name="stakeArt"/>
             </ScriptedLayout>
         </LayoutComponent>
 
@@ -663,11 +666,13 @@
     <ScriptAsset file="lib/discs.luau" folderPath="lib" isModule="true" name="discs" id="0:88"/>
     <ScriptAsset file="lib/maps/echula.luau" folderPath="lib/maps" isModule="true" name="echula" id="0:89"/>
     <ScriptAsset file="lib/maps/funky.luau" folderPath="lib/maps" isModule="true" name="funky" id="0:90"/>
+    <ScriptAsset file="lib/maps/werewolf.luau" folderPath="lib/maps" isModule="true" name="werewolf" id="0:91"/>
     <ScriptAsset file="world.luau" name="world" id="0:85"/>
     <ScriptAsset file="tests/logic_tests.luau" folderPath="tests" name="logic_tests" id="0:86"/>
 
     <AudioAsset file="assets/audio/echula_theme.mp3" name="echula_theme" id="0:70"/>
     <AudioAsset file="assets/audio/funky_counting.mp3" name="funky_counting" id="0:78"/>
+    <AudioAsset file="assets/audio/werewolf_wipeout.mp3" name="werewolf_wipeout" id="0:79"/>
     <AudioAsset file="assets/audio/sfx/heartbeat.wav" name="heartbeat" id="0:71"/>
     <AudioAsset file="assets/audio/sfx/ping_perfect.wav" name="ping_perfect" id="0:72"/>
     <AudioAsset file="assets/audio/sfx/ping_good.wav" name="ping_good" id="0:73"/>

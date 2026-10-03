@@ -13,8 +13,19 @@ export type Event = {
 }
 
 -- A stretch of the song. `fog` (0..1) thickens the street fog (sonar.wgsl cfg.y);
--- `prompt` shows for `promptBeats` beats from `from`.
-export type Section = { from: number, name: string, fog: number?, prompt: string?, promptBeats: number? }
+-- `prompt` shows for `promptBeats` beats from `from`. `speed` multiplies how fast the
+-- street scrolls (1 = normal) from this section on, until a later section sets another.
+-- It ramps linearly over `ramp` beats (default SPEED_RAMP), so nothing on the street
+-- jumps; a long ramp is a continuous acceleration.
+export type Section = {
+    from: number,
+    name: string,
+    fog: number?,
+    prompt: string?,
+    promptBeats: number?,
+    speed: number?,
+    ramp: number?,
+}
 
 -- A color burst when the music changes (sonar.wgsl "burst"). power 0..1.
 export type Burst = { beat: number, power: number }
@@ -128,6 +139,37 @@ function M.fogAt(map: Beatmap, beat: number): number
         end
     end
     return fog
+end
+
+M.SPEED_RAMP = 2 -- beats a speed change takes by default
+
+-- Distance the street has scrolled at `beat`, in beats at normal speed: the integral
+-- of the sections' speeds, each change ramping linearly over its `ramp`. Things on the
+-- street sit at distanceAt(their beat) - distanceAt(now) ahead of the bat. A speed
+-- change must not start before the previous one's ramp has finished.
+function M.distanceAt(map: Beatmap, beat: number): number
+    local dist = 0
+    local pos = 0
+    local cur = 1
+    for _, s in map.sections do
+        local sp = s.speed
+        if sp ~= nil and sp ~= cur then
+            local a = s.from
+            if beat <= a then
+                break
+            end
+            local ramp = s.ramp or M.SPEED_RAMP
+            dist += (a - pos) * cur
+            local t = beat - a
+            if t < ramp then
+                return dist + cur * t + (sp - cur) * t * t / (2 * ramp)
+            end
+            dist += ramp * (cur + sp) / 2
+            pos = a + ramp
+            cur = sp
+        end
+    end
+    return dist + (beat - pos) * cur
 end
 
 -- Whether a heartbeat belongs on integer beat `beat`.

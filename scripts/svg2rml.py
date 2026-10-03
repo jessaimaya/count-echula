@@ -262,9 +262,26 @@ def collect(el, m, st, nodes):
         ry = float(el.get('ry') or el.get('r'))
         subs = ellipse_path(float(el.get('cx', 0)), float(el.get('cy', 0)), rx, ry)
         items.append(('shape', eid, transform_subs(subs, m), st, m))
+    elif tag == 'rect':
+        x, y = float(el.get('x', 0)), float(el.get('y', 0))
+        w, h = float(el.get('width')), float(el.get('height'))
+        # rounded corners (rx/ry) are not used by the art yet; drawn square
+        subs = [((x, y), [('L', (x + w, y)), ('L', (x + w, y + h)), ('L', (x, y + h)), ('L', (x, y))], True)]
+        items.append(('shape', eid, transform_subs(subs, m), st, m))
     if eid in nodes:
         return [('node', nodes[eid], items)]
     return items
+
+
+def anchor_points(items):
+    for it in items:
+        if it[0] == 'shape':
+            for start, segs, _ in it[2]:
+                yield start
+                for sg in segs:
+                    yield sg[-1]
+        else:
+            yield from anchor_points(it[2])
 
 
 def all_points(items):
@@ -313,10 +330,11 @@ def vertices(start, segs, closed, ox, oy):
 
 
 class Emitter:
-    def __init__(self, g, scale, ids):
+    def __init__(self, g, scale, ids, tips):
         self.g = g          # svg space -> artboard space
         self.scale = scale  # artboard units per svg unit
         self.ids = ids
+        self.tips = tips    # node name -> (marker name, 'min' or 'max' x)
         self.node_ids = {}
         self.out = []
 
@@ -330,6 +348,13 @@ class Emitter:
                 nid = self.ids.next()
                 self.node_ids[name] = nid
                 self.out.append('%s<Node x="%s" y="%s" name="%s" id="%s">' % (pad, f(px - ox), f(py - oy), name, nid))
+                if name in self.tips:
+                    # an empty marker at the node's outermost vertex, moving with it
+                    marker, side = self.tips[name]
+                    pts = [apply(self.g, q) for q in anchor_points(kids)]
+                    tip = min(pts, key=lambda q: q[0]) if side == 'min' else max(pts, key=lambda q: q[0])
+                    self.out.append('%s    <Node x="%s" y="%s" name="%s" id="%s"/>'
+                                    % (pad, f(tip[0] - px), f(tip[1] - py), marker, self.ids.next()))
                 self.emit(kids, px, py, pivots, depth + 1)
                 self.out.append('%s</Node>' % pad)
             else:
@@ -380,14 +405,21 @@ ASSETS = [
          root='Body', root_pivot=frac(0.5, 0.55),
          nodes={'g45': 'WingL', 'g41': 'WingR', 'path34': 'EarL', 'path42': 'EarR',
                 'g42': 'Head', 'path39': 'Tuft', 'path38': 'Band', 'g38': 'CupL', 'g47': 'CupR'},
+         # wingtip markers (streak trails start there) ride the flapping wings
+         tips={'WingL': ('WingTipL', 'min'), 'WingR': ('WingTipR', 'max')},
          pivots={'WingL': frac(0.97, 0.25), 'WingR': frac(0.03, 0.25),
                  'EarL': frac(0.5, 0.95), 'EarR': frac(0.5, 0.95),
                  'Head': frac(0.5, 0.5), 'Tuft': frac(0.5, 0.5), 'Band': frac(0.5, 0.5),
                  'CupL': frac(0.5, 0.5), 'CupR': frac(0.5, 0.5)}),
     # 3D props: transparent, feet on the bottom edge (ASSETS.md §2)
     dict(svg='garlic.svg', name='Garlic', id=5100, size=(256, 288), box=(6, 6, 250, 286), align='bottom'),
+    dict(svg='wooden_stake.svg', name='Stake', id=5800, size=(232, 292), box=(4, 4, 228, 290), align='bottom'),
     dict(svg='pink_candy.svg', name='CandyPink', id=5200, size=(128, 128), box=(4, 4, 124, 124), align='center'),
     dict(svg='orange_candy.svg', name='CandyOrange', id=5300, size=(128, 128), box=(4, 4, 124, 124), align='center'),
+    # street dressing (texture props): the lamp faces the camera, the fence runs along the street
+    dict(svg='lamp.svg', name='Lamp', id=5600, size=(104, 512), box=(2, 2, 102, 510), align='bottom'),
+    # a front view that tiles: no margin, so the rails meet the next section's
+    dict(svg='fence.svg', name='Fence', id=5700, size=(442, 256), box=(0, 0, 442, 256), align='bottom'),
     # sky, drawn as vectors over the sonar sky
     dict(svg='moon.svg', name='Moon', id=5400, size=(160, 160), box=(0, 0, 160, 160), align='center'),
     dict(svg='cloud.svg', name='Cloud', id=5500, size=(260, 90), box=(0, 0, 260, 90), align='bottom'),
@@ -407,7 +439,7 @@ def build_asset(a, stage_x):
     ty = by1 - h if a['align'] == 'bottom' else by0 + ((by1 - by0) - h) / 2
     g = (s, 0, 0, s, tx - x0 * s, ty - y0 * s)
 
-    em = Emitter(g, s, ids)
+    em = Emitter(g, s, ids, a.get('tips', {}))
     W, H = a['size']
     aid = '0:%d' % a['id']
     pivots = dict(a.get('pivots', {}))
@@ -422,12 +454,9 @@ def build_asset(a, stage_x):
 
 
 def echula_extras(em, ids):
-    """Wingtip markers and the beat-synced flap: down on the beat (frame 0)."""
+    """The beat-synced flap: down on the beat (frame 0)."""
     out = []
     n = em.node_ids
-    out.append('        <!-- Wingtips (streak trails start here) -->')
-    out.append('        <Node x="16" y="112" name="WingTipL" id="%s"/>' % ids.next())
-    out.append('        <Node x="244" y="112" name="WingTipR" id="%s"/>' % ids.next())
 
     ease_out = '<CubicEaseInterpolator x1="0.2" y1="0" x2="0.3" y2="1"/>'
     ease_io = '<CubicEaseInterpolator x1="0.45" y1="0" x2="0.55" y2="1"/>'

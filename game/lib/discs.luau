@@ -2,6 +2,7 @@
 local beatmap = require('lib/beatmap')
 local echula = require('lib/maps/echula')
 local funky = require('lib/maps/funky')
+local werewolf = require('lib/maps/werewolf')
 
 export type Disc = {
     title: string,
@@ -30,6 +31,14 @@ M.list = {
         preview = 0.314 + beatmap.bar(18) * 0.5,
         color = Color.rgb(255, 79, 182),
         map = funky,
+    },
+    {
+        title = 'Werewolf Wipeout',
+        sleeve = 'Side C  ·  1:25  ·  Wild',
+        audio = 'werewolf_wipeout',
+        preview = 0.311 + beatmap.bar(29) * 60 / 115.396,
+        color = Color.rgb(178, 107, 255),
+        map = werewolf,
     },
 } :: { Disc }
 
