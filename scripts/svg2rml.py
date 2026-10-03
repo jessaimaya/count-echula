@@ -17,6 +17,9 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+# Artboards other artboards nest (Echula sits in "Echula Intro", game/intro.rml).
+COMPONENTS = {'Echula'}
+COMPONENT = ' isComponent="true"'
 SVG = '{http://www.w3.org/2000/svg}'
 
 # --------------------------------------------------------------- matrices
@@ -448,8 +451,8 @@ def build_asset(a, stage_x):
         items = [('node', a['root'], items)]
     em.emit(items, 0, 0, pivots, 2)
     head = ['    <!-- %s: generated from svg/%s by scripts/svg2rml.py -->' % (a['name'], a['svg']),
-            '    <Artboard x="%d" y="-400" width="%d" height="%d" clip="false" name="%s" id="%s">'
-            % (stage_x, W, H, a['name'], aid)]
+            '    <Artboard x="%d" y="-400" width="%d" height="%d" clip="false"%s name="%s" id="%s">'
+            % (stage_x, W, H, COMPONENT if a['name'] in COMPONENTS else '', a['name'], aid)]
     return aid, em, head, W, ids
 
 
@@ -513,6 +516,8 @@ def main():
             lines += echula_extras(em, ids)
         lines += body
         lines.append('    </Artboard>')
+        if a['name'] in COMPONENTS:
+            lines.append('    <ComponentAsset artboardId="%s" name="%s"/>' % (aid, a['name']))
         print('%-12s %s  nodes: %s' % (a['name'], aid, ', '.join('%s=%s' % kv for kv in em.node_ids.items())))
     lines.append('</Rive>')
     (ROOT / 'game' / 'art.rml').write_text('\n'.join(lines) + '\n')
