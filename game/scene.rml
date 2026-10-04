@@ -1376,6 +1376,13 @@
     <AudioAsset file="assets/audio/sfx/candy.wav" name="candy" id="0:75"/>
     <AudioAsset file="assets/audio/sfx/hit.wav" name="hit" id="0:76"/>
     <AudioAsset file="assets/audio/sfx/streak_break.wav" name="streak_break" id="0:77"/>
+    <!-- scripts/make_sfx.py -->
+    <AudioAsset file="assets/audio/sfx/burst_whoosh.wav" name="burst_whoosh" id="0:1101"/>
+    <AudioAsset file="assets/audio/sfx/gate_rattle.wav" name="gate_rattle" id="0:1102"/>
+    <AudioAsset file="assets/audio/sfx/gate_slam.wav" name="gate_slam" id="0:1103"/>
+    <AudioAsset file="assets/audio/sfx/ui_tick.wav" name="ui_tick" id="0:1104"/>
+    <AudioAsset file="assets/audio/sfx/ui_click.wav" name="ui_click" id="0:1105"/>
+    <AudioAsset file="assets/audio/sfx/ui_flip.wav" name="ui_flip" id="0:1106"/>
     <!-- music-box notes C5..C7: C major plus C# and Bb for disc 2 (lib/harmony.luau) -->
     <AudioAsset file="assets/audio/notes/note_72.wav" name="note_72" id="0:1072"/>
     <AudioAsset file="assets/audio/notes/note_73.wav" name="note_73" id="0:1073"/>

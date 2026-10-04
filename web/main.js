@@ -127,8 +127,8 @@
     const vm = r.viewModelInstance;
     const count = vm?.number("wakeCount");
     if (count) count.value += 1;
-    // The script never sees that write on the web (a page write doesn't reach its view
-    // model), so mid-song press its pause button for it: the top-right PAUSE_SIZE square.
+    // And mid-song press its pause button (the top-right PAUSE_SIZE square): a pointer
+    // reaches the script at once and is testable headless, where advance never runs.
     if (vm?.number("mode")?.value === 1 && !vm.boolean("paused")?.value) {
       const b = canvas.getBoundingClientRect();
       const o = { clientX: b.right - 10, clientY: b.top + 10, bubbles: true, button: 0 };

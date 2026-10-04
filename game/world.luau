@@ -228,6 +228,12 @@ type Sfx = {
     heartbeat: AudioSource?,
     candy: AudioSource?,
     hit: AudioSource?,
+    whoosh: AudioSource?,
+    gateRattle: AudioSource?,
+    gateSlam: AudioSource?,
+    tick: AudioSource?,
+    click: AudioSource?,
+    flip: AudioSource?,
 }
 
 type World = {
@@ -594,6 +600,7 @@ end
 local function flipDisc(self: World, dir: number)
     selectDisc(self, self.disc + dir, true)
     fire(self.discFire)
+    playSfx(self.sfx.flip, 0.7)
 end
 
 local function setPaused(self: World, paused: boolean)
@@ -732,6 +739,7 @@ local function toMenu(self: World)
 end
 
 local function pauseSong(self: World)
+    playSfx(self.sfx.click, 0.8)
     self.pausedSong = songNow(self)
     self.resumeAt = 0
     local s = self.sound
@@ -746,6 +754,7 @@ end
 
 -- Resume: the overlay closes, a short count-in, then the song continues.
 local function resumeSong(self: World)
+    playSfx(self.sfx.click, 0.8)
     setPaused(self, false)
     self.resumeAt = self.time + COUNTDOWN_BEATS * beatclock.beatLen(self.clock)
 end
@@ -892,6 +901,9 @@ local function lookAt(self: World, pos: Vector?)
         lx, ly = dx * k, dy * k
         hover = math.abs(f.x - BUTTON_X) <= 135 and math.abs(f.y - 730) <= 36
         if self.startHover ~= nil then
+            if hover and not self.startHover.value then
+                playSfx(self.sfx.tick, 0.6)
+            end
             self.startHover.value = hover
         end
     elseif self.time - self.pointerAt < 2 then
@@ -905,6 +917,7 @@ end
 -- 250 ms blend), so the song starts right away.
 local function pressStart(self: World)
     fire(self.startPress)
+    playSfx(self.sfx.click, 0.8)
     if self.startHover ~= nil then
         self.startHover.value = false
     end
@@ -993,8 +1006,12 @@ local function pointerMove(self: World, event: PointerEvent)
     end
     if self.paused then
         if self.resumeHover ~= nil and self.menuHover ~= nil then
-            self.resumeHover.value = inButton(self, event.position, RESUME_Y)
-            self.menuHover.value = inButton(self, event.position, MENU_Y)
+            local resume, menu = inButton(self, event.position, RESUME_Y), inButton(self, event.position, MENU_Y)
+            if (resume and not self.resumeHover.value) or (menu and not self.menuHover.value) then
+                playSfx(self.sfx.tick, 0.6)
+            end
+            self.resumeHover.value = resume
+            self.menuHover.value = menu
         end
         return
     end
@@ -1367,6 +1384,7 @@ local function advance(self: World, seconds: number): boolean
         startFlip(self, if self.burstIdx % 2 == 0 then 1 else -1,
             FLIP_BEATS * beatclock.beatLen(self.clock))
         self.burstPower = bursts[self.burstIdx].power
+        playSfx(self.sfx.whoosh, 0.5 + 0.3 * math.min(1, self.burstPower))
         self.burstIdx += 1
     end
     local target = if self.beat >= self.plan.flyFrom then 0
@@ -1400,9 +1418,33 @@ local function advance(self: World, seconds: number): boolean
         self.pings = 1
         addPulse(self, 1, 0, 3)
     end
+    if self.pings == 1 and self.beat >= self.plan.doorFrom and not st.over then
+        self.pings = 2 -- the chains let go
+        playSfx(self.sfx.gateRattle, 0.7)
+    end
     if self.slamAt < 0 and self.beat >= self.plan.slam and not st.over then
         self.slamAt = self.time
         addPulse(self, 1, 1, 3)
+        playSfx(self.sfx.gateSlam, 1)
+        -- a fanfare on the music box: chord tones climbing on half beats, in the
+        -- song's chord at the slam, then the top two together
+        local up: { number } = {}
+        for _, m in harmony.arpeggio(harmony.chordAt(self.map, self.plan.slam)) do
+            if m >= 79 and #up < 5 then
+                table.insert(up, m)
+            end
+        end
+        local half = beatclock.beatLen(self.clock) / 2
+        for i, m in up do
+            local src = self.notes[m]
+            if src ~= nil then
+                local at = half * (i + if i == #up then 0 else 1)
+                local snd = Audio.playInTime(src, at)
+                if snd ~= nil then
+                    snd.volume = 0.55
+                end
+            end
+        end
     end
     if st.over then
         self.poofAt = self.time
@@ -2335,6 +2377,12 @@ local function init(self: World, context: Context): boolean
         heartbeat = context:audio('heartbeat'),
         candy = context:audio('candy'),
         hit = context:audio('hit'),
+        whoosh = context:audio('burst_whoosh'),
+        gateRattle = context:audio('gate_rattle'),
+        gateSlam = context:audio('gate_slam'),
+        tick = context:audio('ui_tick'),
+        click = context:audio('ui_click'),
+        flip = context:audio('ui_flip'),
     }
     for _, m in harmony.NOTES do
         local src = context:audio('note_' .. tostring(m))
