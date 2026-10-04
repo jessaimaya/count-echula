@@ -67,6 +67,25 @@ function M.again(s: Summary): string
     return if s.over then 'tap to try again' else 'tap for the record shelf'
 end
 
+-- The results' numbers part way through counting up: `t` 0..1, easing out, so
+-- they rush up and settle.
+function M.counting(s: Summary, t: number): Summary
+    local e = 1 - (1 - math.clamp(t, 0, 1)) ^ 3
+    local function at(n: number): number
+        return math.floor(n * e + 0.5)
+    end
+    return {
+        over = s.over,
+        score = at(s.score),
+        perfect = at(s.perfect),
+        good = at(s.good),
+        candies = at(s.candies),
+        totalCandies = s.totalCandies,
+        maxCombo = at(s.maxCombo),
+        grade = s.grade,
+    }
+end
+
 function M.stats(s: Summary): string
     return string.format('Score  %s\nCandy %d / %d   Max combo %d\nPerfect swipes %d   Good %d',
         M.thousands(s.score), s.candies, s.totalCandies, s.maxCombo, s.perfect, s.good)

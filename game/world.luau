@@ -150,6 +150,13 @@ local REACT = {
     HAPPY_SPARKS = 14, -- sparkles thrown off at the start
     HAPPY_SPARK_LIFE = 0.7, -- seconds
 }
+-- Lives: bats (svg/bat.svg, hud_art.rml LifeBat) beside the pause button.
+local LIVES = {
+    SCALE = 0.28, -- LifeBat artboard (160 x 56) to screen
+    STEP = 48, -- between bats
+    Y = 38,
+    LOST_TIME = 0.8, -- seconds a lost bat tumbles and fades
+}
 
 -- Atmosphere (sonar.wgsl). Tweak these to taste.
 local FOG_TOP = 1.7 -- world height where the ground fog ends; rooftops (1.7-2.8) poke out
@@ -160,6 +167,7 @@ local PROP_SATURATION = 0.7 -- candy and obstacle color: 0 = gray, 1 = the art's
 local PROP_REVEAL = 0.85 -- their brightness when the sonar reveals them
 local PROP_DARK = 0.2 -- their brightness in the dark, outside a reveal
 local RESTART_GUARD = 1.0 -- seconds after the results appear before a tap restarts
+local RESULTS_COUNT_FROM, RESULTS_COUNT_TIME = 0.3, 1.2 -- seconds: the results' numbers count up
 local CANDY_STRENGTH = 0.9 -- sonar reach when a candy is caught
 local CANDY_BEATS = 1.6 -- how long that reveal lasts
 
@@ -186,17 +194,19 @@ local COUNTDOWN_BEATS = 3 -- after Resume, the song waits this many beats
 
 -- Keyboard (GLFW key codes, as KeyboardEvent.key reports them). Needs the
 -- <FocusData/> on the World layout in scene.rml, and focus set by the "Flow" machine.
-local KEY_SPACE = 32
-local KEY_A = 65
-local KEY_D = 68
-local KEY_M = 77
-local KEY_P = 80
-local KEY_ESCAPE = 256
-local KEY_ENTER = 257
-local KEY_BACKSPACE = 259
-local KEY_RIGHT = 262
-local KEY_LEFT = 263
-local KEY_KP_ENTER = 335
+local KEY = {
+    SPACE = 32,
+    A = 65,
+    D = 68,
+    M = 77,
+    P = 80,
+    ESCAPE = 256,
+    ENTER = 257,
+    BACKSPACE = 259,
+    RIGHT = 262,
+    LEFT = 263,
+    KP_ENTER = 335,
+}
 
 type Pulse = { start: number, strength: number, kind: number, life: number }
 
@@ -251,6 +261,9 @@ type World = {
     lampArt: Input<Artboard>,
     fenceArt: Input<Artboard>,
     introArt: Input<Artboard>,
+    lifeArt: Input<Artboard>,
+    life: Artboard?,
+    lostAt: { number }, -- local time each life was lost (-100 = still here)
     bat: Artboard?,
     flap: Animation?,
     tipNodeL: NodeData?, -- WingTipL / WingTipR: markers on the flapping wings
@@ -328,6 +341,26 @@ type World = {
     autopilotUntil: Property<number>?,
     judgeFire: PropertyTrigger?,
     candyFire: PropertyTrigger?,
+    -- the possessed start button (scene.rml "Start Button")
+    lookX: Property<number>?, -- where its pupils look, px from the middle of each eye
+    lookY: Property<number>?,
+    startHover: Property<boolean>?,
+    startPress: PropertyTrigger?,
+    pointerAt: number, -- local time the pointer last moved over the title
+    -- results: the numbers count up, then the grade stamps (or droops after a loss)
+    summary: hudtext.Summary?,
+    stamped: boolean,
+    gradeStamp: PropertyTrigger?,
+    gradeDroop: PropertyTrigger?,
+    logoWave: Property<number>?, -- the title logo's wave, slid along with the preview's beat
+    scorePop: PropertyTrigger?, -- HUD: the score punches on a catch
+    multUp: PropertyTrigger?, -- HUD: the multiplier went up a level
+    prevMult: number,
+    -- pause menu buttons: hover and press
+    resumeHover: Property<boolean>?,
+    menuHover: Property<boolean>?,
+    resumePressFire: PropertyTrigger?,
+    menuPressFire: PropertyTrigger?,
     sfx: Sfx,
     notes: { [number]: AudioSource },
     -- temporary HUD
@@ -627,6 +660,8 @@ local function startSong(self: World)
     self.plan = finale.plan(self.map)
     self.slamAt = -100
     self.pings = 0
+    self.lostAt = { -100, -100, -100 }
+    self.prevMult = 1
     stopSong(self)
     self.useAudioClock = false
     self.songStart = self.time + START_DELAY
@@ -660,7 +695,9 @@ local function endSong(self: World, mode: Mode)
     }
     setString(self, 'resultTitle', hudtext.resultTitle(summary))
     setString(self, 'gradeText', hudtext.gradeText(summary))
-    setString(self, 'statsText', hudtext.stats(summary))
+    setString(self, 'statsText', hudtext.stats(hudtext.counting(summary, 0)))
+    self.summary = summary
+    self.stamped = false
     setString(self, 'againText', hudtext.again(summary))
     setString(self, 'promptText', '')
     self.endAt = self.time
@@ -775,6 +812,12 @@ local function onCatch(self: World, c: rules.Catch)
     end
     setString(self, 'countText', hudtext.count(st.candies))
     fire(self.candyFire)
+    fire(self.scorePop)
+    local mult = rules.multiplier(st.combo)
+    if mult > self.prevMult then
+        fire(self.multUp)
+    end
+    self.prevMult = mult
 end
 
 local function setNumber(p: Property<number>?, value: number)
@@ -824,6 +867,40 @@ local function inButton(self: World, p: Vector, cy: number): boolean
     return math.abs(f.x - BUTTON_X) <= BUTTON_HALF_W and math.abs(f.y - cy) <= BUTTON_HALF_H
 end
 
+-- The start button's eyes follow the pointer (screen position `pos`), up to 5 px off
+-- center; it shivers while the pointer is over it. With no pointer (nil) for a while
+-- they wander.
+local function lookAt(self: World, pos: Vector?)
+    local lx, ly = 4 * math.sin(self.time * 0.8), 2 * math.sin(self.time * 1.3 + 1)
+    local hover = false
+    if pos ~= nil then
+        self.pointerAt = self.time
+        local f = toFrame(self, pos)
+        local dx, dy = f.x - BUTTON_X, f.y - 684 -- the eyes
+        local len = math.sqrt(dx * dx + dy * dy)
+        local k = 5 * math.min(1, len / 80) / math.max(len, 1)
+        lx, ly = dx * k, dy * k
+        hover = math.abs(f.x - BUTTON_X) <= 135 and math.abs(f.y - 730) <= 36
+        if self.startHover ~= nil then
+            self.startHover.value = hover
+        end
+    elseif self.time - self.pointerAt < 2 then
+        return
+    end
+    setNumber(self.lookX, lx)
+    setNumber(self.lookY, ly)
+end
+
+-- Press the start button: it squashes as the title fades out (the Screens layer's
+-- 250 ms blend), so the song starts right away.
+local function pressStart(self: World)
+    fire(self.startPress)
+    if self.startHover ~= nil then
+        self.startHover.value = false
+    end
+    startSong(self)
+end
+
 -- Title screen tap: the side strips of the shelf flip records (out to the screen
 -- edges), anywhere else plays.
 local function menuTap(self: World)
@@ -834,7 +911,7 @@ local function menuTap(self: World)
     elseif onShelf and p.x > FRAME_W * (1 - ARROW_W) then
         flipDisc(self, 1)
     else
-        startSong(self)
+        pressStart(self)
     end
 end
 
@@ -854,6 +931,7 @@ local function pointerDown(self: World, event: PointerEvent)
     event:hit()
     if self.mode == 'ready' then
         self.menuPress = event.position
+        lookAt(self, event.position)
         gesture.press(self.menuGest, self.time, event.position.x)
         return
     end
@@ -869,9 +947,17 @@ local function pointerDown(self: World, event: PointerEvent)
         return
     end
     if self.paused then
-        if inButton(self, event.position, RESUME_Y) then
+        -- the button squashes while the overlay fades out (the Pause layer's 150 ms blend)
+        local resume, menu = inButton(self, event.position, RESUME_Y), inButton(self, event.position, MENU_Y)
+        if (resume or menu) and self.resumeHover ~= nil and self.menuHover ~= nil then
+            self.resumeHover.value = false
+            self.menuHover.value = false
+        end
+        if resume then
+            fire(self.resumePressFire)
             resumeSong(self)
-        elseif inButton(self, event.position, MENU_Y) then
+        elseif menu then
+            fire(self.menuPressFire)
             toMenu(self)
         end
         return
@@ -891,10 +977,18 @@ end
 local function pointerMove(self: World, event: PointerEvent)
     if self.mode == 'ready' then
         event:hit()
+        lookAt(self, event.position)
         menuGesture(self, gesture.move(self.menuGest, self.time, event.position.x))
         return
     end
-    if self.mode ~= 'playing' or self.paused or self.resumeAt > 0 then
+    if self.paused then
+        if self.resumeHover ~= nil and self.menuHover ~= nil then
+            self.resumeHover.value = inButton(self, event.position, RESUME_Y)
+            self.menuHover.value = inButton(self, event.position, MENU_Y)
+        end
+        return
+    end
+    if self.mode ~= 'playing' or self.resumeAt > 0 then
         return
     end
     event:hit()
@@ -930,22 +1024,22 @@ local function keyboardEvent(self: World, event: KeyboardEvent): boolean
         return false -- no auto-repeat: one press, one lane
     end
     local k = event.key
-    local dir = if k == KEY_LEFT or k == KEY_A then -1 elseif k == KEY_RIGHT or k == KEY_D then 1 else 0
-    local confirm = k == KEY_ENTER or k == KEY_KP_ENTER or k == KEY_SPACE
-    local pauseKey = k == KEY_ESCAPE or k == KEY_P
+    local dir = if k == KEY.LEFT or k == KEY.A then -1 elseif k == KEY.RIGHT or k == KEY.D then 1 else 0
+    local confirm = k == KEY.ENTER or k == KEY.KP_ENTER or k == KEY.SPACE
+    local pauseKey = k == KEY.ESCAPE or k == KEY.P
 
     if self.mode == 'ready' then
         if dir ~= 0 then
             flipDisc(self, dir)
         elseif confirm then
-            startSong(self)
+            pressStart(self)
         else
             return false
         end
         return true
     end
     if self.mode ~= 'playing' then
-        if not (confirm or k == KEY_ESCAPE) then
+        if not (confirm or k == KEY.ESCAPE) then
             return false
         end
         if self.time - self.endAt >= RESTART_GUARD then
@@ -960,7 +1054,7 @@ local function keyboardEvent(self: World, event: KeyboardEvent): boolean
     if self.paused then
         if pauseKey or confirm then
             resumeSong(self)
-        elseif k == KEY_M or k == KEY_BACKSPACE then
+        elseif k == KEY.M or k == KEY.BACKSPACE then
             toMenu(self)
         else
             return false
@@ -1123,12 +1217,33 @@ local function advance(self: World, seconds: number): boolean
         -- idle: the street breathes on the beat (of the menu preview on the shelf)
         local idx = math.floor(self.time / beatclock.beatLen(self.clock))
         if self.mode == 'ready' then
+            lookAt(self, nil)
             previewTick(self)
-            idx = math.floor(beatclock.beatAt(self.clock, previewSongTime(self)))
+            local beat = beatclock.beatAt(self.clock, previewSongTime(self))
+            idx = math.floor(beat)
+            -- the logo's wave runs through it in the first 60% of each beat, then rests
+            setNumber(self.logoWave, math.min((beat - idx) * 2.2, 1.5))
         end
         if idx ~= self.beatIdx then
             self.beatIdx = idx
             addPulse(self, 0.8, 1, 1.5)
+        end
+        -- results: the numbers count up as the card fades in, then the grade lands
+        local summary = self.summary
+        if summary ~= nil and (self.mode == 'over' or self.mode == 'done') and not self.stamped then
+            local t = (self.time - self.endAt - RESULTS_COUNT_FROM) / RESULTS_COUNT_TIME
+            setString(self, 'statsText', hudtext.stats(hudtext.counting(summary, t)))
+            if t >= 1 then
+                self.stamped = true
+                if summary.over then
+                    fire(self.gradeDroop)
+                else
+                    fire(self.gradeStamp)
+                    for _, midi in { 72, 76, 79, 84 } do -- a C major chord on the music box
+                        playSfx(self.notes[midi], 0.6)
+                    end
+                end
+            end
         end
         self.beat = 0
         return true
@@ -1173,6 +1288,7 @@ local function advance(self: World, seconds: number): boolean
     local out = rules.update(st, self.beat, seconds)
     if out.hits > 0 then
         self.hitAt = self.time
+        self.lostAt[st.hp + 1] = self.time
         print(string.format('hit: %.3f s (beat %.2f), hp %d', self.time, self.beat, st.hp))
         playSfx(self.sfx.hit, 0.9)
     end
@@ -1937,12 +2053,54 @@ local function drawHud(self: World, renderer: Renderer, bx: number, by: number)
         drawReactions(self, renderer, bx, by, not blink)
     end
 
-    -- hp pips, top right beside the pause button (in game only)
-    for i = 1, if self.mode == 'playing' then rules.MAX_HP else 0 do
-        local p = paths[1 + i]
-        circle(p, w - PAUSE_SIZE - 14 - (i - 1) * 26, 38, 9)
-        self.paint.color = if i <= st.hp then Color.rgb(255, 77, 109) else Color.rgb(60, 50, 90)
-        renderer:drawPath(p, self.paint)
+    -- lives, top right beside the pause button (in game only): bats that flap on the
+    -- beat in a little wave. A lost one tumbles away and leaves a dim empty slot; on
+    -- the last life the one left shivers and beats harder.
+    local life = self.life
+    if life ~= nil and self.mode == 'playing' then
+        local origin = Vector.xy(80, 28)
+        for i = 1, rules.MAX_HP do
+            local x = w - PAUSE_SIZE - 26 - (i - 1) * LIVES.STEP
+            local y = LIVES.Y
+            local s = LIVES.SCALE
+            local since = self.time - self.lostAt[i]
+            if i <= st.hp then
+                local u = (self.beat - (rules.MAX_HP - i) * 0.08) % 1
+                local flap = (1 - u) * (1 - u) * (1 - u)
+                local last = st.hp == 1
+                local sx, sy = s * (1 + 0.06 * flap), s * (1 - 0.35 * flap)
+                if last then
+                    x += math.sin(self.time * 47) * 1.5
+                    sx *= 1 + 0.15 * flap
+                    sy *= 1 + 0.15 * flap
+                end
+                renderer:save()
+                renderer:transform(Mat2D.withTranslation(x, y - 3 * flap)
+                    * Mat2D.withScale(sx, sy) * Mat2D.withTranslation(-origin.x, -origin.y))
+                renderer:modulateOpacity(if last and u > 0.5 then 0.6 else 1)
+                life:draw(renderer)
+                renderer:restore()
+            else
+                -- the empty slot
+                renderer:save()
+                renderer:modulateColor(Color.rgb(70, 55, 110))
+                drawArt(renderer, life, x, y, s, origin, 0, 0.5)
+                renderer:restore()
+                renderer:setColorModulation(Color.rgb(255, 255, 255))
+                if since < LIVES.LOST_TIME then
+                    -- the lost bat tumbles down, spinning and fading, from a puff
+                    local t = since / LIVES.LOST_TIME
+                    drawArt(renderer, life, x + 30 * t, y + 160 * t * t, s * (1 - 0.3 * t), origin,
+                        t * 7, 1 - t)
+                    local p = paths[2]
+                    circle(p, x, y, 12 + 26 * t)
+                    local stroke = self.fxStroke
+                    stroke.thickness = 3 * (1 - t) + 0.5
+                    stroke.color = Color.rgba(220, 210, 255, math.floor(200 * (1 - t)))
+                    renderer:drawPath(p, stroke)
+                end
+            end
+        end
     end
 end
 
@@ -2114,6 +2272,9 @@ local function init(self: World, context: Context): boolean
     if self.flap == nil then
         print('world: Echula idle_flap missing')
     end
+    local life = self.lifeArt:instance()
+    life:advance(0) -- static art: lay out its shapes once
+    self.life = life
     local moon = self.moonArt:instance()
     local cloud = self.cloudArt:instance()
     moon:advance(0) -- static art: lay out its shapes once
@@ -2174,6 +2335,19 @@ local function init(self: World, context: Context): boolean
     self.autopilot = vm:getBoolean('_autopilot')
     self.autopilotUntil = vm:getNumber('_autopilotUntil')
     self.judgeFire = vm:getTrigger('judgeFire')
+    self.lookX = vm:getNumber('lookX')
+    self.lookY = vm:getNumber('lookY')
+    self.startHover = vm:getBoolean('startHover')
+    self.startPress = vm:getTrigger('startPress')
+    self.gradeStamp = vm:getTrigger('gradeStamp')
+    self.gradeDroop = vm:getTrigger('gradeDroop')
+    self.logoWave = vm:getNumber('logoWave')
+    self.scorePop = vm:getTrigger('scorePop')
+    self.multUp = vm:getTrigger('multUp')
+    self.resumeHover = vm:getBoolean('resumeHover')
+    self.menuHover = vm:getBoolean('menuHover')
+    self.resumePressFire = vm:getTrigger('resumePress')
+    self.menuPressFire = vm:getTrigger('menuPress')
     self.candyFire = vm:getTrigger('candyFire')
     setMode(self, self.mode)
     selectDisc(self, self.disc, true)
@@ -2271,6 +2445,9 @@ return function(context: Context): Layout<World>
         lampArt = late(),
         fenceArt = late(),
         introArt = late(),
+        lifeArt = late(),
+        life = nil,
+        lostAt = { -100, -100, -100 },
         bat = nil,
         flap = nil,
         tipNodeL = nil,
@@ -2345,6 +2522,23 @@ return function(context: Context): Layout<World>
         autopilotUntil = nil,
         judgeFire = nil,
         candyFire = nil,
+        lookX = nil,
+        lookY = nil,
+        startHover = nil,
+        startPress = nil,
+        pointerAt = -100,
+        summary = nil,
+        stamped = false,
+        gradeStamp = nil,
+        gradeDroop = nil,
+        logoWave = nil,
+        scorePop = nil,
+        multUp = nil,
+        prevMult = 1,
+        resumeHover = nil,
+        menuHover = nil,
+        resumePressFire = nil,
+        menuPressFire = nil,
         sfx = {},
         notes = {},
         paint = Paint.with({ color = Color.rgb(255, 77, 109) }),

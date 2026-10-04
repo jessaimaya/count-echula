@@ -367,6 +367,14 @@ return function(): Tests
                 expect(hudtext.thousands(1000)).is('1,000')
                 expect(hudtext.thousands(1234567)).is('1,234,567')
             end)
+            test.case('results count up', function(expect)
+                local s: hudtext.Summary = { over = false, score = 7340, perfect = 8, good = 42, candies = 105, totalCandies = 105, maxCombo = 105, grade = 'S' }
+                expect(hudtext.counting(s, 0).score).is(0)
+                expect(hudtext.counting(s, 0).totalCandies).is(105)
+                expect(hudtext.counting(s, 0.5).score > 7340 / 2).is(true)
+                expect(hudtext.stats(hudtext.counting(s, 1))).is(hudtext.stats(s))
+                expect(hudtext.stats(hudtext.counting(s, 2))).is(hudtext.stats(s))
+            end)
             test.case('results text', function(expect)
                 local s: hudtext.Summary = { over = true, score = 1500, perfect = 1, good = 2, candies = 4, totalCandies = 10, maxCombo = 5, grade = 'fail' }
                 expect(hudtext.resultTitle(s)).is('Stake-d!')
