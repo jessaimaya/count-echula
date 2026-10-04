@@ -104,10 +104,14 @@
   });
 
   // Background (app closed, tab switched, screen locked): silence the audio and stop the
-  // frame loop, or the music keeps playing and the GPU keeps drawing. Back in front, the
-  // game gets a wake (GameVM.wakeCount): mid-song it opens its pause menu, so the audio
-  // comes back a moment later, once the song is paused.
+  // frame loop, or the music keeps playing and the GPU keeps drawing. Back in front,
+  // mid-song, the game opens its pause menu, so the audio comes back a moment later,
+  // once the song is paused.
   let asleep = false;
+  // A phone turned sideways: a web page can't lock the orientation on iOS (and only in
+  // fullscreen on Android), so the game sleeps under a "turn your phone upright" card
+  // (index.html, same media query) and wakes into its pause menu once upright again.
+  const sideways = matchMedia("(orientation: landscape) and (pointer: coarse) and (max-height: 500px)");
   // Rive makes several; skip the ones it has already closed
   const audio = () => (window.__audioContexts || []).filter((ac) => ac.state !== "closed");
   function sleep() {
@@ -117,11 +121,20 @@
     r.pause();
   }
   function wake() {
-    if (!asleep || document.hidden) return;
+    if (!asleep || document.hidden || sideways.matches) return;
     asleep = false;
     r.play(); // resumes what pause() paused (the Flow machine)
-    const count = r.viewModelInstance?.number("wakeCount");
+    const vm = r.viewModelInstance;
+    const count = vm?.number("wakeCount");
     if (count) count.value += 1;
+    // The script never sees that write on the web (a page write doesn't reach its view
+    // model), so mid-song press its pause button for it: the top-right PAUSE_SIZE square.
+    if (vm?.number("mode")?.value === 1 && !vm.boolean("paused")?.value) {
+      const b = canvas.getBoundingClientRect();
+      const o = { clientX: b.right - 10, clientY: b.top + 10, bubbles: true, button: 0 };
+      canvas.dispatchEvent(new MouseEvent("mousedown", o));
+      canvas.dispatchEvent(new MouseEvent("mouseup", o));
+    }
     // a timer, not animation frames: those can stall right after the page comes back
     setTimeout(() => {
       if (!asleep) for (const ac of audio()) ac.resume().catch(() => {});
@@ -130,6 +143,16 @@
   document.addEventListener("visibilitychange", () => (document.hidden ? sleep() : wake()));
   window.addEventListener("pagehide", sleep);
   window.addEventListener("pageshow", wake);
+  const turned = () => {
+    if (sideways.matches) sleep();
+    else if (!document.hidden) wake();
+  };
+  // the media query's change event alone can be missed; resize always follows a turn
+  sideways.addEventListener("change", turned);
+  window.addEventListener("resize", turned);
+  window.addEventListener("orientationchange", turned);
+  turned();
+  screen.orientation?.lock?.("portrait").catch(() => {}); // Android in fullscreen; elsewhere a no-op
 
   // iOS only starts audio inside a user gesture. Rive unlocks its own context on some
   // events, but touchstart is default-prevented on the canvas, so make sure: every touch

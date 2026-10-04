@@ -68,6 +68,17 @@
     }
     canvas { width: 100%; height: 100%; display: block; touch-action: none; }
     canvas:focus { outline: none; } /* focused for keyboard play; no ring around the game */
+    /* Phone turned sideways: cover the game (main.js pauses it) until it is upright again. */
+    #rotate {
+      position: fixed; inset: 0; z-index: 4; display: none; place-content: center; gap: 18px;
+      justify-items: center; background: var(--night); color: var(--ink); text-align: center;
+      font: 600 20px/1.4 system-ui, sans-serif; touch-action: none;
+    }
+    #rotate svg { width: 56px; height: 56px; animation: tilt 2.4s ease-in-out infinite; }
+    @keyframes tilt { 0%, 30% { transform: rotate(-90deg); } 60%, 100% { transform: rotate(0); } }
+    @media (orientation: landscape) and (pointer: coarse) and (max-height: 500px) {
+      #rotate { display: grid; }
+    }
     #hud {
       position: fixed; top: 8px; left: 8px; padding: 4px 8px; border-radius: 6px;
       font: 12px/1.4 ui-monospace, monospace; color: var(--ink); background: #0008;
@@ -98,6 +109,12 @@
     <div class="bat b2"><svg viewBox="0 0 60 24"><path d="M30 8c2-4 4-4 5 0 6-6 14-7 25-4-6 2-8 6-8 11-4-3-8-3-11 1-2-3-5-3-7 0h-8c-2-3-5-3-7 0-3-4-7-4-11-1 0-5-2-9-8-11 11-3 19-2 25 4 1-4 3-4 5 0z"/></svg></div>
   </div>
   <div id="stage"><canvas id="canvas"></canvas></div>
+  <div id="rotate" aria-live="polite">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+      <rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18.5h2"/>
+    </svg>
+    <div>Turn your phone upright<br>to keep flying</div>
+  </div>
   <div id="hud">loading…</div>
   <div id="errors" title="tap to dismiss"></div>
   <!-- Before Rive loads: remember every AudioContext the page makes (Rive's audio engine
