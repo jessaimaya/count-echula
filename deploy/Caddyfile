@@ -3,6 +3,9 @@
 	root * /srv
 	encode gzip
 	redir / /web/ 302
+	# play stats (deploy/api.py): events in, the password-protected dashboard out
+	reverse_proxy /api/* 127.0.0.1:8081
+	reverse_proxy /stats* 127.0.0.1:8081
 	# testers always get the latest build after a redeploy
 	header /web/* Cache-Control "no-cache"
 	header /game/* Cache-Control "no-cache"

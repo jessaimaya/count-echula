@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Count Echula Stats</title>
+<style>
+  :root {
+    --bg: #141032; --surface: #1d1945; --line: #c8beff22; --ink: #f1edff; --ink2: #b9b2dd;
+    --muted: #8b84b3; --bar: #7fd8f5; --bar-hover: #b6ecff; --accent: #ff9f3d;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #f6f4fc; --surface: #ffffff; --line: #1d194518; --ink: #1d1945; --ink2: #4a4470;
+      --muted: #7a74a0; --bar: #2f7fa8; --bar-hover: #1f5f82; --accent: #c4610a;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 system-ui, sans-serif; }
+  main { max-width: 1100px; margin: 0 auto; padding: 24px 16px 48px; }
+  header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 16px; margin-bottom: 20px; }
+  h1 { font-size: 22px; margin: 0; }
+  h1 span { color: var(--accent); }
+  .meta { color: var(--muted); font-size: 13px; }
+  button { font: inherit; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 4px 12px; cursor: pointer; }
+  h2 { font-size: 15px; margin: 28px 0 10px; color: var(--ink2); font-weight: 600; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+  .tile { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+  .tile .v { font-size: 28px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .tile .l { color: var(--ink2); font-size: 13px; }
+  .tile .s { color: var(--muted); font-size: 12px; margin-top: 2px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; overflow-x: auto; }
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th { color: var(--muted); font-weight: 500; font-size: 12px; }
+  td.n, th.n { text-align: right; }
+  .chart { position: relative; }
+  .chart svg { display: block; width: 100%; height: 200px; overflow: visible; }
+  .chart .axis { fill: var(--muted); font-size: 11px; }
+  .chart .grid { stroke: var(--line); }
+  .chart .bar { fill: var(--bar); }
+  .chart .hit { fill: transparent; cursor: default; }
+  .chart .hit:hover + .bar, .chart g:hover .bar { fill: var(--bar-hover); }
+  .tip { position: absolute; pointer-events: none; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; font-size: 12px; color: var(--ink); white-space: nowrap; display: none; z-index: 2; }
+  .tip b { display: block; margin-bottom: 2px; }
+  .list .row { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; margin: 6px 0; }
+  .list .track { grid-column: 1 / -1; height: 6px; border-radius: 3px; background: var(--line); }
+  .list .fill { height: 100%; border-radius: 3px; background: var(--bar); }
+  .list .k { color: var(--ink2); }
+  .list .c { color: var(--ink); font-variant-numeric: tabular-nums; }
+  .empty { color: var(--muted); padding: 8px 0; }
+  details summary { cursor: pointer; color: var(--muted); font-size: 12px; margin-top: 10px; }
+  .live { color: var(--bar); }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Count Echula <span>play stats</span></h1>
+    <div class="meta" id="meta">loading…</div>
+    <button id="refresh" type="button">Refresh</button>
+  </header>
+
+  <section class="tiles" id="tiles"></section>
+
+  <h2>Sessions per day</h2>
+  <div class="card">
+    <div class="chart" id="chart"></div>
+    <details><summary>Show as a table</summary><div id="dailyTable"></div></details>
+  </div>
+
+  <h2>Songs</h2>
+  <div class="card" id="discs"></div>
+
+  <h2>Who is playing</h2>
+  <div class="grid2">
+    <div class="card list" id="devices"></div>
+    <div class="card list" id="os"></div>
+    <div class="card list" id="browsers"></div>
+    <div class="card list" id="referrers"></div>
+  </div>
+
+  <h2>Recent sessions</h2>
+  <div class="card" id="recent"></div>
+</main>
+<div class="tip" id="tip"></div>
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const num = (n) => Math.round(n).toLocaleString();
+  const dur = (secs) => {
+    secs = Math.round(secs);
+    if (secs < 60) return `${secs}s`;
+    const m = Math.floor(secs / 60), h = Math.floor(m / 60);
+    return h ? `${h}h ${m % 60}m` : `${m}m ${secs % 60}s`;
+  };
+  const when = (ms) => new Date(ms).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+  const GRADES = ["S", "A", "B", "C", "RIP"];
+  const rank = (g) => (GRADES.includes(g) ? GRADES.indexOf(g) : GRADES.length);
+  const pct = (a, b) => (b ? `${Math.round((100 * a) / b)}%` : "–");
+
+  function tiles(t) {
+    const items = [
+      [num(t.players), "Players", `${num(t.returning)} came back`],
+      [num(t.sessions), "Sessions", `${num(t.played)} played a song`],
+      [num(t.songs), "Songs played", `${num(t.finished)} finished, ${num(t.gameovers)} game over`],
+      [dur(t.playSecs), "Total playing time", t.songs ? `${dur(t.playSecs / t.songs)} per song` : ""],
+      [dur(t.avgSession), "Average session", "time on the page"],
+      [`<span class="live">${num(t.live)}</span>`, "Playing now", "seen in the last 45 s"],
+    ];
+    $("tiles").innerHTML = items.map(([v, l, s]) =>
+      `<div class="tile"><div class="v">${v}</div><div class="l">${l}</div><div class="s">${esc(s)}</div></div>`).join("");
+  }
+
+  function chart(days) {
+    const el = $("chart");
+    if (!days.length) { el.innerHTML = '<div class="empty">No sessions yet.</div>'; $("dailyTable").innerHTML = ""; return; }
+    const W = Math.max(el.clientWidth, 300), H = 200, L = 32, B = 22, T = 8;
+    const max = Math.max(...days.map((d) => d.sessions), 1);
+    const step = Math.pow(10, Math.floor(Math.log10(max)));
+    const top = Math.ceil(max / step) * step;
+    const slot = (W - L) / days.length, bw = Math.max(2, Math.min(36, slot - 2));
+    const y = (v) => T + (H - T - B) * (1 - v / top);
+    let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Sessions per day">`;
+    for (const v of [0, top / 2, top]) {
+      svg += `<line class="grid" x1="${L}" x2="${W}" y1="${y(v)}" y2="${y(v)}"/><text class="axis" x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${num(v)}</text>`;
+    }
+    const every = Math.ceil(days.length / Math.floor((W - L) / 64));
+    days.forEach((d, i) => {
+      const x = L + i * slot + (slot - bw) / 2, h = Math.max(0, y(0) - y(d.sessions));
+      const r = Math.min(4, bw / 2, h);
+      // rounded top, square base on the axis
+      const path = h ? `M${x},${y(0)}V${y(0) - h + r}Q${x},${y(0) - h} ${x + r},${y(0) - h}H${x + bw - r}Q${x + bw},${y(0) - h} ${x + bw},${y(0) - h + r}V${y(0)}Z` : "";
+      svg += `<g data-i="${i}"><rect class="hit" x="${L + i * slot}" y="${T}" width="${slot}" height="${H - T - B}"/>${path ? `<path class="bar" d="${path}"/>` : ""}</g>`;
+      if (i % every === 0) svg += `<text class="axis" x="${x + bw / 2}" y="${H - 6}" text-anchor="middle">${d.day.slice(5)}</text>`;
+    });
+    el.innerHTML = svg + "</svg>";
+    const tip = $("tip");
+    el.querySelectorAll("g[data-i]").forEach((g) => {
+      g.addEventListener("mousemove", (e) => {
+        const d = days[+g.dataset.i];
+        tip.innerHTML = `<b>${esc(d.day)}</b>${num(d.sessions)} sessions · ${num(d.players)} players<br>${num(d.songs)} songs · ${dur(d.play)} playing`;
+        tip.style.display = "block";
+        tip.style.left = `${Math.min(e.pageX + 12, document.documentElement.clientWidth - tip.offsetWidth - 8)}px`;
+        tip.style.top = `${e.pageY - tip.offsetHeight - 10}px`;
+      });
+      g.addEventListener("mouseleave", () => (tip.style.display = "none"));
+    });
+    $("dailyTable").innerHTML = table(["Day", "Sessions", "Players", "Songs", "Playing time"],
+      days.slice().reverse().map((d) => [d.day, num(d.sessions), num(d.players), num(d.songs), dur(d.play)]), [1, 2, 3, 4]);
+  }
+
+  function table(head, rows, right = []) {
+    if (!rows.length) return '<div class="empty">Nothing yet.</div>';
+    const cls = (i) => (right.includes(i) ? ' class="n"' : "");
+    return `<table><thead><tr>${head.map((h, i) => `<th${cls(i)}>${h}</th>`).join("")}</tr></thead><tbody>${
+      rows.map((r) => `<tr>${r.map((c, i) => `<td${cls(i)}>${c}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+  }
+
+  function list(id, title, counts) {
+    const entries = Object.entries(counts);
+    const total = entries.reduce((a, [, v]) => a + v, 0);
+    $(id).innerHTML = `<h2 style="margin:0 0 6px">${title}</h2>` + (entries.length ? entries.slice(0, 8).map(([k, v]) =>
+      `<div class="row"><span class="k">${esc(k || "unknown")}</span><span class="c">${num(v)} · ${pct(v, total)}</span><div class="track"><div class="fill" style="width:${(100 * v) / total}%"></div></div></div>`).join("")
+      : '<div class="empty">Nothing yet.</div>');
+  }
+
+  let last = null;
+  async function load() {
+    try {
+      // from the origin: a page opened as https://user:pass@host/stats cannot fetch relative URLs
+      const res = await fetch(`${location.origin}/stats/data?tz=${-new Date().getTimezoneOffset()}`, { cache: "no-store" });
+      if (!res.ok) throw new Error(res.status);
+      const s = (last = await res.json());
+      tiles(s.totals);
+      chart(s.daily);
+      $("discs").innerHTML = table(["Song", "Plays", "Finished", "Game over", "Quit", "Avg time", "Avg score", "Best", "Grades"],
+        s.discs.map((d) => [esc(d.disc), num(d.plays), `${num(d.done)} (${pct(d.done, d.plays)})`, num(d.over), num(d.quit),
+          dur(d.avgSecs), num(d.avgScore), num(d.best),
+          esc(Object.entries(d.grades).sort(([a], [b]) => rank(a) - rank(b)).map(([g, n]) => `${g} ${n}`).join("  "))]), [1, 2, 3, 4, 5, 6, 7]);
+      list("devices", "Devices", s.devices);
+      list("os", "Systems", s.os);
+      list("browsers", "Browsers", s.browsers);
+      list("referrers", "Came from", s.referrers);
+      $("recent").innerHTML = table(["Started", "Device", "Browser", "From", "Time on page", "Songs", "Playing", "Best score"],
+        s.recent.map((r) => [when(r.start), esc(`${r.device}, ${r.os}`), esc(r.browser), esc(r.ref || "direct"),
+          dur((r.end - r.start) / 1000), num(r.songs), dur(r.play), num(r.best)]), [4, 5, 6, 7]);
+      $("meta").textContent = `Updated ${new Date(s.generated).toLocaleTimeString()} · refreshes every 30 s`;
+    } catch (e) {
+      $("meta").textContent = `Could not load the stats (${e.message}).`;
+    }
+  }
+  $("refresh").addEventListener("click", load);
+  let resizing = 0;
+  addEventListener("resize", () => {
+    clearTimeout(resizing);
+    resizing = setTimeout(() => last && chart(last.daily), 150);
+  });
+  load();
+  setInterval(load, 30000);
+})();
+</script>
+</body>
+</html>

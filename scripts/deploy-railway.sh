@@ -16,11 +16,12 @@ SITE="$ROOT/deploy/site"
 
 rm -rf "$SITE"
 mkdir -p "$SITE/web" "$SITE/game/build"
-cp "$ROOT/web/index.html" "$ROOT/web/main.js" "$SITE/web/"
+cp "$ROOT/web/index.html" "$ROOT/web/main.js" "$ROOT/web/analytics.js" "$SITE/web/"
 cp "$ROOT/game/build/count-echula.riv" "$SITE/game/build/"
-# a clean screen for testers: no corner readout (?hud=1 brings it back)
+# a clean screen for testers: no corner readout (?hud=1 brings it back); play stats on
+# (web/analytics.js, stored by deploy/api.py)
 sed -i -e 's|<title>Count Echula — local</title>|<title>Count Echula — test build</title>|' \
-    -e 's|<body>|<body data-hud="0">|' "$SITE/web/index.html"
+    -e 's|<body>|<body data-hud="0" data-analytics="1">|' "$SITE/web/index.html"
 
 cd "$ROOT"
 # --no-gitignore: site/ is git-ignored, but it is exactly what has to go up
