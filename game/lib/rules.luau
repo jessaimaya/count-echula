@@ -49,7 +49,6 @@ export type State = {
     over: boolean,
     finished: boolean,
     endBeat: number,
-    tutorialEnd: number,
 }
 
 local M = {}
@@ -111,7 +110,6 @@ function M.new(map: beatmap.Beatmap): State
         over = false,
         finished = false,
         endBeat = map.endBeat,
-        tutorialEnd = map.tutorialEnd,
     }
 end
 
@@ -211,7 +209,7 @@ function M.update(s: State, beat: number, dt: number): Outcome
                     if beat >= e.beat - M.EARLY then
                         table.insert(out.collected, collect(s, e))
                     end
-                elseif beat >= e.beat - M.LATE and beat >= s.tutorialEnd and beat >= s.invulnUntil then
+                elseif beat >= e.beat - M.LATE and beat >= s.invulnUntil then
                     e.state = 1
                     s.hp -= 1
                     s.hits += 1

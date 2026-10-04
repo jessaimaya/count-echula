@@ -18,7 +18,7 @@ local NONE: { [number]: { number } } = {}
 
 -- Groove, bars 2-5: learn to swipe on beats 1 and 3. No garlic yet.
 trail(c, 2, 6, BEATS_1_3, NONE, { 0, 0, -1, -1, 0, 1, 1, 0 }, 1, false, 0)
--- Bars 6-8: garlic appears (no damage until bar 10).
+-- Bars 6-8: garlic appears.
 trail(c, 6, 9, BEATS_1_3, NONE, { 1, 1, 0, -1, -1, 0 }, 1, true, 0)
 -- Stop, bar 9: the hit, then the band's "and-four" pickup.
 trail(c, 9, 10, { 0 }, { [9] = { 2.5, 3 } }, { 1 }, 1, true, 0)
@@ -57,15 +57,12 @@ local map: beatmap.Beatmap = {
     bpm = 120,
     firstBeat = 0.314,
     endBeat = bar(51),
-    tutorialEnd = bar(10),
-    swipeTutorial = bar(1),
-    sonarTutorial = bar(6),
     sections = {
         { from = bar(1), name = 'count-in' },
         { from = bar(2), name = 'groove' },
         { from = bar(10), name = 'verse' },
         { from = bar(18), name = 'chorus' },
-        { from = bar(24) + 1, name = 'freeze', prompt = 'Brrr... the night froze.\nGlide with the moon...', promptBeats = 12 },
+        { from = bar(24) + 1, name = 'freeze' },
         { from = bar(30), name = 'thaw' },
         { from = bar(34), name = 'chorus' },
         { from = bar(42), name = 'finale' },

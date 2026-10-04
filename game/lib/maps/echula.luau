@@ -15,7 +15,7 @@ local NONE: { [number]: { number } } = {}
 
 -- Intro, bars 2-4: learn to swipe after the candy, on the claps. No garlic yet.
 beatmap.trail(c, 2, 5, BEATS_2_4, NONE, { 0, 0, -1, -1, 0, 1 }, 1, false, 0)
--- Bars 5-8: the kick arrives; garlic appears (no damage until bar 9).
+-- Bars 5-8: the kick arrives; garlic appears.
 beatmap.trail(c, 5, 9, BEATS_1_3, NONE, { 1, 1, 0, -1, -1, 0, 1, 0 }, 1, true, 0)
 -- Verse, bars 9-12: candy on beats 1 and 3.
 beatmap.trail(c, 9, 13, BEATS_1_3, NONE, { -1, -1, 0, 1, 1, 0, -1, 0 }, 1, true, 3)
@@ -32,15 +32,12 @@ local map: beatmap.Beatmap = {
     bpm = 120,
     firstBeat = 0.340,
     endBeat = bar(37),
-    tutorialEnd = bar(9),
-    swipeTutorial = bar(1),
-    sonarTutorial = bar(5),
     sections = {
         { from = bar(1), name = 'intro' },
         { from = bar(5), name = 'tutorial' },
         { from = bar(9), name = 'verse' },
         { from = bar(13), name = 'chorus' },
-        { from = bar(21), name = 'bridge', fog = 1, prompt = 'The fog is rolling in...\nremember the trail!', promptBeats = 8 },
+        { from = bar(21), name = 'bridge', fog = 1 },
         { from = bar(25), name = 'finale' },
         { from = bar(33), name = 'outro' },
     },

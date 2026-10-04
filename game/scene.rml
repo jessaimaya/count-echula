@@ -110,7 +110,7 @@
                         <Fill name="Fill" id="0:7603"><SolidColor colorValue="FFB8B0E0" name="C" id="0:7604"/></Fill>
                         <TextStyleAxis tag="2003265652" axisValue="500" name="Weight" id="0:7605"/>
                     </TextStylePaint>
-                    <TextValueRun styleId="0:231" text="Swipe to pick a record, tap to play.&#10;Catch the candy on the beat to see in the dark.&#10;Keys: arrows or A/D to move,&#10;Enter to play, Esc to pause" name="Run" id="0:7606"/>
+                    <TextValueRun styleId="0:231" text="Swipe left or right to grab candy and dodge the monsters!" name="Run" id="0:7606"/>
                 </Text>
                 <Text x="270" y="730" originX="0.5" originY="0.5" sizingValue="autoWidth" name="Tap To Start" id="0:220">
                     <TextStylePaint fontSize="34" fontAssetId="0:31" familyName="Fredoka" styleName="SemiBold" name="Tap Style" id="0:221">

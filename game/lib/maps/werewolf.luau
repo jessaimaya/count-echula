@@ -23,7 +23,7 @@ local NONE: { [number]: { number } } = {}
 
 -- Riff, bars 2-3 (no drums yet, a heartbeat keeps time): learn to swipe. No garlic.
 trail(c, 2, 4, BEATS_1_3, NONE, { 0, -1, 0, 1 }, 1, false, 0)
--- Bars 4-7: the kick comes in; garlic appears (no damage until bar 8).
+-- Bars 4-7: the kick comes in; garlic appears.
 trail(c, 4, 8, BEATS_1_3, NONE, { 1, 0, -1, -1, 0, 1, 1, 0 }, 1, true, 0)
 -- Verse, bars 8-11: every beat, a lane change every two candies.
 trail(c, 8, 12, EVERY, NONE, { -1, 0, 1, 0, -1, -1, 1, 0 }, 2, true, 4)
@@ -58,9 +58,6 @@ local map: beatmap.Beatmap = {
     bpm = 115.396,
     firstBeat = 0.311,
     endBeat = bar(41) + 2, -- the last hit rings out to the end of the file (84.9 s)
-    tutorialEnd = bar(8),
-    swipeTutorial = bar(1),
-    sonarTutorial = bar(5),
     sections = {
         { from = bar(1), name = 'howl' },
         { from = bar(2), name = 'riff' },
@@ -68,7 +65,7 @@ local map: beatmap.Beatmap = {
         { from = bar(8), name = 'verse' },
         { from = bar(12), name = 'chase' },
         { from = bar(20), name = 'full speed' },
-        { from = bar(24) + 1, name = 'blackout', fog = 1, prompt = 'Lights out... something howls.\nFollow your heartbeat!', promptBeats = 8 },
+        { from = bar(24) + 1, name = 'blackout', fog = 1 },
         { from = bar(26) + 2, name = 'storm back', speed = 1.2 },
         { from = bar(27), name = 'accelerate', speed = 1.6, ramp = bar(41) - bar(27) },
         { from = bar(29), name = 'groove' },

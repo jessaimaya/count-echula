@@ -111,6 +111,26 @@ local SHARDS = 30 -- trail pieces when a streak breaks
 local SHARD_LIFE = 0.8 -- seconds
 local SHARD_GRAVITY = 900 -- artboard units / s^2
 
+-- Echula's reactions, drawn around him by drawReactions. Offsets are in his artboard
+-- units from BAT_ORIGIN (scaled by BAT_SCALE like the art). One table: the module is
+-- at Luau's limit of 200 top-level locals.
+local REACT = {
+    GULP_TIME = 0.2, -- seconds: a catch squashes him wide, then he springs back
+    GULP_SQUASH = 0.12,
+    MINT_TIME = 0.35, -- seconds of the PERFECT tint and mint ring
+    MINT = Color.rgb(140, 255, 210),
+    DIZZY_STARS = 4, -- circling his head while he is invulnerable after a hit
+    DIZZY_Y = -64, -- the stars' orbit, above the headphone band
+    DIZZY_RX = 50,
+    DIZZY_RY = 13,
+    SWEAT_X = 44, -- the worried drop, beside his right ear
+    SWEAT_Y = -44,
+    HAPPY_BEATS = 4, -- a bar of double-time flaps when the streak reaches TRAIL_T1 / TRAIL_T2
+    HAPPY_HOP = 12, -- a hop with every flap
+    HAPPY_SPARKS = 14, -- sparkles thrown off at the start
+    HAPPY_SPARK_LIFE = 0.7, -- seconds
+}
+
 -- Atmosphere (sonar.wgsl). Tweak these to taste.
 local FOG_TOP = 1.7 -- world height where the ground fog ends; rooftops (1.7-2.8) poke out
 local FOG_DENSITY = 0.92 -- 0..1 at street level
@@ -314,6 +334,15 @@ type World = {
     breakPower: number,
     shards: { Shard },
     shardPaths: { Path },
+    -- reactions (drawReactions)
+    catchAt: number, -- local time of the last catch (the gulp)
+    perfectAt: number, -- local time of the last PERFECT (mint flash)
+    worriedAt: number, -- local time of a missed candy; -100 once he catches again
+    happyAt: number, -- local time the streak reached TRAIL_T1 / TRAIL_T2
+    happyBeat: number, -- first beat of the double-time flaps
+    happyBig: boolean, -- TRAIL_T2: a bigger hop and rainbow sparkles
+    fxPaths: { Path },
+    fxStroke: Paint,
 }
 
 local function newPulses(): { Pulse }
@@ -563,6 +592,11 @@ local function startSong(self: World)
     self.histRX = {}
     self.histRY = {}
     self.hitAt = -100
+    self.catchAt = -100
+    self.perfectAt = -100
+    self.worriedAt = -100
+    self.happyAt = -100
+    self.happyBeat = -100
     stopSong(self)
     self.useAudioClock = false
     self.songStart = self.time + START_DELAY
@@ -694,7 +728,10 @@ local function onCatch(self: World, c: rules.Catch)
     if frost > 0.5 and self.notes[note + 12] ~= nil then
         note += 12
     end
+    self.catchAt = self.time
+    self.worriedAt = -100
     if c.judgement == 'perfect' then
+        self.perfectAt = self.time
         addPulse(self, strength, 0, beats)
         playNote(self, note, c.beat, 0.9 * gain)
         playNote(self, harmony.above(map, c.beat, note), c.beat, 0.5 * gain)
@@ -1002,7 +1039,10 @@ local function animateBat(self: World, seconds: number)
     local beat = if self.mode == 'playing' then self.beat
         elseif self.mode == 'ready' then beatclock.beatAt(self.clock, previewSongTime(self))
         else self.time / beatclock.beatLen(self.clock)
-    flap:setTimePercentage(beat - math.floor(beat))
+    -- happy flaps: twice per beat, so a downstroke still lands on every beat
+    local happy = self.mode == 'playing' and beat >= self.happyBeat and beat < self.happyBeat + REACT.HAPPY_BEATS
+    local phase = if happy then beat * 2 else beat
+    flap:setTimePercentage(phase - math.floor(phase))
     bat:advance(0)
 
     -- the swing: a spring pulling toward the lean, kicked by changes of speed
@@ -1111,6 +1151,17 @@ local function advance(self: World, seconds: number): boolean
     end
     if out.missed > 0 then
         showJudge(self, hudtext.judge('miss'))
+        self.worriedAt = self.time
+    end
+    -- streak milestones: a bar of happy flaps, from the next beat
+    local big = self.prevCombo < TRAIL_T2 and st.combo >= TRAIL_T2
+    if big or (self.prevCombo < TRAIL_T1 and st.combo >= TRAIL_T1) then
+        self.happyAt = self.time
+        self.happyBeat = math.ceil(self.beat)
+        self.happyBig = big
+        if big then
+            startFlip(self, if st.lane < 0 then 1 else -1, FLIP_QUICK)
+        end
     end
     -- streak broken while a trail was showing: shatter it (see onStreakBreak)
     if self.prevCombo >= TRAIL_T1 and st.combo == 0 then
@@ -1149,7 +1200,6 @@ local function advance(self: World, seconds: number): boolean
 
     setString(self, 'scoreText', hudtext.thousands(st.score))
     setString(self, 'multText', hudtext.mult(rules.multiplier(st.combo), st.combo))
-    setString(self, 'promptText', hudtext.prompt(self.map, self.beat))
 
     local idx = math.floor(self.beat)
     if idx ~= self.beatIdx then
@@ -1610,11 +1660,13 @@ local function drawShards(self: World, renderer: Renderer)
 end
 
 -- Draws `art` scaled by `s` with its point `origin` at (x, y), rolled by `rot`.
+-- `squash` > 0 makes it wider and shorter by that fraction.
 local function drawArt(renderer: Renderer, art: Artboard, x: number, y: number, s: number,
-    origin: Vector, rot: number, opacity: number)
+    origin: Vector, rot: number, opacity: number, squash: number?)
+    local q = squash or 0
     renderer:save()
     renderer:transform(Mat2D.withTranslation(x, y) * Mat2D.withRotation(rot)
-        * Mat2D.withScale(s) * Mat2D.withTranslation(-origin.x, -origin.y))
+        * Mat2D.withScale(s * (1 + q), s * (1 - q)) * Mat2D.withTranslation(-origin.x, -origin.y))
     renderer:modulateOpacity(opacity)
     art:draw(renderer)
     renderer:restore()
@@ -1681,6 +1733,104 @@ local function drawSky(self: World, renderer: Renderer)
     end
 end
 
+-- A star with `points` tips around (cx, cy), turned by `rot`.
+local function star(p: Path, cx: number, cy: number, outer: number, inner: number, points: number, rot: number)
+    for i = 0, points * 2 - 1 do
+        local r = if i % 2 == 0 then outer else inner
+        local a = rot + i * math.pi / points - math.pi / 2
+        local v = Vector.xy(cx + math.cos(a) * r, cy + math.sin(a) * r)
+        if i == 0 then
+            p:moveTo(v)
+        else
+            p:lineTo(v)
+        end
+    end
+    p:close()
+end
+
+local function withAlpha(c: Color, alpha: number): Color
+    return Color.rgba(Color.red(c) :: number, Color.green(c) :: number, Color.blue(c) :: number,
+        math.floor(255 * math.clamp(alpha, 0, 1)))
+end
+
+-- Echula's reactions, drawn in his own frame (he rolls and they roll with him):
+-- dizzy stars after a hit, a sweat drop while worried, the PERFECT mint ring and
+-- the sparkles of the happy flaps.
+local function drawReactions(self: World, renderer: Renderer, bx: number, by: number, showBat: boolean)
+    local paths = self.fxPaths
+    for _, p in paths do
+        p:reset()
+    end
+    local paint = self.paint
+    local k = BAT_SCALE * self.flipScale
+    local st = self.state
+    renderer:save()
+    renderer:transform(Mat2D.withTranslation(bx, by) * Mat2D.withRotation(self.batRoll + self.flipRot))
+
+    -- dizzy: stars circle his head until he can be hit again, fading at the end
+    local left = st.invulnUntil - self.beat
+    if left > 0 and left <= rules.INVULN then
+        local alpha = math.min(1, left / 0.5) * math.min(1, (rules.INVULN - left) / 0.15)
+        for i = 1, REACT.DIZZY_STARS do
+            local a = self.time * 5 + i * 2 * math.pi / REACT.DIZZY_STARS
+            local depth = math.sin(a) -- 1 in front of his head, -1 behind
+            local size = (0.8 + 0.25 * depth) * 18 * k
+            star(paths[i], math.cos(a) * REACT.DIZZY_RX * k, (REACT.DIZZY_Y + math.sin(a) * REACT.DIZZY_RY) * k,
+                size, size * 0.45, 5, self.time * 3 + i)
+            paint.color = withAlpha(Color.rgb(255, 225, 90), alpha * (0.75 + 0.25 * depth))
+            renderer:drawPath(paths[i], paint)
+        end
+    end
+
+    -- worried: a drop beside his ear that slides down and wells up again each beat
+    if showBat and self.worriedAt > 0 then
+        local grow = math.min(1, (self.time - self.worriedAt) / 0.15)
+        local u = self.beat % 1
+        local x = (REACT.SWEAT_X + math.sin(self.time * 7) * 2) * k
+        local y = (REACT.SWEAT_Y + u * 14) * k
+        local r = 9 * k * grow
+        local p = paths[REACT.DIZZY_STARS + 1]
+        p:moveTo(Vector.xy(x, y - r * 2.2))
+        p:cubicTo(Vector.xy(x + r * 0.4, y - r * 1.2), Vector.xy(x + r, y - r * 0.6), Vector.xy(x + r, y))
+        p:cubicTo(Vector.xy(x + r, y + r * K), Vector.xy(x + r * K, y + r), Vector.xy(x, y + r))
+        p:cubicTo(Vector.xy(x - r * K, y + r), Vector.xy(x - r, y + r * K), Vector.xy(x - r, y))
+        p:cubicTo(Vector.xy(x - r, y - r * 0.6), Vector.xy(x - r * 0.4, y - r * 1.2), Vector.xy(x, y - r * 2.2))
+        p:close()
+        paint.color = Color.rgba(150, 215, 255, math.floor(230 * (1 - 0.5 * u)))
+        renderer:drawPath(p, paint)
+    end
+
+    -- PERFECT: a mint ring opens around him
+    local sincePerfect = self.time - self.perfectAt
+    if sincePerfect < REACT.MINT_TIME then
+        local t = sincePerfect / REACT.MINT_TIME
+        local p = paths[REACT.DIZZY_STARS + 2]
+        circle(p, 0, 0, (70 + 70 * t) * k)
+        local stroke = self.fxStroke
+        stroke.thickness = 5 * (1 - t) + 1
+        stroke.color = withAlpha(REACT.MINT, 1 - t)
+        renderer:drawPath(p, stroke)
+    end
+
+    -- happy flaps: sparkles burst out of him and slow down
+    local sinceHappy = self.time - self.happyAt
+    if sinceHappy < REACT.HAPPY_SPARK_LIFE then
+        local t = sinceHappy / REACT.HAPPY_SPARK_LIFE
+        local reach = (1 - (1 - t) * (1 - t)) * (if self.happyBig then 190 else 140)
+        for i = 1, REACT.HAPPY_SPARKS do
+            local a = i * 2 * math.pi / REACT.HAPPY_SPARKS + (if i % 2 == 0 then 0.2 else -0.1)
+            local d = (40 + reach * (0.7 + 0.3 * ((i * 0.618) % 1))) * k
+            local size = (1 - 0.6 * t) * (if i % 2 == 0 then 20 else 13) * k
+            local p = paths[REACT.DIZZY_STARS + 2 + i]
+            star(p, math.cos(a) * d, math.sin(a) * d - 20 * k, size, size * 0.35, 4, t * 2)
+            local c = if self.happyBig then WINGS[1 + i % #WINGS] else Color.rgb(255, 230, 150)
+            paint.color = withAlpha(c, 1 - t * t)
+            renderer:drawPath(p, paint)
+        end
+    end
+    renderer:restore()
+end
+
 local function drawHud(self: World, renderer: Renderer, bx: number, by: number)
     local w = self.size.x
     local paths = self.paths
@@ -1693,19 +1843,34 @@ local function drawHud(self: World, renderer: Renderer, bx: number, by: number)
     local blink = self.mode == 'playing' and self.beat < st.invulnUntil and math.floor(self.time * 12) % 2 == 0
     local onResults = self.mode == 'over' or self.mode == 'done'
     local bat = self.bat
+    local playing = self.mode == 'playing'
+    -- happy flaps: a hop with every flap
+    if playing and self.beat >= self.happyBeat and self.beat < self.happyBeat + REACT.HAPPY_BEATS then
+        local fade = math.min(1, self.happyBeat + REACT.HAPPY_BEATS - self.beat)
+        by -= REACT.HAPPY_HOP * (if self.happyBig then 1.4 else 1) * fade * math.abs(math.sin(self.beat * 2 * math.pi))
+    end
     if bat ~= nil and not blink and not onResults then
         renderer:save()
         if self.time - self.hitAt < 0.3 then
             renderer:modulateColor(Color.rgb(255, 120, 140))
+        elseif self.time - self.perfectAt < REACT.MINT_TIME * 0.6 then
+            renderer:modulateColor(Color.rgb(190, 255, 225))
         end
         local intro = self.intro
-        local art = if self.introOn and intro ~= nil and self.mode == 'playing' then intro else bat
-        drawArt(renderer, art, bx, by, BAT_SCALE * self.flipScale, BAT_ORIGIN, self.batRoll + self.flipRot, 1)
+        local art = if self.introOn and intro ~= nil and playing then intro else bat
+        -- the gulp: squashed wide right after a catch, springing back
+        local sinceCatch = self.time - self.catchAt
+        local squash = if playing and sinceCatch < REACT.GULP_TIME
+            then REACT.GULP_SQUASH * math.sin(math.pi * sinceCatch / REACT.GULP_TIME) else 0
+        drawArt(renderer, art, bx, by, BAT_SCALE * self.flipScale, BAT_ORIGIN, self.batRoll + self.flipRot, 1, squash)
         renderer:restore()
         -- On the web runtime (2.44) the screen stayed red after a hit: the hit tint
         -- seems to outlive restore() and tint every later frame. Nothing here is
         -- meant to be tinted, so set the modulation back to white outright.
         renderer:setColorModulation(Color.rgb(255, 255, 255))
+    end
+    if bat ~= nil and playing and not self.introOn then
+        drawReactions(self, renderer, bx, by, not blink)
     end
 
     -- hp pips, top right beside the pause button (in game only)
@@ -1949,6 +2114,10 @@ return function(context: Context): Layout<World>
     for i = 1, SHARDS do
         shardPaths[i] = Path.new()
     end
+    local fxPaths: { Path } = {}
+    for i = 1, REACT.DIZZY_STARS + 2 + REACT.HAPPY_SPARKS do
+        fxPaths[i] = Path.new()
+    end
     local trailPaths: { Path } = {}
     for i = 1, TRAIL_SEG * 3 + SPARKLES do
         trailPaths[i] = Path.new()
@@ -1971,6 +2140,14 @@ return function(context: Context): Layout<World>
         breakPower = 0,
         shards = {},
         shardPaths = shardPaths,
+        catchAt = -100,
+        perfectAt = -100,
+        worriedAt = -100,
+        happyAt = -100,
+        happyBeat = -100,
+        happyBig = false,
+        fxPaths = fxPaths,
+        fxStroke = Paint.with({ style = 'stroke', cap = 'round', thickness = 3 }),
         trailPaint = Paint.with({ style = 'stroke', cap = 'round', join = 'round', thickness = 4, feather = 3, blendMode = 'screen' }),
         context = nil,
         size = Vector.xy(0, 0),

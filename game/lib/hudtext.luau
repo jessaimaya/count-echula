@@ -1,5 +1,4 @@
 -- HUD strings written into GameVM. Pure functions, unit tested.
-local beatmap = require('lib/beatmap')
 
 local M = {}
 
@@ -42,24 +41,6 @@ function M.mult(multiplier: number, combo: number): string
         return 'x' .. tostring(multiplier)
     end
     return 'x' .. tostring(multiplier) .. '   combo ' .. tostring(combo)
-end
-
--- Tutorial / section prompt for fractional beat `beat` of `map`.
-function M.prompt(map: beatmap.Beatmap, beat: number): string
-    if beat < 0 then
-        return ''
-    elseif beat < map.sonarTutorial then
-        return 'Swipe (or arrow keys) to catch\nthe candy on the beat!'
-    elseif beat < map.tutorialEnd then
-        return 'Catch candy to send your sonar:\nit is your only light in the dark!'
-    end
-    for _, s in map.sections do
-        local text = s.prompt
-        if text ~= nil and beat >= s.from and beat < s.from + (s.promptBeats or 8) then
-            return text
-        end
-    end
-    return ''
 end
 
 export type Summary = {

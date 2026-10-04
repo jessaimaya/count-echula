@@ -14,9 +14,6 @@ local function emptyMap(): beatmap.Beatmap
         bpm = 120,
         firstBeat = 0,
         endBeat = 100,
-        tutorialEnd = 0,
-        swipeTutorial = 0,
-        sonarTutorial = 0,
         sections = {},
         bursts = {},
         heartbeats = {},
@@ -155,13 +152,19 @@ return function(): Tests
                 rules.update(s, 8, 0.016)
                 expect(s.hp).is(1)
             end)
-            test.case('no damage during the tutorial', function(expect)
+            test.case('missing a candy flies into the garlic left behind', function(expect)
                 local m = emptyMap()
-                m.tutorialEnd = 32
-                m.events = { { beat = 4, lane = 0, kind = 'garlic' } }
+                -- the trail moves to lane 1; garlic waits in lane 0, where he stays
+                m.events = {
+                    { beat = 4, lane = 1, kind = 'candy' },
+                    { beat = 4, lane = 0, kind = 'garlic' },
+                }
                 local s = rules.new(m)
-                rules.update(s, 4, 0.016)
-                expect(s.hp).is(rules.MAX_HP)
+                local out = rules.update(s, 4, 0.016)
+                expect(out.hits).is(1)
+                expect(s.hp).is(rules.MAX_HP - 1)
+                out = rules.update(s, 5, 0.016)
+                expect(out.missed).is(1)
             end)
             test.case('three hits is game over', function(expect)
                 local m = emptyMap()
@@ -362,14 +365,6 @@ return function(): Tests
                 expect(hudtext.thousands(999)).is('999')
                 expect(hudtext.thousands(1000)).is('1,000')
                 expect(hudtext.thousands(1234567)).is('1,234,567')
-            end)
-            test.case('tutorial prompts follow the beatmap', function(expect)
-                expect(hudtext.prompt(echula, 2)).is('Swipe (or arrow keys) to catch\nthe candy on the beat!')
-                expect(hudtext.prompt(echula, echula.sonarTutorial + 1)).is('Catch candy to send your sonar:\nit is your only light in the dark!')
-                expect(hudtext.prompt(echula, echula.tutorialEnd + 1)).is('')
-                expect(hudtext.prompt(echula, 81)).is('The fog is rolling in...\nremember the trail!')
-                expect(hudtext.prompt(funky, 95)).is('Brrr... the night froze.\nGlide with the moon...')
-                expect(hudtext.prompt(werewolf, 95)).is('Lights out... something howls.\nFollow your heartbeat!')
             end)
             test.case('results text', function(expect)
                 local s: hudtext.Summary = { over = true, score = 1500, perfect = 1, good = 2, candies = 4, totalCandies = 10, maxCombo = 5, grade = 'fail' }

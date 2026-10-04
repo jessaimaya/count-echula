@@ -13,16 +13,13 @@ export type Event = {
 }
 
 -- A stretch of the song. `fog` (0..1) thickens the street fog (sonar.wgsl cfg.y);
--- `prompt` shows for `promptBeats` beats from `from`. `speed` multiplies how fast the
--- street scrolls (1 = normal) from this section on, until a later section sets another.
--- It ramps linearly over `ramp` beats (default SPEED_RAMP), so nothing on the street
--- jumps; a long ramp is a continuous acceleration.
+-- `speed` multiplies how fast the street scrolls (1 = normal) from this section on,
+-- until a later section sets another. It ramps linearly over `ramp` beats (default
+-- SPEED_RAMP), so nothing on the street jumps; a long ramp is a continuous acceleration.
 export type Section = {
     from: number,
     name: string,
     fog: number?,
-    prompt: string?,
-    promptBeats: number?,
     speed: number?,
     ramp: number?,
 }
@@ -41,9 +38,6 @@ export type Beatmap = {
     bpm: number,
     firstBeat: number,
     endBeat: number,
-    tutorialEnd: number, -- no damage before this beat
-    swipeTutorial: number, -- beat the swipe prompt starts
-    sonarTutorial: number, -- beat the "candy sends your sonar" prompt starts
     sections: { Section },
     bursts: { Burst },
     heartbeats: { Span },
