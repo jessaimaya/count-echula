@@ -75,6 +75,10 @@
     autoBind,
     enableGPUCanvas: true,
     useOffscreenRenderer: false,
+    // In single-touch mode the runtime locks onto the first finger until its touchend; on
+    // iPhone Chrome that release can go missing and every later touch is dropped (no
+    // swipes, no pause button). Multi-touch has no lock; the game treats any finger alike.
+    enableMultiTouch: true,
     // Keyboard: the file focuses its World layout on every screen (FocusActionTarget);
     // this lets that pull browser focus onto the canvas so keys arrive without a click.
     focusOptions: { allowFocusInterrupt: true },
@@ -127,6 +131,22 @@
   window.addEventListener("pagehide", sleep);
   window.addEventListener("pageshow", wake);
 
+  // iOS only starts audio inside a user gesture. Rive unlocks its own context on some
+  // events, but touchstart is default-prevented on the canvas, so make sure: every touch
+  // or click resumes whatever is still suspended (unless the page is asleep).
+  for (const type of ["touchend", "pointerup", "click", "keydown"])
+    document.addEventListener(type, () => {
+      if (asleep) return;
+      for (const ac of audio()) if (ac.state !== "running") ac.resume().catch(() => {});
+    }, { capture: true, passive: true });
+
+  // Debug readout (?hud=1): touches reaching the canvas, audio and page state.
+  const touches = { start: 0, end: 0, cancel: 0 };
+  for (const k of Object.keys(touches))
+    canvas.addEventListener(`touch${k}`, () => touches[k]++, { capture: true, passive: true });
+  const pageState = () =>
+    `\ntouch ${touches.start}/${touches.end}/${touches.cancel}  audio ${audio().map((ac) => ac.state).join(",") || "-"}` +
+    `  ${document.visibilityState}${asleep ? " asleep" : ""}  focus ${document.activeElement?.tagName?.toLowerCase()}`;
   const ro = new ResizeObserver(() => r.resizeDrawingSurfaceToCanvas());
   ro.observe(canvas);
 
@@ -173,7 +193,7 @@
       const fps = (frames * 1000) / (now - last);
       hud.textContent =
         `${info.loaded}${info.note ? `  (${info.note})` : ""}\n${fps.toFixed(0)} fps  worst ${worst.toFixed(1)} ms\n` +
-        `${canvas.width}×${canvas.height} @${devicePixelRatio}x  webgl2 2.44.0` + vmReadout();
+        `${canvas.width}×${canvas.height} @${devicePixelRatio}x  webgl2 2.44.0` + vmReadout() + pageState();
       frames = 0; worst = 0; last = now;
     }
     requestAnimationFrame(tick);
