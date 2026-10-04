@@ -8,6 +8,7 @@ local beatmap = require('lib/beatmap')
 local hudtext = require('lib/hudtext')
 local harmony = require('lib/harmony')
 local discs = require('lib/discs')
+local finale = require('lib/finale')
 
 local NEAR = 0.1
 local FAR = 60
@@ -44,7 +45,7 @@ local INTRO_SWAP = 70 / 60 -- seconds into the intro when the smoke hides the sw
 -- Texture props for the 3D street: each artboard drawn into its own rect of one
 -- canvas, at the art's aspect. The index is the instance's atlas cell; the rects
 -- go to scene.wgsl in the camera buffer.
-local ATLAS_W, ATLAS_H = 2176, 1024
+local ATLAS_W, ATLAS_H = 2176, 2048
 local CELL_PINK, CELL_ORANGE, CELL_GARLIC, CELL_LAMP, CELL_FENCE, CELL_STAKE = 0, 1, 2, 3, 4, 5
 local ATLAS_RECTS = { -- x, y, w, h in pixels, by cell
     { 0, 0, 256, 256 }, -- pink candy
@@ -60,8 +61,27 @@ local ATLAS_RECTS = { -- x, y, w, h in pixels, by cell
     { 1024, 512, 269, 480 }, -- narrow_d
     { 1293, 512, 322, 480 }, -- church
     { 1615, 512, 390, 480 }, -- cottage_e
+    -- the finale (assets/images/castle, cut by scripts/cut_castle.py)
+    { 0, 1024, 1176, 1024 }, -- castle
+    { 1200, 1024, 385, 512 }, -- portcullis
 }
 local FIRST_HOUSE_CELL = 6
+-- The castle at the end of the street; lib/finale.luau times the finale. One table:
+-- the module is at Luau's limit of 200 top-level locals.
+local CASTLE = {
+    CELL = 12, -- atlas cells (ATLAS_RECTS)
+    DOOR_CELL = 13,
+    W = 7, -- world width; the height keeps the art's aspect
+    ASPECT = 1024 / 1176,
+    -- the arch opening, fractions of the art from its left and bottom edges
+    -- (scripts/cut_castle.py prints them)
+    ARCH_L = 0.3828,
+    ARCH_R = 0.6212,
+    ARCH_TOP = 0.4197,
+    DOOR_ASPECT = 385 / 512,
+    HALL_DEPTH = 0.6, -- the lit hall behind the gate
+    DOOR_DEPTH = 0.05, -- the portcullis, just behind the wall so the wall hides it
+}
 local HOUSE_IMAGES = { 'house_a', 'cottage_c', 'house_b', 'narrow_d', 'church', 'cottage_e' }
 -- world height of each house: their heights relative to each other on the sheet
 local HOUSE_H = { 3.0, 2.78, 2.9, 3.09, 3.4, 2.6 }
@@ -343,6 +363,13 @@ type World = {
     happyBig: boolean, -- TRAIL_T2: a bigger hop and rainbow sparkles
     fxPaths: { Path },
     fxStroke: Paint,
+    -- the finale (lib/finale.luau)
+    plan: finale.Plan,
+    scroll: number, -- world distance the street has scrolled (stops at the castle)
+    batFar: number, -- his size as he flies into the gate (1 = in his lane)
+    batAlpha: number,
+    slamAt: number, -- local time the portcullis landed
+    pings: number, -- finale pings fired
 }
 
 local function newPulses(): { Pulse }
@@ -597,6 +624,9 @@ local function startSong(self: World)
     self.worriedAt = -100
     self.happyAt = -100
     self.happyBeat = -100
+    self.plan = finale.plan(self.map)
+    self.slamAt = -100
+    self.pings = 0
     stopSong(self)
     self.useAudioClock = false
     self.songStart = self.time + START_DELAY
@@ -1194,7 +1224,8 @@ local function advance(self: World, seconds: number): boolean
         self.burstPower = bursts[self.burstIdx].power
         self.burstIdx += 1
     end
-    local target = if st.combo >= TRAIL_T2 then 2 elseif st.combo >= TRAIL_T1 then 1 else 0
+    local target = if self.beat >= self.plan.flyFrom then 0
+        elseif st.combo >= TRAIL_T2 then 2 elseif st.combo >= TRAIL_T1 then 1 else 0
     local rate = if target < self.trailLevel then 8 else 3
     self.trailLevel += (target - self.trailLevel) * math.min(1, seconds * rate)
 
@@ -1218,9 +1249,19 @@ local function advance(self: World, seconds: number): boolean
         end
     end
 
+    -- the finale: a sonar ping lights the castle as he flies for the gate, another
+    -- when the portcullis lands behind him
+    if self.pings == 0 and self.beat >= self.plan.flyFrom and not st.over then
+        self.pings = 1
+        addPulse(self, 1, 0, 3)
+    end
+    if self.slamAt < 0 and self.beat >= self.plan.slam and not st.over then
+        self.slamAt = self.time
+        addPulse(self, 1, 1, 3)
+    end
     if st.over then
         endSong(self, 'over')
-    elseif st.finished then
+    elseif st.finished and self.beat >= self.plan.results then
         endSong(self, 'done')
     end
     return true
@@ -1236,7 +1277,7 @@ end
 
 -- World z of something `age` beats behind the bat (the trail and its pieces).
 local function behind(self: World, age: number): number
-    return BAT_Z + along(self, self.beat) - along(self, self.beat - age)
+    return BAT_Z + self.scroll - along(self, self.beat - age)
 end
 
 local function writeInst(b: buffer, i: number, x: number, y: number, z: number,
@@ -1300,10 +1341,28 @@ end
 local function fillWorld(self: World): number
     local b = self.instData
     local beat = self.beat
-    local scroll = along(self, beat)
+    local scroll = self.scroll
     local n = 0
     writeInst(b, n, 0, 0, -25, 2 * HOUSE_X, 60, 0.16, 0.13, 0.3, 1)
     n += 1
+    -- the castle across the end of the street, the portcullis behind its arch (it
+    -- drops in the finale; scene.wgsl cuts it off above the arch) and the lit hall
+    if self.mode == 'playing' or self.mode == 'done' then
+        local z = BAT_Z - (self.plan.gate * TILE - scroll)
+        if z > -FAR then
+            local h = CASTLE.W * CASTLE.ASPECT
+            local archX = ((CASTLE.ARCH_L + CASTLE.ARCH_R) / 2 - 0.5) * CASTLE.W
+            local archW = (CASTLE.ARCH_R - CASTLE.ARCH_L) * CASTLE.W
+            local archH = CASTLE.ARCH_TOP * h
+            writeInst(b, n, 0, 0, z, CASTLE.W, h, 0.4, 0.33, 0.58, 0, CASTLE.CELL)
+            local doorW = archW * 1.04
+            local doorH = doorW / CASTLE.DOOR_ASPECT
+            local y = (archH + 0.05) * (1 - finale.door(self.plan, beat))
+            writeInst(b, n + 1, archX, y, z - CASTLE.DOOR_DEPTH, doorW, doorH, archH, 0, 0, 9, CASTLE.DOOR_CELL)
+            writeInst(b, n + 2, archX, 0, z - CASTLE.HALL_DEPTH, archW * 1.4, archH * 1.2, 0, 0, 0, 8)
+            n += 3
+        end
+    end
     for side = -1, 1, 2 do
         -- the yards: plain ground at curb height from the sidewalk out
         writeInst(b, n, side * (WALK_OUT + YARD_OUT) / 2, CURB_H, -25, YARD_OUT - WALK_OUT, 60, 0.13, 0.1, 0.2, 1)
@@ -1692,9 +1751,13 @@ local function drawAtlas(self: World)
     end
     local ctx = self.context
     if ctx ~= nil then
+        local images = { castle = CASTLE.CELL, castle_door = CASTLE.DOOR_CELL }
         for i, name in HOUSE_IMAGES do
+            images[name] = FIRST_HOUSE_CELL + i - 1
+        end
+        for name, cell in images do
             local img = ctx:image(name)
-            local rect = ATLAS_RECTS[FIRST_HOUSE_CELL + i]
+            local rect = ATLAS_RECTS[cell + 1]
             if img ~= nil then
                 r:save()
                 r:transform(Mat2D.withScaleAndTranslation(rect[3] / img.width, rect[4] / img.height, rect[1], rect[2]))
@@ -1762,7 +1825,7 @@ local function drawReactions(self: World, renderer: Renderer, bx: number, by: nu
         p:reset()
     end
     local paint = self.paint
-    local k = BAT_SCALE * self.flipScale
+    local k = BAT_SCALE * self.flipScale * self.batFar
     local st = self.state
     renderer:save()
     renderer:transform(Mat2D.withTranslation(bx, by) * Mat2D.withRotation(self.batRoll + self.flipRot))
@@ -1849,7 +1912,7 @@ local function drawHud(self: World, renderer: Renderer, bx: number, by: number)
         local fade = math.min(1, self.happyBeat + REACT.HAPPY_BEATS - self.beat)
         by -= REACT.HAPPY_HOP * (if self.happyBig then 1.4 else 1) * fade * math.abs(math.sin(self.beat * 2 * math.pi))
     end
-    if bat ~= nil and not blink and not onResults then
+    if bat ~= nil and not blink and not onResults and self.batAlpha > 0 then
         renderer:save()
         if self.time - self.hitAt < 0.3 then
             renderer:modulateColor(Color.rgb(255, 120, 140))
@@ -1862,14 +1925,15 @@ local function drawHud(self: World, renderer: Renderer, bx: number, by: number)
         local sinceCatch = self.time - self.catchAt
         local squash = if playing and sinceCatch < REACT.GULP_TIME
             then REACT.GULP_SQUASH * math.sin(math.pi * sinceCatch / REACT.GULP_TIME) else 0
-        drawArt(renderer, art, bx, by, BAT_SCALE * self.flipScale, BAT_ORIGIN, self.batRoll + self.flipRot, 1, squash)
+        drawArt(renderer, art, bx, by, BAT_SCALE * self.flipScale * self.batFar, BAT_ORIGIN,
+            self.batRoll + self.flipRot, self.batAlpha, squash)
         renderer:restore()
         -- On the web runtime (2.44) the screen stayed red after a hit: the hit tint
         -- seems to outlive restore() and tint every later frame. Nothing here is
         -- meant to be tinted, so set the modulation back to white outright.
         renderer:setColorModulation(Color.rgb(255, 255, 255))
     end
-    if bat ~= nil and playing and not self.introOn then
+    if bat ~= nil and playing and not self.introOn and self.batAlpha >= 1 then
         drawReactions(self, renderer, bx, by, not blink)
     end
 
@@ -1898,8 +1962,11 @@ local function draw(self: World, renderer: Renderer)
         return
     end
 
+    -- in a song the street stops at the castle (lib/finale.luau)
+    self.scroll = if self.mode == 'playing' or self.mode == 'done'
+        then finale.street(self.map, self.plan, self.beat) * TILE else along(self, self.beat)
     self.viewProj:writeToBuffer(self.camData, 0)
-    buffer.writef32(self.camData, 64, along(self, self.beat))
+    buffer.writef32(self.camData, 64, self.scroll)
     buffer.writef32(self.camData, 68, self.time)
     buffer.writef32(self.camData, 72, LANE) -- the road paints its dividers from this
     camUBO:write(self.camData)
@@ -1908,12 +1975,26 @@ local function draw(self: World, renderer: Renderer)
     local n = fillWorld(self)
     instBuf:write(self.instData, 0, 0, n * STRIDE)
 
-    local laneX = rules.laneX(self.state)
-    local ndc = self.viewProj:transformPoint(laneX * LANE, 0.6, BAT_Z)
+    -- Echula: in his lane, or flying in through the castle gate in the finale (he
+    -- shrinks with the distance and fades into the hall as he passes the arch)
+    local x, y, z = rules.laneX(self.state) * LANE, 0.6, BAT_Z
+    local fly = if self.mode == 'playing' then finale.fly(self.plan, self.beat) else 0
+    if fly > 0 then
+        local gateZ = BAT_Z - (self.plan.gate * TILE - self.scroll)
+        local archX = ((CASTLE.ARCH_L + CASTLE.ARCH_R) / 2 - 0.5) * CASTLE.W
+        x += (archX - x) * fly
+        y -= 0.15 * fly
+        z += (gateZ - 0.2 - z) * fly
+    end
+    local ndc = self.viewProj:transformPoint(x, y, z)
     local W = scene.width
     local H = scene.height
     local bx = (ndc.x * 0.5 + 0.5) * W
     local by = (1 - (ndc.y * 0.5 + 0.5)) * H
+    local unit = self.viewProj:transformPoint(x + 1, y, z).x - ndc.x
+    local home = self.viewProj:transformPoint(1, 0.6, BAT_Z).x - self.viewProj:transformPoint(0, 0.6, BAT_Z).x
+    self.batFar = if home > 0 then unit / home else 1
+    self.batAlpha = math.clamp((1 - fly) / 0.2, 0, 1)
 
     local pd = self.postData
     local playing = self.mode == 'playing'
@@ -1937,7 +2018,7 @@ local function draw(self: World, renderer: Renderer)
     buffer.writef32(pd, 0, W)
     buffer.writef32(pd, 4, H)
     buffer.writef32(pd, 8, self.time)
-    buffer.writef32(pd, 12, if playing then along(self, self.beat) else self.time * 2)
+    buffer.writef32(pd, 12, if playing then self.scroll else self.time * 2)
     buffer.writef32(pd, 16, bx)
     buffer.writef32(pd, 20, by)
     buffer.writef32(pd, 24, NEAR)
@@ -1995,6 +2076,10 @@ local function draw(self: World, renderer: Renderer)
     local sinceHit = self.time - self.hitAt
     if sinceHit < 0.5 then
         shake = 12 * math.exp(-sinceHit * 9)
+    end
+    local sinceSlam = self.time - self.slamAt
+    if sinceSlam >= 0 and sinceSlam < 0.6 then
+        shake = math.max(shake, 9 * math.exp(-sinceSlam * 7))
     end
     local jx = math.sin(self.time * 97.3) * shake
     local jy = math.cos(self.time * 83.1) * shake
@@ -2148,6 +2233,12 @@ return function(context: Context): Layout<World>
         happyBig = false,
         fxPaths = fxPaths,
         fxStroke = Paint.with({ style = 'stroke', cap = 'round', thickness = 3 }),
+        plan = finale.plan(discs.list[1].map),
+        scroll = 0,
+        batFar = 1,
+        batAlpha = 1,
+        slamAt = -100,
+        pings = 0,
         trailPaint = Paint.with({ style = 'stroke', cap = 'round', join = 'round', thickness = 4, feather = 3, blendMode = 'screen' }),
         context = nil,
         size = Vector.xy(0, 0),

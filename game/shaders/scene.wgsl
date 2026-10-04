@@ -5,6 +5,7 @@
 // street, so the projection gives it its perspective), 6 sidewalk top (flat, raised),
 // 7 curb face (upright along the street). The sidewalk is geometry, not art, so it
 // converges correctly; its joints are drawn here in svg/left_sidewalk's palette.
+// 8 the castle's lit hall seen through its gate, 9 the portcullis (world.luau CASTLE).
 
 struct Camera {
     viewProj: mat4x4<f32>,
@@ -137,6 +138,17 @@ fn fs_main(in: VOut) -> @location(0) vec4<f32> {
         } else {
             rgb = art.rgb / art.a;
         }
+    } else if (near(in.kind, 8.0)) {
+        // the castle's hall through the gate: warm light spilling from the floor, dark
+        // under the vault; the light glows through the fog like a window
+        let warm = smoothstep(0.9, 0.15, uv.y);
+        rgb = mix(vec3<f32>(0.16, 0.07, 0.18), vec3<f32>(1.0, 0.72, 0.28), warm);
+        cls = select(0.5, 0.55, warm > 0.2);
+    } else if (near(in.kind, 9.0)) {
+        // portcullis (svg/door): it hangs behind the wall; above the arch's top
+        // (color.r, world height) the castle's towers don't cover it, so it is cut there
+        if (art.a < 0.5 || in.wpos.y > in.color.r) { discard; }
+        rgb = art.rgb / art.a;
     } else {
         // house (assets/images/houses): scenery; its lit windows glow through the
         // fog (0.55 = window)

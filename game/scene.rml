@@ -732,6 +732,8 @@
     <ImageAsset file="assets/images/houses/narrow_d.png" name="narrow_d" id="0:6004"/>
     <ImageAsset file="assets/images/houses/church.png" name="church" id="0:6005"/>
     <ImageAsset file="assets/images/houses/cottage_e.png" name="cottage_e" id="0:6006"/>
+    <ImageAsset file="assets/images/castle/castle.png" name="castle" id="0:6007"/>
+    <ImageAsset file="assets/images/castle/door.png" name="castle_door" id="0:6008"/>
     <AudioAsset file="assets/audio/sfx/heartbeat.wav" name="heartbeat" id="0:71"/>
     <AudioAsset file="assets/audio/sfx/candy.wav" name="candy" id="0:75"/>
     <AudioAsset file="assets/audio/sfx/hit.wav" name="hit" id="0:76"/>

@@ -5,6 +5,7 @@ local beatmap = require('lib/beatmap')
 local hudtext = require('lib/hudtext')
 local harmony = require('lib/harmony')
 local discs = require('lib/discs')
+local finale = require('lib/finale')
 local echula = require('lib/maps/echula')
 local funky = require('lib/maps/funky')
 local werewolf = require('lib/maps/werewolf')
@@ -373,6 +374,37 @@ return function(): Tests
                 expect(hudtext.again(s)).is('tap to try again')
                 s.over = false
                 expect(hudtext.again(s)).is('tap for the record shelf')
+            end)
+        end)
+        test.group('finale', function()
+            test.case('the street stops before the gate, after the last candy', function(expect)
+                for _, map in { echula, funky, werewolf } do
+                    local plan = finale.plan(map)
+                    local last = map.events[#map.events].beat
+                    -- the candy still passes at full speed
+                    expect(finale.street(map, plan, last)).is(beatmap.distanceAt(map, last))
+                    local prev = -1
+                    for b = last, last + 12, 0.25 do
+                        local d = finale.street(map, plan, b)
+                        expect(d >= prev).is(true)
+                        expect(d < plan.stop).is(true)
+                        prev = d
+                    end
+                    expect(plan.stop - prev < 0.01).is(true)
+                    expect(plan.gate - plan.stop).is(finale.GAP)
+                    expect(plan.results >= map.endBeat).is(true)
+                    expect(plan.results > plan.slam).is(true)
+                end
+            end)
+            test.case('he flies in, then the portcullis drops and bounces', function(expect)
+                local plan = finale.plan(echula)
+                expect(finale.fly(plan, plan.flyFrom)).is(0)
+                expect(finale.fly(plan, plan.flyFrom + finale.FLY_BEATS)).is(1)
+                expect(plan.doorFrom >= plan.flyFrom + finale.FLY_BEATS).is(true)
+                expect(finale.door(plan, plan.doorFrom)).is(0)
+                expect(finale.door(plan, plan.slam)).is(1)
+                expect(finale.door(plan, plan.slam + finale.BOUNCE_BEATS / 2) < 1).is(true)
+                expect(finale.door(plan, plan.slam + 1)).is(1)
             end)
         end)
     end
