@@ -22,7 +22,12 @@ while [ $# -gt 0 ]; do
 done
 
 if [ "$MODE" = region ]; then
-  read -r W H X Y < <(slop -f "%w %h %x %y")
+  echo "Drag a rectangle (right-click cancels)…"
+  # --nokeyboard: slop otherwise sees the Enter release that started this script and
+  # cancels at once; the short wait lets the key settle
+  sleep 0.3
+  sel=$(slop --nokeyboard -f "%w %h %x %y") || { echo "Selection cancelled." >&2; exit 1; }
+  read -r W H X Y <<<"$sel"
 else
   echo "Click the window to record…"
   info=$(xwininfo -frame)
