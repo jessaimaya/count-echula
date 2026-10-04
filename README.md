@@ -63,7 +63,7 @@ scripts/    Build + serve helper, SVG → RML converter, house cut-out tool
 
 Game design, code and art direction by [@jessaimaya](https://github.com/jessaimaya).
 
-Music: generated with [YuE](https://github.com/multimodal-art-projection/YuE) (M-A-P / HKUST).
+Music: three songs generated on [yueai.ai](https://yueai.ai) with [YuE2](https://github.com/multimodal-art-projection/YuE) (M-A-P / HKUST). #YuE2
 
 Fonts: [Creepster](https://fonts.google.com/specimen/Creepster) and [Fredoka](https://fonts.google.com/specimen/Fredoka), both under the SIL Open Font License (see `game/assets/fonts/`).
 
