@@ -149,6 +149,9 @@ local REACT = {
     HAPPY_HOP = 12, -- a hop with every flap
     HAPPY_SPARKS = 14, -- sparkles thrown off at the start
     HAPPY_SPARK_LIFE = 0.7, -- seconds
+    -- game over: he vanishes in the intro's Smoke Puff, and the results wait for it
+    POOF_SCALE = 1.5, -- the puff, against BAT_SCALE
+    POOF_HOLD = 0.85, -- seconds from the last hit to the results
 }
 -- Lives: bats (svg/bat.svg, hud_art.rml LifeBat) beside the pause button.
 local LIVES = {
@@ -262,6 +265,10 @@ type World = {
     fenceArt: Input<Artboard>,
     introArt: Input<Artboard>,
     lifeArt: Input<Artboard>,
+    smokeArt: Input<Artboard>,
+    poof: Artboard?, -- the game-over puff (intro.rml Smoke Puff)
+    poofAnim: Animation?,
+    poofAt: number, -- local time he went poof (-100 = not yet)
     life: Artboard?,
     lostAt: { number }, -- local time each life was lost (-100 = still here)
     bat: Artboard?,
@@ -662,6 +669,8 @@ local function startSong(self: World)
     self.pings = 0
     self.lostAt = { -100, -100, -100 }
     self.prevMult = 1
+    self.poofAt = -100
+    self.poof = nil
     stopSong(self)
     self.useAudioClock = false
     self.songStart = self.time + START_DELAY
@@ -702,9 +711,6 @@ local function endSong(self: World, mode: Mode)
     setString(self, 'promptText', '')
     self.endAt = self.time
     setMode(self, mode)
-    if mode == 'over' then
-        playSfx(self.sfx.hit, 1)
-    end
     print(string.format('%s: score %d  grade %s  candy %d/%d  perfect %d good %d  hits %d  max combo %d',
         mode, st.score, summary.grade, st.candies, st.totalCandies, st.perfect, st.good, st.hits, st.maxCombo))
 end
@@ -1251,6 +1257,18 @@ local function advance(self: World, seconds: number): boolean
     if self.paused then
         return true
     end
+    -- game over: everything holds while he goes up in smoke, then the results
+    if self.poofAt >= 0 then
+        local anim, puff = self.poofAnim, self.poof
+        if anim ~= nil and puff ~= nil then
+            anim:setTime(math.min(self.time - self.poofAt, anim.duration))
+            puff:advance(0)
+        end
+        if self.time - self.poofAt >= REACT.POOF_HOLD then
+            endSong(self, 'over')
+        end
+        return true
+    end
     if self.resumeAt > 0 then
         countdownTick(self)
         if self.resumeAt > 0 then
@@ -1376,7 +1394,14 @@ local function advance(self: World, seconds: number): boolean
         addPulse(self, 1, 1, 3)
     end
     if st.over then
-        endSong(self, 'over')
+        self.poofAt = self.time
+        local puff = self.smokeArt:instance()
+        self.poof = puff
+        self.poofAnim = puff:animation('pop')
+        local snd = self.sound
+        if snd ~= nil then
+            snd:stop(0.3)
+        end
     elseif st.finished and self.beat >= self.plan.results then
         endSong(self, 'done')
     end
@@ -2028,7 +2053,11 @@ local function drawHud(self: World, renderer: Renderer, bx: number, by: number)
         local fade = math.min(1, self.happyBeat + REACT.HAPPY_BEATS - self.beat)
         by -= REACT.HAPPY_HOP * (if self.happyBig then 1.4 else 1) * fade * math.abs(math.sin(self.beat * 2 * math.pi))
     end
-    if bat ~= nil and not blink and not onResults and self.batAlpha > 0 then
+    local poofing = self.poofAt >= 0 and self.mode == 'playing'
+    if poofing and self.poof ~= nil then
+        drawArt(renderer, self.poof, bx, by, BAT_SCALE * REACT.POOF_SCALE, BAT_ORIGIN, 0, 1)
+    end
+    if bat ~= nil and not blink and not onResults and self.batAlpha > 0 and not poofing then
         renderer:save()
         if self.time - self.hitAt < 0.3 then
             renderer:modulateColor(Color.rgb(255, 120, 140))
@@ -2049,7 +2078,7 @@ local function drawHud(self: World, renderer: Renderer, bx: number, by: number)
         -- meant to be tinted, so set the modulation back to white outright.
         renderer:setColorModulation(Color.rgb(255, 255, 255))
     end
-    if bat ~= nil and playing and not self.introOn and self.batAlpha >= 1 then
+    if bat ~= nil and playing and not self.introOn and self.batAlpha >= 1 and not poofing then
         drawReactions(self, renderer, bx, by, not blink)
     end
 
@@ -2446,6 +2475,10 @@ return function(context: Context): Layout<World>
         fenceArt = late(),
         introArt = late(),
         lifeArt = late(),
+        smokeArt = late(),
+        poof = nil,
+        poofAnim = nil,
+        poofAt = -100,
         life = nil,
         lostAt = { -100, -100, -100 },
         bat = nil,
