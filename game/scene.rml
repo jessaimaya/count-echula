@@ -1297,6 +1297,7 @@
         <ViewModelPropertyBoolean name="menuHover" id="0:2226"/>
         <ViewModelPropertyTrigger name="resumePress" id="0:2227"/>
         <ViewModelPropertyTrigger name="menuPress" id="0:2228"/>
+        <ViewModelPropertyNumber name="wakeCount" id="0:2229"/>
         <ViewModelInstance exports="true" name="Default" id="0:60">
             <ViewModelInstanceNumber propertyValue="0" viewModelPropertyId="0:41" id="0:7912"/>
             <ViewModelInstanceString propertyValue="0" viewModelPropertyId="0:42" id="0:7913"/>
@@ -1339,6 +1340,7 @@
             <ViewModelInstanceBoolean propertyValue="false" viewModelPropertyId="0:2226" id="0:300111"/>
             <ViewModelInstanceTrigger viewModelPropertyId="0:2227" id="0:300112"/>
             <ViewModelInstanceTrigger viewModelPropertyId="0:2228" id="0:300113"/>
+            <ViewModelInstanceNumber propertyValue="0" viewModelPropertyId="0:2229" id="0:300115"/>
         </ViewModelInstance>
     </ViewModel>
 

@@ -28,6 +28,23 @@
   <div id="stage"><canvas id="canvas"></canvas></div>
   <div id="hud">loading…</div>
   <div id="errors" title="tap to dismiss"></div>
+  <!-- Before Rive loads: remember every AudioContext the page makes (Rive's audio engine
+       makes its own), so main.js can silence them while the app is in the background. -->
+  <script>
+    (() => {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      const contexts = (window.__audioContexts = []);
+      class Tracked extends AC {
+        constructor(...args) {
+          super(...args);
+          contexts.push(this);
+        }
+      }
+      window.AudioContext = Tracked;
+      if (window.webkitAudioContext) window.webkitAudioContext = Tracked;
+    })();
+  </script>
   <!-- Pinned: GPU Canvas needs @rive-app/webgl2 >= 2.42.0 -->
   <script src="https://cdn.jsdelivr.net/npm/@rive-app/webgl2@2.44.0/rive.js"></script>
   <script src="main.js"></script>

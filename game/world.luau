@@ -368,6 +368,10 @@ type World = {
     menuHover: Property<boolean>?,
     resumePressFire: PropertyTrigger?,
     menuPressFire: PropertyTrigger?,
+    -- the web page counts each return from the background (web/main.js); mid-song
+    -- that opens the pause menu, so the player comes back to "Paused"
+    wakeCount: Property<number>?,
+    wakeSeen: number,
     sfx: Sfx,
     notes: { [number]: AudioSource },
     -- temporary HUD
@@ -1217,6 +1221,13 @@ end
 
 local function advance(self: World, seconds: number): boolean
     self.time += seconds
+    local wake = self.wakeCount
+    if wake ~= nil and wake.value ~= self.wakeSeen then
+        self.wakeSeen = wake.value
+        if self.mode == 'playing' and not self.paused and self.poofAt < 0 then
+            pauseSong(self)
+        end
+    end
     placePop(self)
     animateBat(self, seconds)
     if self.mode ~= 'playing' then
@@ -2377,6 +2388,7 @@ local function init(self: World, context: Context): boolean
     self.menuHover = vm:getBoolean('menuHover')
     self.resumePressFire = vm:getTrigger('resumePress')
     self.menuPressFire = vm:getTrigger('menuPress')
+    self.wakeCount = vm:getNumber('wakeCount')
     self.candyFire = vm:getTrigger('candyFire')
     setMode(self, self.mode)
     selectDisc(self, self.disc, true)
@@ -2572,6 +2584,8 @@ return function(context: Context): Layout<World>
         menuHover = nil,
         resumePressFire = nil,
         menuPressFire = nil,
+        wakeCount = nil,
+        wakeSeen = 0,
         sfx = {},
         notes = {},
         paint = Paint.with({ color = Color.rgb(255, 77, 109) }),

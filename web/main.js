@@ -99,6 +99,34 @@
     if (e.target !== canvas) e.preventDefault();
   });
 
+  // Background (app closed, tab switched, screen locked): silence the audio and stop the
+  // frame loop, or the music keeps playing and the GPU keeps drawing. Back in front, the
+  // game gets a wake (GameVM.wakeCount): mid-song it opens its pause menu, so the audio
+  // comes back a moment later, once the song is paused.
+  let asleep = false;
+  // Rive makes several; skip the ones it has already closed
+  const audio = () => (window.__audioContexts || []).filter((ac) => ac.state !== "closed");
+  function sleep() {
+    if (asleep) return;
+    asleep = true;
+    for (const ac of audio()) ac.suspend().catch(() => {});
+    r.pause();
+  }
+  function wake() {
+    if (!asleep || document.hidden) return;
+    asleep = false;
+    r.play(); // resumes what pause() paused (the Flow machine)
+    const count = r.viewModelInstance?.number("wakeCount");
+    if (count) count.value += 1;
+    // a timer, not animation frames: those can stall right after the page comes back
+    setTimeout(() => {
+      if (!asleep) for (const ac of audio()) ac.resume().catch(() => {});
+    }, 120);
+  }
+  document.addEventListener("visibilitychange", () => (document.hidden ? sleep() : wake()));
+  window.addEventListener("pagehide", sleep);
+  window.addEventListener("pageshow", wake);
+
   const ro = new ResizeObserver(() => r.resizeDrawingSurfaceToCanvas());
   ro.observe(canvas);
 
