@@ -9,7 +9,63 @@
     html, body { margin: 0; height: 100%; background: var(--night); overflow: hidden; }
     body { display: grid; place-items: center; }
     /* Portrait-first: fill height on desktop (letterboxed), full screen on phones. */
-    #stage { position: relative; height: 100dvh; aspect-ratio: 9 / 16; max-width: 100vw; }
+    #stage {
+      position: relative; z-index: 1; height: 100dvh; aspect-ratio: 9 / 16; max-width: 100vw;
+      box-shadow: 0 0 80px 20px #0009, 0 0 0 1px #c8beff1a;
+    }
+    /* Desktop letterbox: the haunted street carries on past the stage (static, no Rive cost). */
+    #backdrop {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+      background:
+        radial-gradient(ellipse 70% 55% at 50% 18%, #2a2650 0%, #1d1a33 55%, transparent 100%),
+        linear-gradient(#0a0818 0%, #1a1730 45%, #13112a 100%);
+    }
+    #backdrop .stars {
+      position: absolute; inset: 0 0 35% 0; background-size: 420px 340px;
+      mask-image: linear-gradient(#000 40%, transparent);
+      background-image:
+        radial-gradient(2px 2px at 12% 18%, #e8d8ec 50%, transparent 51%),
+        radial-gradient(1.5px 1.5px at 27% 8%, #e8d8ec 50%, transparent 51%),
+        radial-gradient(1.5px 1.5px at 8% 42%, #9fe8ff 50%, transparent 51%),
+        radial-gradient(1.5px 1.5px at 33% 31%, #faebde 50%, transparent 51%),
+        radial-gradient(1.5px 1.5px at 19% 60%, #e8d8ec 50%, transparent 51%),
+        radial-gradient(1.5px 1.5px at 71% 12%, #e8d8ec 50%, transparent 51%),
+        radial-gradient(2px 2px at 88% 24%, #faebde 50%, transparent 51%),
+        radial-gradient(1.5px 1.5px at 79% 47%, #9fe8ff 50%, transparent 51%),
+        radial-gradient(1.5px 1.5px at 93% 9%, #e8d8ec 50%, transparent 51%),
+        radial-gradient(1.5px 1.5px at 66% 36%, #e8d8ec 50%, transparent 51%);
+      animation: twinkle 6s ease-in-out infinite alternate;
+    }
+    @keyframes twinkle { from { opacity: .55; } to { opacity: 1; } }
+    #backdrop .street { position: absolute; bottom: 0; width: 50%; height: 40vh; }
+    #backdrop .street.left { left: 0; }
+    #backdrop .street.right { right: 0; transform: scaleX(-1); }
+    #backdrop .far { fill: #1a1832; stroke: #c8beff22; stroke-width: 1; }
+    #backdrop .near { fill: #0e0c1c; stroke: #c8beff40; stroke-width: 1.5; }
+    #backdrop .windows { fill: #ff9f3d; opacity: .55; filter: drop-shadow(0 0 4px #ff9f3d); }
+    #backdrop .fog {
+      position: absolute; inset: auto 0 0 0; height: 22vh;
+      background: linear-gradient(transparent, #1d1a33cc);
+    }
+    #backdrop .bat { position: absolute; width: 42px; fill: #07060f; opacity: .85; }
+    #backdrop .bat svg { width: 100%; animation: flap .35s ease-in-out infinite alternate; }
+    #backdrop .bat.b1 { top: 22vh; left: 0; animation: fly-l 26s linear infinite; }
+    #backdrop .bat.b2 { top: 34vh; right: 0; width: 30px; animation: fly-r 34s linear infinite 9s; }
+    @keyframes flap { from { transform: scaleY(1); } to { transform: scaleY(.35); } }
+    @keyframes fly-l {
+      from { transform: translate(-60px, 0); } 50% { transform: translate(22vw, -6vh); }
+      to { transform: translate(-60px, 3vh); }
+    }
+    @keyframes fly-r {
+      from { transform: translate(60px, 0); } 50% { transform: translate(-20vw, 5vh); }
+      to { transform: translate(60px, -2vh); }
+    }
+    /* Bats only where there are real side bars (not on phones), and never for reduced motion. */
+    @media (max-aspect-ratio: 4 / 5) { #backdrop .bat { display: none; } }
+    @media (prefers-reduced-motion: reduce) {
+      #backdrop .bat { display: none; }
+      #backdrop .stars { animation: none; }
+    }
     canvas { width: 100%; height: 100%; display: block; touch-action: none; }
     canvas:focus { outline: none; } /* focused for keyboard play; no ring around the game */
     #hud {
@@ -25,6 +81,22 @@
   </style>
 </head>
 <body>
+  <div id="backdrop" aria-hidden="true">
+    <div class="stars"></div>
+    <svg class="street left" viewBox="0 0 600 220" preserveAspectRatio="xMaxYMax slice">
+      <path class="far" d="M-10 220V113L14 85L37 113V220ZM52 220V112L86 73L121 112V220ZM143 220V112L164 93L185 112V220ZM204 220V115L228 91L252 115V220ZM278 220V116L306 80L333 116V220ZM352 220V110L378 75L404 110V220ZM415 220V141L445 101L475 141V220ZM495 220V150L521 118L547 150V220ZM553 220V113L576 92L598 113V220ZM602 220V133L635 95L668 133V220Z"/>
+      <path class="near" d="M-10 220V135L34 77L78 135V220ZM96 220V133L142 87L188 133V220ZM207 220V131L257 66L307 131V220ZM328 220V130L380 82L432 130V220ZM450 220V123L500 62L551 123V220ZM557 220V168L588 137L620 168V220Z"/>
+      <g class="windows"><rect x="243" y="143" width="9" height="12" rx="1"/><rect x="476" y="149" width="9" height="12" rx="1"/><rect x="40" y="160" width="9" height="12" rx="1"/></g>
+    </svg>
+    <svg class="street right" viewBox="0 0 600 220" preserveAspectRatio="xMaxYMax slice">
+      <path class="far" d="M-10 220V113L14 85L37 113V220ZM52 220V112L86 73L121 112V220ZM143 220V112L164 93L185 112V220ZM204 220V115L228 91L252 115V220ZM278 220V116L306 80L333 116V220ZM352 220V110L378 75L404 110V220ZM415 220V141L445 101L475 141V220ZM495 220V150L521 118L547 150V220ZM553 220V113L576 92L598 113V220ZM602 220V133L635 95L668 133V220Z"/>
+      <path class="near" d="M-10 220V135L34 77L78 135V220ZM96 220V133L142 87L188 133V220ZM207 220V131L257 66L307 131V220ZM328 220V130L380 82L432 130V220ZM450 220V123L500 62L551 123V220ZM557 220V168L588 137L620 168V220Z"/>
+      <g class="windows"><rect x="360" y="150" width="9" height="12" rx="1"/><rect x="130" y="146" width="9" height="12" rx="1"/></g>
+    </svg>
+    <div class="fog"></div>
+    <div class="bat b1"><svg viewBox="0 0 60 24"><path d="M30 8c2-4 4-4 5 0 6-6 14-7 25-4-6 2-8 6-8 11-4-3-8-3-11 1-2-3-5-3-7 0h-8c-2-3-5-3-7 0-3-4-7-4-11-1 0-5-2-9-8-11 11-3 19-2 25 4 1-4 3-4 5 0z"/></svg></div>
+    <div class="bat b2"><svg viewBox="0 0 60 24"><path d="M30 8c2-4 4-4 5 0 6-6 14-7 25-4-6 2-8 6-8 11-4-3-8-3-11 1-2-3-5-3-7 0h-8c-2-3-5-3-7 0-3-4-7-4-11-1 0-5-2-9-8-11 11-3 19-2 25 4 1-4 3-4 5 0z"/></svg></div>
+  </div>
   <div id="stage"><canvas id="canvas"></canvas></div>
   <div id="hud">loading…</div>
   <div id="errors" title="tap to dismiss"></div>
