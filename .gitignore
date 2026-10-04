@@ -5,3 +5,6 @@ node_modules/
 **/build/*
 !game/build/
 !game/build/count-echula.riv
+
+# Railway test deploy: assembled by scripts/deploy-railway.sh
+deploy/site/

@@ -9,6 +9,9 @@
 
   const canvas = document.getElementById("canvas");
   const hud = document.getElementById("hud");
+  // The corner readout: on by default here; the deployed test build sets
+  // <body data-hud="0"> (scripts/deploy-railway.sh), and ?hud=1 / ?hud=0 override.
+  if ((params.get("hud") ?? document.body.dataset.hud ?? "1") === "0") hud.style.display = "none";
   const errors = document.getElementById("errors");
 
   const info = { loaded: "loading…", note: "" };

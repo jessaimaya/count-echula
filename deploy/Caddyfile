@@ -1,0 +1,10 @@
+# Railway sets $PORT. The game opens at / (the harness page in /web/).
+:{$PORT:8080} {
+	root * /srv
+	encode gzip
+	redir / /web/ 302
+	# testers always get the latest build after a redeploy
+	header /web/* Cache-Control "no-cache"
+	header /game/* Cache-Control "no-cache"
+	file_server
+}
